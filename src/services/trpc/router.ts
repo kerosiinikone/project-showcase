@@ -1,9 +1,14 @@
-import actions from '@/actions/user.actions'
+import userActions from '@/actions/user.actions'
+import projectActions from '@/actions/project.actions'
 import { procedure, router } from '.'
 
 const userActionsRouter = router({
-    createNewUserAction: actions.createUserAction,
-    getExistingUserAction: actions.getExistingUserAction,
+    createNewUserAction: userActions.createUserAction,
+    getExistingUserAction: userActions.getExistingUserAction,
+})
+
+const projectActionsRouter = router({
+    createProjectAction: projectActions.createProjectAction,
 })
 
 export const appRouter = router({
@@ -13,19 +18,7 @@ export const appRouter = router({
         }
     }),
     userActionsRouter,
+    projectActionsRouter,
 })
 
 export type AppRouter = typeof appRouter
-
-// export const authorizedProcedure = procedure
-//     .input()
-//     .use((opts) => {
-//         if (opts.input.townName !== 'Pucklechurch') {
-//             throw new TRPCError({
-//                 code: 'FORBIDDEN',
-//                 message: "We don't take kindly to out-of-town folk",
-//             })
-//         }
-
-//         return opts.next()
-//     })

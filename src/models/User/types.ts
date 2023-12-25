@@ -1,8 +1,8 @@
 export interface UserType {
-    id?: string
+    id: string
     github_url: string
     email: string
-    name?: string
+    name: string
     own_projects: string[]
     emailVerified?: Date | null
     image?: string | null

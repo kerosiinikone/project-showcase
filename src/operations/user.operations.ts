@@ -5,13 +5,7 @@ import { User } from '@/models/User/model'
 
 export function createNewUser(newUser: UserType) {
     const user = new User(newUser)
-    return db.insert(users).values({
-        ...user,
-        id: user.id!,
-        name: user.name!,
-        updated_at: user.updated_at!,
-        created_at: user.created_at!,
-    })
+    return db.insert(users).values(user).returning()
 }
 
 export function getExistingUserById(id: string) {

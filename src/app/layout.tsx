@@ -1,19 +1,16 @@
-import type { Metadata } from 'next'
 import './globals.css'
 import SideNavLayout from './Nav'
 import Provider from './_util/Provider'
 import { useAsyncAuth } from '@/hooks/useAsyncAuth'
-
-export const metadata: Metadata = {
-    title: 'Project Showcase',
-}
 
 export default async function RootLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+    // Same could be achieved with NextJS middleware ???
     const session = await useAsyncAuth()
+
     return (
         <html lang="en">
             <body>

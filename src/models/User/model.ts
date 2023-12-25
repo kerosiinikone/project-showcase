@@ -1,6 +1,6 @@
-import z from 'zod'
+import z, { ZodError } from 'zod'
 import { UserType } from './types'
-import { BaseModel, validationMixin } from '../base'
+import { ValidationError } from '../errorModel'
 
 export const UserSchema = z.object({
     id: z.string().length(36),
@@ -14,37 +14,46 @@ export const UserSchema = z.object({
     image: z.string().max(191).optional(),
 })
 
-export class User extends validationMixin(BaseModel) implements UserType {
-    name: string | undefined // Mixin type casting
+export class User implements UserType {
+    name: string
     github_url: string
-    id: string | undefined // Mixin type casting
-    created_at: Date | undefined // Mixin type casting
-    updated_at: Date | undefined // Mixin type casting
+    id: string
+    created_at: Date
+    updated_at: Date
     email: string
     emailVerified?: Date | null | undefined
     image?: string | null | undefined
     own_projects: string[]
     projects: string[]
 
-    constructor({
-        name,
-        id,
-        email,
-        image = null,
-        emailVerified = null,
-    }: UserType) {
-        super(name, id, image)
+    constructor({ id, name, email, image, emailVerified = null }: UserType) {
         this.email = email
+        this.id = id
         this.github_url = this.createGithubLink()
         this.emailVerified = emailVerified
         this.own_projects = []
         this.projects = []
-
-        this.validate_schema(UserSchema)
+        this.image = image
+        this.created_at = new Date()
+        this.updated_at = new Date()
+        this.name = name
+        this.validate_schema()
     }
 
     private createGithubLink() {
         const BASE_LINK = 'https://github.com'
         return `${BASE_LINK}/${this.name}`
+    }
+
+    private validate_schema(): void {
+        try {
+            UserSchema.parse(this)
+        } catch (error) {
+            if (error instanceof ZodError) {
+                throw new ValidationError('Validation Failed', error)
+            } else {
+                throw error
+            }
+        }
     }
 }

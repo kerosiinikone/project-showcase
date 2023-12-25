@@ -3,9 +3,10 @@
 import { Github, LayoutDashboard, PlusIcon, Target } from 'lucide-react'
 import Link from 'next/link'
 import { signInGithub, signOutGithub } from './_actions'
-import CreateModalPortal from './_components/CreateProjectModal'
+import CreateModalPortal from '../components/CreateProjectModal'
 import { useState } from 'react'
 import { Session } from 'next-auth'
+import useCreateProject from './_hooks/useCreateProject'
 
 type NavItemLayoutProps = {
     title: string
@@ -32,10 +33,15 @@ export default function SideNavLayout({
     session: Session | null
 }) {
     const [show, setShow] = useState<boolean>(false)
+    const [createProject, { data, error, isLoading }] = useCreateProject({})
 
     return (
         <>
-            <CreateModalPortal show={show} setShow={setShow} />
+            <CreateModalPortal
+                show={show}
+                setShow={setShow}
+                createProject={createProject}
+            />
             <div
                 id="default-sidebar"
                 className="top-0 left-0 z-40 h-screen bg-slate-50 font-medium border-r-2 

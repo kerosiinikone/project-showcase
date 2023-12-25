@@ -1,5 +1,9 @@
 import { Github } from 'lucide-react'
 
+/*
+An Example Card
+*/
+
 export default function ProjectCard() {
     return (
         <div

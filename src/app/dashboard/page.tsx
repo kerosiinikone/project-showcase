@@ -1,11 +1,11 @@
-import { auth } from '@/services/auth'
 import { redirect } from 'next/navigation'
 import UserSectionComponent from './_components/UserSection'
+import { useAsyncAuth } from '@/hooks/useAsyncAuth'
 
 export default async function DashboardComponent() {
-    const session = await auth()
+    const session = await useAsyncAuth()
 
-    // Middleware
+    // Change to a Middleware
     if (!session) {
         redirect('/auth/github')
     }

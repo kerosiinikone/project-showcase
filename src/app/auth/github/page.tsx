@@ -1,9 +1,11 @@
 import { LoginWithGithubButton } from '@/app/Nav'
-import { auth } from '@/services/auth'
+import { useAsyncAuth } from '@/hooks/useAsyncAuth'
 import { redirect } from 'next/navigation'
 
 export default async function GithubAuthRedirect() {
-    const session = await auth()
+    const session = await useAsyncAuth()
+
+    // Could use a middleware
 
     if (session) {
         redirect('/dashboard')

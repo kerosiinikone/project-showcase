@@ -14,11 +14,10 @@ export const {
     callbacks: {
         async signIn({ user }) {
             try {
+                // create / fetch user and auth VALIDATION
                 new User(user as UserType)
                 return true
             } catch (error) {
-                console.log(error)
-
                 return false
             }
         },

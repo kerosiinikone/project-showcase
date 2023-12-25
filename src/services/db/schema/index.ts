@@ -22,7 +22,7 @@ export const stageEnum = pgEnum('stage', [
 ])
 
 export const projects = pgTable('project', {
-    id: uuid('id').primaryKey(),
+    id: uuid('id').primaryKey().notNull(),
     name: text('name').notNull(),
     description: text('description').default('A project'),
     image: text('image'),
@@ -80,7 +80,7 @@ export const sessions = pgTable(
 export const users = pgTable(
     'user',
     {
-        id: uuid('id').primaryKey().notNull(),
+        id: text('id').primaryKey().notNull(),
         name: text('name'),
         own_projects: uuid('own_projects').array(),
         projects: uuid('projects').array(),
