@@ -1,0 +1,50 @@
+{
+    "name": "project-showcase",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "generate": "drizzle-kit generate:pg",
+        "db:push": "drizzle-kit push:pg --config=drizzle.config.ts",
+        "studio": "drizzle-kit studio --verbose",
+        "typecheck": "tsc",
+        "cypress:open": "cypress open",
+        "cypress:run": "cypress run"
+    },
+    "dependencies": {
+        "@auth/drizzle-adapter": "^0.3.12",
+        "@tanstack/react-query": "^4.36.1",
+        "@trpc/client": "^10.44.1",
+        "@trpc/next": "^10.44.1",
+        "@trpc/react-query": "^10.44.1",
+        "@trpc/server": "^10.44.1",
+        "drizzle-orm": "^0.29.1",
+        "lucide-react": "^0.299.0",
+        "net": "^1.0.2",
+        "next": "14.0.4",
+        "next-auth": "^5.0.0-beta.4",
+        "postgres": "^3.4.3",
+        "react": "^18",
+        "react-dom": "^18",
+        "uuid": "^9.0.1",
+        "zod": "^3.22.4"
+    },
+    "devDependencies": {
+        "@types/node": "^20",
+        "@types/pg": "^8.10.9",
+        "@types/react": "^18.2.20",
+        "@types/react-dom": "^18.2.7",
+        "@types/uuid": "^9.0.7",
+        "autoprefixer": "^10.0.1",
+        "cypress": "^13.6.1",
+        "drizzle-kit": "^0.20.6",
+        "eslint": "^8",
+        "eslint-config-next": "14.0.4",
+        "postcss": "^8",
+        "tailwindcss": "^3.3.0",
+        "typescript": "^5"
+    }
+}
