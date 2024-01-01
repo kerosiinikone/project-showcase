@@ -1,15 +1,14 @@
+import 'server-only'
+
 import { UserType } from '@/models/User/types'
 import db from '../services/db.server'
 import { users } from '@/services/db/schema'
-import { User } from '@/models/User/model'
+import { eq } from 'drizzle-orm'
 
-export function createNewUser(newUser: UserType) {
-    const user = new User(newUser)
-    return db.insert(users).values(user).returning()
+export async function createNewUser(newUser: UserType) {
+    return await db.insert(users).values(newUser).returning()
 }
 
-export function getExistingUserById(id: string) {
-    return db.query.users.findFirst({
-        where: (users, { eq }) => eq(users.id, id),
-    })
+export async function getExistingUserById(id: string) {
+    return await db.select().from(users).where(eq(users.id, id))
 }

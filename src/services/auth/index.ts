@@ -1,9 +1,17 @@
-import NextAuth from 'next-auth'
+import NextAuth, { DefaultSession } from 'next-auth'
 import authConfig from './auth.config'
-import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import db from '../db.server'
-import { User } from '@/models/User/model'
-import { UserType } from '@/models/User/types'
+import { CustomDrizzleAdapter } from './adapter/drizzle'
+import { getExistingUserById } from '@/operations/user.operations'
+
+declare module 'next-auth' {
+    interface Session extends DefaultSession {
+        user: {
+            id: string
+            own_projects: string[]
+        } & DefaultSession['user']
+    }
+}
 
 export const {
     handlers: { GET, POST },
@@ -12,24 +20,27 @@ export const {
     signOut,
 } = NextAuth({
     callbacks: {
-        async signIn({ user }) {
+        async session({ session, token }) {
+            let loggedInUser
+
             try {
-                // create / fetch user and auth VALIDATION
-                new User(user as UserType)
-                return true
+                loggedInUser = (await getExistingUserById(token.sub!))[0]
+                if (loggedInUser) {
+                    session.user.own_projects = loggedInUser?.own_projects!
+                }
             } catch (error) {
-                return false
+                // Invalidate session
             }
-        },
-        async session({ session, user }) {
+
             if (session && session.user) {
-                session.user.id = user.id
+                session.user.id = token.sub!
             }
+
             return session
         },
     },
-    adapter: DrizzleAdapter(db),
-    session: { strategy: 'database' },
+    adapter: CustomDrizzleAdapter(db),
+    session: { strategy: 'jwt' },
     secret: process.env.SECRET!,
     ...authConfig,
 })

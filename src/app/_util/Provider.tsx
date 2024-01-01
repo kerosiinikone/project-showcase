@@ -2,7 +2,7 @@
 
 import { httpBatchLink } from '@trpc/client'
 import React, { useState } from 'react'
-import { trpc } from './trpc'
+import { api } from './trpc'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 function getBaseUrl() {
@@ -13,7 +13,7 @@ function getBaseUrl() {
 export default function Provider({ children }: React.PropsWithChildren) {
     const [queryClient] = useState(() => new QueryClient())
     const [trpcClient] = useState(() =>
-        trpc.createClient({
+        api.createClient({
             links: [
                 httpBatchLink({
                     url: `${getBaseUrl()}/api/trpc`,
@@ -22,10 +22,10 @@ export default function Provider({ children }: React.PropsWithChildren) {
         })
     )
     return (
-        <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <api.Provider client={trpcClient} queryClient={queryClient}>
             <QueryClientProvider client={queryClient}>
                 {children}
             </QueryClientProvider>
-        </trpc.Provider>
+        </api.Provider>
     )
 }

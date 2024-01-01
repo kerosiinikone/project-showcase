@@ -1,14 +1,17 @@
-import userActions from '@/actions/user.actions'
-import projectActions from '@/actions/project.actions'
 import { procedure, router } from '.'
+import userActions from '@/procedures/user.procedures'
+import projectActions from '@/procedures/project.procedures'
 
-const userActionsRouter = router({
+const user = router({
     createNewUserAction: userActions.createUserAction,
     getExistingUserAction: userActions.getExistingUserAction,
 })
 
-const projectActionsRouter = router({
-    createProjectAction: projectActions.createProjectAction,
+const project = router({
+    createProject: projectActions.createProject,
+    getProjects: projectActions.getProjects,
+    getProjectById: projectActions.getProjectById,
+    deleteProjectById: projectActions.deleteProjectById,
 })
 
 export const appRouter = router({
@@ -17,8 +20,8 @@ export const appRouter = router({
             status: 'Healthy',
         }
     }),
-    userActionsRouter,
-    projectActionsRouter,
+    user,
+    project,
 })
 
 export type AppRouter = typeof appRouter

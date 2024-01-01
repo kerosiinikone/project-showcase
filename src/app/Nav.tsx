@@ -2,16 +2,17 @@
 
 import { Github, LayoutDashboard, PlusIcon, Target } from 'lucide-react'
 import Link from 'next/link'
-import { signInGithub, signOutGithub } from './_actions'
+import { signInGithub, signOutGithub } from './_actions/auth'
 import CreateModalPortal from '../components/CreateProjectModal'
 import { useState } from 'react'
 import { Session } from 'next-auth'
-import useCreateProject from './_hooks/useCreateProject'
 
 type NavItemLayoutProps = {
     title: string
     site: string
 } & React.PropsWithChildren
+
+// Turn this into a server component and move the CreateProjectModal elsewhere?
 
 const NavItemLayout = ({ children, title, site }: NavItemLayoutProps) => {
     return (
@@ -33,15 +34,10 @@ export default function SideNavLayout({
     session: Session | null
 }) {
     const [show, setShow] = useState<boolean>(false)
-    const [createProject, { data, error, isLoading }] = useCreateProject({})
 
     return (
         <>
-            <CreateModalPortal
-                show={show}
-                setShow={setShow}
-                createProject={createProject}
-            />
+            <CreateModalPortal show={show} setShow={setShow} />
             <div
                 id="default-sidebar"
                 className="top-0 left-0 z-40 h-screen bg-slate-50 font-medium border-r-2 

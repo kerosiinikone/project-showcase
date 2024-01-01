@@ -1,19 +1,35 @@
 import { Stage } from '@/models/Project/types'
-import { trpc } from '../_util/trpc'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { api } from '../_util/trpc'
+
+// Might not need
 
 export interface ProjectParams {
     name: string
     stage: Stage
-    github_url?: string
-    description?: string
+    github_url: string | null
+    description: string | null
 }
 
-export default function useCreateProject(opts: any) {
+export default function useCreateProject(
+    opts: any,
+    router: AppRouterInstance,
+    handleClose: () => void
+) {
+    //const utils = trpc.useUtils()
     const { data, mutate, isLoading, error } =
-        trpc.projectActionsRouter.createProjectAction.useMutation(opts)
+        api.project.createProject.useMutation({
+            ...opts,
+            onSuccess: async () => {
+                handleClose()
+                // revalidatePath('/') -> RSC - tRPC hybrid
+                router.push('/')
+            },
+        })
 
-    const createProject = (projectOptions: ProjectParams) => {
-        mutate(projectOptions)
+    const createProject = (projectParams: ProjectParams) => {
+        // Image "null" for now
+        mutate({ ...projectParams, image: null })
     }
 
     return [createProject, { data, isLoading, error }] as const

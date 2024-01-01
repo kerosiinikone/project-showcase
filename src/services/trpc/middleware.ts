@@ -1,18 +1,22 @@
 import { useAsyncAuth } from '@/hooks/useAsyncAuth'
-import { t } from '.'
+import { procedure, t } from '.'
 import { TRPCError } from '@trpc/server'
+import db from '../db.server'
 
-export const isAuth = t.middleware(async ({ next }) => {
-    const session = await useAsyncAuth()
+export const protectedProcedure = procedure.use(
+    t.middleware(async ({ next }) => {
+        const session = await useAsyncAuth()
 
-    if (!session?.user?.id) {
-        throw new TRPCError({
-            code: 'UNAUTHORIZED',
+        if (!session?.user?.id) {
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+            })
+        }
+        return next({
+            ctx: {
+                session,
+                db,
+            },
         })
-    }
-    return next({
-        ctx: {
-            session,
-        },
     })
-})
+)

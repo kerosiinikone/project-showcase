@@ -1,7 +1,14 @@
+import { Suspense } from 'react'
 import ProductContainerComponent from './_components/ProjectContainer'
 import SearchBaComponent from './_components/SearchBar'
+import { getProjectsServer } from '@/services/trpc/server'
 
-export default function MainComponent() {
+// SSR vs. tRPC Caller ???
+// Proper Loader -> Skeleton ?
+
+export default async function MainComponent() {
+    const initialProjects = await getProjectsServer()
+
     return (
         <div className="container h-screen w-screen flex justify-center items-center p-10">
             <div className="flex flex-col gap-4 h-full w-full">
@@ -16,7 +23,9 @@ export default function MainComponent() {
                 <div className="h-fit">
                     <SearchBaComponent />
                 </div>
-                <ProductContainerComponent />
+                <Suspense fallback={<div>Loading...</div>}>
+                    <ProductContainerComponent projects={initialProjects} />
+                </Suspense>
             </div>
         </div>
     )

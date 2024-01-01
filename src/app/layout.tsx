@@ -8,7 +8,7 @@ export default async function RootLayout({
 }: {
     children: React.ReactNode
 }) {
-    // Same could be achieved with NextJS middleware ???
+    // Same could be achieved with useSession ???
     const session = await useAsyncAuth()
 
     return (

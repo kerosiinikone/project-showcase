@@ -1,6 +1,6 @@
 import z, { ZodError } from 'zod'
 import { UserType } from './types'
-import { ValidationError } from '../errorModel'
+import { ValidationError } from '../validationError'
 
 export const UserSchema = z.object({
     id: z.string().length(36),
@@ -37,6 +37,7 @@ export class User implements UserType {
         this.created_at = new Date()
         this.updated_at = new Date()
         this.name = name
+
         this.validate_schema()
     }
 

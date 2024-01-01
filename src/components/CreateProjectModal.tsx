@@ -1,27 +1,26 @@
 'use client'
 
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { ProjectParams } from '../app/_hooks/useCreateProject'
+import useCreateProject from '../app/_hooks/useCreateProject'
 import { Stage } from '@/models/Project/types'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { PlusIcon, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
-type CreateProjectModalParams = {
+type ModalLayoutParams = {
     show: boolean
     setShow: Dispatch<SetStateAction<boolean>>
-    createProject: (p: ProjectParams) => void
 }
 
 type ModalContentParams = {
     setShow: Dispatch<SetStateAction<boolean>>
-    createProject: (p: ProjectParams) => void
 }
 
 type IFormInput = {
     name: string
-    description?: string
-    github_url?: string
+    description: string | null
+    github_url: string | null
     stage: Stage
 }
 
@@ -29,22 +28,24 @@ type IFormInput = {
 // Improve !!!
 
 /*
-    SSA vs. tRPC
-    Form Hooks -> Integrating with services Page 
+    Change to SSA w/ tRPC Component Layer
 */
 
-const ModalContent = ({ setShow, createProject }: ModalContentParams) => {
-    const { register, handleSubmit } = useForm<IFormInput>()
-
+const CreateProjectModal = ({ setShow }: ModalContentParams) => {
     const handleClose = () => setShow(false)
+    const router = useRouter()
+    const { register, handleSubmit, reset } = useForm<IFormInput>()
+    const [createProject] = useCreateProject({}, router, handleClose)
 
-    const onSubmit: SubmitHandler<IFormInput> = (data) =>
+    const onSubmit: SubmitHandler<IFormInput> = (data) => {
         createProject({
             name: data.name,
-            description: data.description,
+            description: data.description != '' ? data.description : null,
             stage: data.stage,
             github_url: data.github_url,
         })
+        reset()
+    }
 
     return (
         <div className="fixed h-screen w-screen z-50 flex justify-center items-center left-40">
@@ -59,9 +60,9 @@ const ModalContent = ({ setShow, createProject }: ModalContentParams) => {
                         </h1>
                         <button
                             type="button"
+                            onClick={handleClose}
                             className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg 
                             text-sm w-8 h-8 ms-auto inline-flex justify-center items-center "
-                            onClick={handleClose}
                         >
                             <X
                                 className="w-5 h-5"
@@ -86,8 +87,7 @@ const ModalContent = ({ setShow, createProject }: ModalContentParams) => {
                                     Name
                                 </label>
                                 <input
-                                    {...(register('name'),
-                                    { required: true, maxLength: 191, min: 5 })}
+                                    {...register('name')}
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                     rounded-lg py-2 px-3 w-full"
                                     placeholder="Type a project name"
@@ -100,8 +100,7 @@ const ModalContent = ({ setShow, createProject }: ModalContentParams) => {
                                     Description
                                 </label>
                                 <textarea
-                                    {...(register('description'),
-                                    { required: false })}
+                                    {...register('description')}
                                     className="h-32 max-h-40 min-h-20 bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                     rounded-lg block w-full p-2.5 "
                                     placeholder="Type a project description"
@@ -110,21 +109,24 @@ const ModalContent = ({ setShow, createProject }: ModalContentParams) => {
                         </div>
                         <div className="grid gap-4 mb-4 grid-cols-2 grid-rows-1">
                             <div className="row-span-2">
-                                <label className="block mb-2 text-sm font-medium text-gray-900 ">
+                                <label className="block mb-2 text-sm font-medium text-gray-900">
                                     Stage
                                 </label>
                                 <select
-                                    {...(register('stage'), { required: true })}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg block p-2.5 dark:bg-gray-600 mb-2 w-full"
+                                    {...register('stage')}
+                                    id="stage"
+                                    name="stage"
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 dark:bg-gray-600 mb-2 w-full"
                                 >
-                                    <option value="IDEA">Idea</option>
-                                    <option value="PLAN">Planning</option>
-                                    <option value="DEVELOPMENT">
+                                    <option value={Stage.IDEA}>Idea</option>
+                                    <option value={Stage.PLAN}>Planning</option>
+                                    <option value={Stage.DEVELOPMENT}>
                                         In development
                                     </option>
-                                    <option value="FINISHED">Finished</option>
-                                    <option value="PRODUCTION">
+                                    <option value={Stage.FINISHED}>
+                                        Finished
+                                    </option>
+                                    <option value={Stage.PRODUCTION}>
                                         In production
                                     </option>
                                 </select>
@@ -134,8 +136,7 @@ const ModalContent = ({ setShow, createProject }: ModalContentParams) => {
                                     Github URL
                                 </label>
                                 <input
-                                    {...(register('github_url'),
-                                    { required: false, maxLength: 255 })}
+                                    {...register('github_url')}
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                     rounded-lg block p-2.5 dark:bg-gray-600 w-full"
                                     placeholder="Github URL (optional)"
@@ -175,19 +176,13 @@ const ModalContent = ({ setShow, createProject }: ModalContentParams) => {
 
 // Handles interaction and rendering
 
-export default function CreateProjectModal({
-    show,
-    setShow,
-    createProject,
-}: CreateProjectModalParams) {
+export default function ModalLayout({ show, setShow }: ModalLayoutParams) {
     const ref = useRef<Element | null>(null)
     useEffect(() => {
+        // "document" undefined before rendering
         ref.current = document.getElementById('modal')
     }, [])
     return show && ref.current
-        ? createPortal(
-              <ModalContent setShow={setShow} createProject={createProject} />,
-              ref.current
-          )
+        ? createPortal(<CreateProjectModal setShow={setShow} />, ref.current)
         : null
 }

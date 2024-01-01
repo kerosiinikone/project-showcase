@@ -2,6 +2,7 @@ import { auth } from '@/services/auth'
 
 export const useAsyncAuth = async () => {
     let expiresDate
+
     const session = await auth()
 
     if (!session) {

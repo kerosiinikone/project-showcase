@@ -11,12 +11,20 @@ export default {
     createUserAction: procedure
         .input(UserSchema)
         .mutation(async ({ input }) => {
-            return await createNewUser(input as UserType)
+            try {
+                return (await createNewUser(input as UserType))[0]
+            } catch (error) {
+                throw error
+            }
         }),
     getExistingUserAction: procedure
         .input(z.string().length(36))
         .query(async ({ input }) => {
             const id = input
-            return await getExistingUserById(id)
+            try {
+                return (await getExistingUserById(id))[0]
+            } catch (error) {
+                throw error
+            }
         }),
 }

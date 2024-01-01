@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import UserSectionComponent from './_components/UserSection'
 import { useAsyncAuth } from '@/hooks/useAsyncAuth'
+import ProjectDashboard from './_components/ProjectDashboard'
 
 export default async function DashboardComponent() {
     const session = await useAsyncAuth()
@@ -18,16 +19,7 @@ export default async function DashboardComponent() {
                     id={session.user?.id ?? 'No ID found'}
                     image={session.user?.image}
                 />
-                <div
-                    id="project"
-                    className="mt-5 rounded-lg h-full w-full font-medium bg-gray-100"
-                >
-                    <div className="flex flex-col justify-center items-center h-full w-full">
-                        <div className="flex justify-center items-center h-full w-full">
-                            Project Section
-                        </div>
-                    </div>
-                </div>
+                <ProjectDashboard />
             </div>
         </div>
     )

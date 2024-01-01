@@ -1,10 +1,41 @@
-import { Project } from '@/models/Project/model'
+import 'server-only'
+
 import { ProjectType } from '@/models/Project/types'
-import { projects } from '@/services/db/schema'
+import { projects, users } from '@/services/db/schema'
 import db from '../services/db.server'
+import { eq } from 'drizzle-orm'
 
 export async function createNewProject(newProject: ProjectType) {
-    // Need for validate_schema here?
-    const project = new Project(newProject)
-    return await db.insert(projects).values(project).returning()
+    return await db.insert(projects).values(newProject).returning()
+}
+
+export async function getExistingProjects() {
+    return await db.select().from(projects)
+}
+
+export async function getExistingProjectById({
+    id,
+    joinUsers,
+}: {
+    id: string
+    joinUsers: boolean
+}) {
+    const queryWithoutJoin = db
+        .select()
+        .from(projects)
+        .where(eq(projects.id, id))
+    if (joinUsers) {
+        return await queryWithoutJoin.leftJoin(
+            users,
+            eq(users.id, projects.author_id)
+        )
+    }
+    return await queryWithoutJoin
+}
+
+export async function deleteExistingProjectById(pid: string) {
+    return await db
+        .delete(projects)
+        .where(eq(projects.id, pid))
+        .returning({ id: projects.id })
 }

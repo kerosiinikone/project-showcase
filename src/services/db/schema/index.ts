@@ -24,13 +24,15 @@ export const stageEnum = pgEnum('stage', [
 export const projects = pgTable('project', {
     id: uuid('id').primaryKey().notNull(),
     name: text('name').notNull(),
-    description: text('description').default('A project'),
+    description: text('description'),
     image: text('image'),
     stage: stageEnum('stage').$type<Stage>().notNull(),
-    author_id: uuid('authorID').notNull(),
+    author_id: uuid('authorID')
+        .notNull()
+        .references(() => users.id),
     github_url: text('github_url'),
-    createdAt: timestamp('createdAt').defaultNow().notNull(),
-    updatedAt: timestamp('updatedAt').defaultNow().notNull(),
+    createdAt: timestamp('createdAt', { mode: 'date' }).defaultNow().notNull(),
+    updatedAt: timestamp('updatedAt', { mode: 'date' }).defaultNow().notNull(),
 })
 
 export const accounts = pgTable(
@@ -49,8 +51,12 @@ export const accounts = pgTable(
         scope: text('scope'),
         id_token: text('id_token'),
         session_state: text('session_state'),
-        createdAt: timestamp('createdAt').defaultNow().notNull(),
-        updatedAt: timestamp('updatedAt').defaultNow().notNull(),
+        createdAt: timestamp('createdAt', { mode: 'date' })
+            .defaultNow()
+            .notNull(),
+        updatedAt: timestamp('updatedAt', { mode: 'date' })
+            .defaultNow()
+            .notNull(),
     },
     (account) => ({
         providerProviderAccountIdIndex: uniqueIndex(
@@ -80,15 +86,19 @@ export const sessions = pgTable(
 export const users = pgTable(
     'user',
     {
-        id: text('id').primaryKey().notNull(),
+        id: uuid('id').primaryKey().notNull(),
         name: text('name'),
         own_projects: uuid('own_projects').array(),
         projects: uuid('projects').array(),
         email: varchar('email', { length: 191 }).notNull(),
         emailVerified: timestamp('emailVerified'),
         image: varchar('image', { length: 191 }),
-        created_at: timestamp('created_at').notNull().defaultNow(),
-        updated_at: timestamp('updated_at').notNull().defaultNow(),
+        created_at: timestamp('created_at', { mode: 'date' })
+            .notNull()
+            .defaultNow(),
+        updated_at: timestamp('updated_at', { mode: 'date' })
+            .notNull()
+            .defaultNow(),
     },
     (user) => ({
         emailIndex: uniqueIndex('users__email__idx').on(user.email),
