@@ -1,28 +1,30 @@
 import './globals.css'
 import SideNavLayout from './Nav'
 import Provider from './_util/Provider'
-import { useAsyncAuth } from '@/hooks/useAsyncAuth'
+import { SessionProvider } from 'next-auth/react'
+import { auth } from '@/services/auth'
 
 export default async function RootLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    // Same could be achieved with useSession ???
-    const session = await useAsyncAuth()
+    const session = await auth()
 
     return (
         <html lang="en">
             <body>
-                <Provider>
-                    <div className="flex w-screen h-screen">
-                        <div id="modal" />
-                        <SideNavLayout session={session} />
-                        <div className="w-full h-full flex justify-center items-center bg-gradient-to-r from-slate-50 to-white">
-                            {children}
+                <SessionProvider session={session}>
+                    <Provider>
+                        <div className="flex w-screen h-screen">
+                            <div id="modal" />
+                            <SideNavLayout />
+                            <div className="w-full h-full flex justify-center items-center bg-gradient-to-r from-slate-50 to-white">
+                                {children}
+                            </div>
                         </div>
-                    </div>
-                </Provider>
+                    </Provider>
+                </SessionProvider>
             </body>
         </html>
     )

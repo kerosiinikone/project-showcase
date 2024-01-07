@@ -25,7 +25,9 @@ export type DefaultSchema = ReturnType<typeof createTables>
 
 export function CustomDrizzleAdapter(
     client: PostgresJsDatabase<typeof schema>
-): Adapter {
+): Adapter & {
+    getGithubAccessToken: (loggedUser: string) => Promise<string>
+} {
     const { users, accounts, sessions, verificationTokens } = createTables()
 
     return {
@@ -187,6 +189,17 @@ export function CustomDrizzleAdapter(
                 )
                 .returning()
                 .then((res) => res[0] ?? null)
+        },
+        async getGithubAccessToken(loggedUser: string) {
+            const { token } = (
+                await client
+                    .select({
+                        token: accounts.access_token,
+                    })
+                    .from(accounts)
+                    .where(eq(accounts.userId, loggedUser))
+            )[0]
+            return token as string
         },
     }
 }

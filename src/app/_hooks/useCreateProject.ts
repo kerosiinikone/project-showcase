@@ -1,6 +1,7 @@
 import { Stage } from '@/models/Project/types'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { api } from '../_util/trpc'
+import { revalidatePath } from 'next/cache'
 
 // Might not need
 
@@ -22,7 +23,8 @@ export default function useCreateProject(
             ...opts,
             onSuccess: async () => {
                 handleClose()
-                // revalidatePath('/') -> RSC - tRPC hybrid
+                // revalidatePath('/')
+                // revalidatePath('/dashboard')
                 router.push('/')
             },
         })

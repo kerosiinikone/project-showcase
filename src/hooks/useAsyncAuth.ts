@@ -14,7 +14,7 @@ export const useAsyncAuth = async () => {
     }
 
     if (!expiresDate || Date.now() < expiresDate) {
-        // Logout and delete session
+        // Logout
     }
     return session
 }

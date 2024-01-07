@@ -7,13 +7,16 @@ import { Stage } from '@/models/Project/types'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { PlusIcon, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { UserRepo } from '@/services/octokit/types'
 
 type ModalLayoutParams = {
     show: boolean
+    repos: UserRepo[] | null
     setShow: Dispatch<SetStateAction<boolean>>
 }
 
 type ModalContentParams = {
+    repos: UserRepo[] | null
     setShow: Dispatch<SetStateAction<boolean>>
 }
 
@@ -31,7 +34,7 @@ type IFormInput = {
     Change to SSA w/ tRPC Component Layer
 */
 
-const CreateProjectModal = ({ setShow }: ModalContentParams) => {
+const CreateProjectModal = ({ setShow, repos }: ModalContentParams) => {
     const handleClose = () => setShow(false)
     const router = useRouter()
     const { register, handleSubmit, reset } = useForm<IFormInput>()
@@ -42,7 +45,7 @@ const CreateProjectModal = ({ setShow }: ModalContentParams) => {
             name: data.name,
             description: data.description != '' ? data.description : null,
             stage: data.stage,
-            github_url: data.github_url,
+            github_url: data.github_url != '' ? data.github_url : null,
         })
         reset()
     }
@@ -133,14 +136,26 @@ const CreateProjectModal = ({ setShow }: ModalContentParams) => {
                             </div>
                             <div className="row-span-2">
                                 <label className="block mb-2 text-sm font-medium text-gray-900">
-                                    Github URL
+                                    Github Repo
                                 </label>
-                                <input
+                                <select
                                     {...register('github_url')}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg block p-2.5 dark:bg-gray-600 w-full"
-                                    placeholder="Github URL (optional)"
-                                />
+                                    id="github_url"
+                                    name="github_url"
+                                    defaultValue=""
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 dark:bg-gray-600 mb-2 w-full"
+                                >
+                                    <option selected value="">
+                                        None
+                                    </option>
+                                    {repos?.map((repo) => {
+                                        return (
+                                            <option value={repo.github_url}>
+                                                {repo.name}
+                                            </option>
+                                        )
+                                    })}
+                                </select>
                             </div>
                         </div>
                         <div className="flex w-full h-full items-end">
@@ -176,13 +191,20 @@ const CreateProjectModal = ({ setShow }: ModalContentParams) => {
 
 // Handles interaction and rendering
 
-export default function ModalLayout({ show, setShow }: ModalLayoutParams) {
+export default function ModalLayout({
+    show,
+    setShow,
+    repos,
+}: ModalLayoutParams) {
     const ref = useRef<Element | null>(null)
     useEffect(() => {
         // "document" undefined before rendering
         ref.current = document.getElementById('modal')
     }, [])
     return show && ref.current
-        ? createPortal(<CreateProjectModal setShow={setShow} />, ref.current)
+        ? createPortal(
+              <CreateProjectModal setShow={setShow} repos={repos} />,
+              ref.current
+          )
         : null
 }

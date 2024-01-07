@@ -29,9 +29,11 @@ export default {
                 throw error // for now
             }
         }),
-    getProjects: procedure.query(async () => {
-        return (await getExistingProjects()) as ProjectType[] // Database Abstraction
-    }),
+    getProjects: procedure
+        .input(z.string().length(36).optional())
+        .query(async ({ input }) => {
+            return (await getExistingProjects(input)) as ProjectType[] // Database Abstraction
+        }),
     getProjectById: procedure
         .input(
             z.object({

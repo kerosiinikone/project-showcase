@@ -9,6 +9,7 @@ export const {
         deleteProjectById: deleteProjectServer,
         createProject: createProjectServer,
     },
+    user: { getUserRepos: getRepos },
 } = appRouter.createCaller({
     session: null, // Can't be set Async
 })

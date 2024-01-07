@@ -1,11 +1,14 @@
 'use client'
 
-import { Github, LayoutDashboard, PlusIcon, Target } from 'lucide-react'
+import { UserRepo } from '@/services/octokit/types'
+import { Github, LayoutDashboard, Target } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { signInGithub, signOutGithub } from './_actions/auth'
-import CreateModalPortal from '../components/CreateProjectModal'
 import { useState } from 'react'
-import { Session } from 'next-auth'
+import { useFormState } from 'react-dom'
+import CreateModalPortal from '../components/CreateProjectModal'
+import { signInGithub, signOutGithub } from './_actions/auth'
+import fetchUserRepos from './_actions/fetchUserRepos'
 
 type NavItemLayoutProps = {
     title: string
@@ -28,16 +31,17 @@ const NavItemLayout = ({ children, title, site }: NavItemLayoutProps) => {
     )
 }
 
-export default function SideNavLayout({
-    session,
-}: {
-    session: Session | null
-}) {
+export default function SideNavLayout() {
     const [show, setShow] = useState<boolean>(false)
+    const { data: session } = useSession()
+    const [state, fetchReposAction] = useFormState<UserRepo[] | null, FormData>(
+        fetchUserRepos,
+        null
+    )
 
     return (
         <>
-            <CreateModalPortal show={show} setShow={setShow} />
+            <CreateModalPortal show={show} setShow={setShow} repos={state} />
             <div
                 id="default-sidebar"
                 className="top-0 left-0 z-40 h-screen bg-slate-50 font-medium border-r-2 
@@ -82,6 +86,7 @@ export default function SideNavLayout({
                                 </NavItemLayout>
                                 {session && (
                                     <CreateProjectButton
+                                        fetch={fetchReposAction}
                                         open={() => setShow(true)}
                                     />
                                 )}
@@ -137,27 +142,27 @@ const LogoutButton = () => {
     )
 }
 
-const CreateProjectButton = ({ open }: { open: () => void }) => {
+const CreateProjectButton = ({
+    open,
+    fetch,
+}: {
+    open: () => void
+    fetch: (payload: FormData) => void
+}) => {
+    // Fetch repos from GithubApp "on the server"
+
     return (
-        <div className="flex justiyf-center items-center">
-            <button
-                onClick={open}
-                type="submit"
-                className="cursor-pointer inline-flex py-2 px-2.5 text-sm font-medium justify-center items-center bg-white border-2 border-blue-500 rounded-lg 
+        <div id="open-modal-form">
+            <form action={fetch} className="flex justify-center items-center">
+                <button
+                    type="submit"
+                    onClick={open}
+                    className="cursor-pointer inline-flex py-2 px-2.5 text-sm font-medium justify-center items-center bg-white border-2 border-blue-500 rounded-lg 
             group hover:bg-blue-100 text-blue-500 transition"
-            >
-                <PlusIcon
-                    className="w-5 h-5 me-2"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    aria-hidden="true"
-                    fill="none"
-                    viewBox="0 0 22 24"
-                />
-                Create a Project
-            </button>
+                >
+                    Create Project
+                </button>
+            </form>
         </div>
     )
 }

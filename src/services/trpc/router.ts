@@ -5,6 +5,7 @@ import projectActions from '@/procedures/project.procedures'
 const user = router({
     createNewUserAction: userActions.createUserAction,
     getExistingUserAction: userActions.getExistingUserAction,
+    getUserRepos: userActions.getUserRepos,
 })
 
 const project = router({

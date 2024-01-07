@@ -1,8 +1,8 @@
 import NextAuth, { DefaultSession } from 'next-auth'
 import authConfig from './auth.config'
+import { getExistingUserById } from '@/operations/user.operations'
 import db from '../db.server'
 import { CustomDrizzleAdapter } from './adapter/drizzle'
-import { getExistingUserById } from '@/operations/user.operations'
 
 declare module 'next-auth' {
     interface Session extends DefaultSession {
@@ -13,12 +13,17 @@ declare module 'next-auth' {
     }
 }
 
+export const GithubAccountDBAdapter = CustomDrizzleAdapter(db)
+
 export const {
     handlers: { GET, POST },
     auth,
     signIn,
     signOut,
 } = NextAuth({
+    pages: {
+        signIn: '/auth/github',
+    },
     callbacks: {
         async session({ session, token }) {
             let loggedInUser
@@ -39,7 +44,7 @@ export const {
             return session
         },
     },
-    adapter: CustomDrizzleAdapter(db),
+    adapter: GithubAccountDBAdapter,
     session: { strategy: 'jwt' },
     secret: process.env.SECRET!,
     ...authConfig,

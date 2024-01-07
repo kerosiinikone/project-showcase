@@ -10,9 +10,7 @@ interface ProductContainerProps {
 // When Cards span to the second row, gridbox breaks down
 // Third and up works OK
 
-export default function ProductContainerComponent({
-    projects,
-}: ProductContainerProps) {
+export default function ProjectContainer({ projects }: ProductContainerProps) {
     return (
         <div
             id="catalog"

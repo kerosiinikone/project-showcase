@@ -5,12 +5,18 @@ import { projects, users } from '@/services/db/schema'
 import db from '../services/db.server'
 import { eq } from 'drizzle-orm'
 
+// Separate business logic
+
 export async function createNewProject(newProject: ProjectType) {
     return await db.insert(projects).values(newProject).returning()
 }
 
-export async function getExistingProjects() {
-    return await db.select().from(projects)
+export async function getExistingProjects(uid?: string) {
+    const query = db.select().from(projects)
+    if (uid) {
+        return await query.where(eq(projects.author_id, uid))
+    }
+    return await query
 }
 
 export async function getExistingProjectById({
@@ -20,17 +26,11 @@ export async function getExistingProjectById({
     id: string
     joinUsers: boolean
 }) {
-    const queryWithoutJoin = db
-        .select()
-        .from(projects)
-        .where(eq(projects.id, id))
+    const query = db.select().from(projects).where(eq(projects.id, id))
     if (joinUsers) {
-        return await queryWithoutJoin.leftJoin(
-            users,
-            eq(users.id, projects.author_id)
-        )
+        return await query.leftJoin(users, eq(users.id, projects.author_id))
     }
-    return await queryWithoutJoin
+    return await query
 }
 
 export async function deleteExistingProjectById(pid: string) {
