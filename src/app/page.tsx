@@ -1,16 +1,15 @@
-import { Suspense } from 'react'
-import ProjectContainer from '../components/ProjectContainer'
-import SearchBaComponent from './_components/SearchBar'
-import { getProjectsServer } from '@/services/trpc/server'
+import { getProjects } from '@/services/trpc/server'
+import ProjectContainer from './_components/ProjectContainer'
 
 // SSR vs. tRPC Caller ???
 // Proper Loader -> Skeleton ?
 
 export default async function MainComponent() {
-    const initialProjects = await getProjectsServer()
+    // Initial -> make lastQuery optional
+    const { data: initial, nextCursor } = await getProjects({})
 
     return (
-        <div className="container h-screen w-screen flex justify-center items-center p-10">
+        <div className="container h-full w-full flex justify-center items-center p-10">
             <div className="flex flex-col gap-4 h-full w-full">
                 <div id="info" className="rounded-lg font-medium h-32">
                     <div className="flex flex-col justify-center items-center">
@@ -20,12 +19,10 @@ export default async function MainComponent() {
                         </div>
                     </div>
                 </div>
-                <div className="h-fit">
-                    <SearchBaComponent />
-                </div>
-                <Suspense fallback={<div>Loading...</div>}>
-                    <ProjectContainer projects={initialProjects} />
-                </Suspense>
+                <ProjectContainer
+                    initialProjects={initial}
+                    initialNextCursor={nextCursor}
+                />
             </div>
         </div>
     )

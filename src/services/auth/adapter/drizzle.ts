@@ -190,6 +190,8 @@ export function CustomDrizzleAdapter(
                 .returning()
                 .then((res) => res[0] ?? null)
         },
+
+        // Make this independent of the "Adapter"
         async getGithubAccessToken(loggedUser: string) {
             const { token } = (
                 await client

@@ -10,7 +10,8 @@ const user = router({
 
 const project = router({
     createProject: projectActions.createProject,
-    getProjects: projectActions.getProjects,
+    getProjectsById: projectActions.getProjectsById,
+    getProjects: projectActions.getProjectsByQuery,
     getProjectById: projectActions.getProjectById,
     deleteProjectById: projectActions.deleteProjectById,
 })

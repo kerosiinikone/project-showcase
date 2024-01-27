@@ -12,6 +12,7 @@ import {
 } from 'drizzle-orm/pg-core'
 import type { AdapterAccount } from '@auth/core/adapters'
 import { Stage } from '@/models/Project/types'
+import { relations } from 'drizzle-orm'
 
 export const stageEnum = pgEnum('stage', [
     'IDEA',
@@ -21,13 +22,14 @@ export const stageEnum = pgEnum('stage', [
     'PRODUCTION',
 ])
 
+// Add project array relations
 export const users = pgTable(
     'user',
     {
         id: uuid('id').primaryKey().notNull(),
         name: text('name'),
-        own_projects: uuid('own_projects').array(),
-        projects: uuid('projects').array(),
+        own_projects: uuid('own_projects').array().notNull(),
+        supported_projects: uuid('projects').array().notNull(),
         //.references(() => projects.id, { onDelete: 'cascade' }),
         email: varchar('email', { length: 191 }).notNull(),
         emailVerified: timestamp('emailVerified'),
@@ -38,12 +40,19 @@ export const users = pgTable(
         updated_at: timestamp('updated_at', { mode: 'date' })
             .notNull()
             .defaultNow(),
+        github_url: text('github_url'),
     },
     (user) => ({
         emailIndex: uniqueIndex('users__email__idx').on(user.email),
     })
 )
 
+export const userProjectRelations = relations(users, ({ many }) => ({
+    own_projects: many(projects),
+    supported_projects: many(projects),
+}))
+
+// Add supporters relation
 export const projects = pgTable('project', {
     id: uuid('id').primaryKey().notNull(),
     name: text('name').notNull(),

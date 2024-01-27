@@ -1,3 +1,4 @@
+import { UserType } from '@/models/User/types'
 import { Github } from 'lucide-react'
 
 interface UserSectionProps {
@@ -5,6 +6,7 @@ interface UserSectionProps {
     name?: string | null
     id: string
     userBio: string
+    user: UserType
 }
 
 export default function UserSectionComponent({
@@ -12,6 +14,7 @@ export default function UserSectionComponent({
     name,
     id,
     userBio,
+    user,
 }: UserSectionProps) {
     return (
         <div
@@ -42,7 +45,7 @@ export default function UserSectionComponent({
             </div>
             <div
                 id="follower-projects-info"
-                className="grid grid-flow-col grid-cols-4 w-full mt-4"
+                className="grid grid-flow-col grid-cols-4 w-full m-4 justify-center items-center"
             >
                 <div className="col-span-1 flex flex-col items-center">
                     <h1 className="font-medium">Supporters</h1>
@@ -50,16 +53,16 @@ export default function UserSectionComponent({
                 </div>
                 <div className="col-span-1 flex flex-col items-center">
                     <h1 className="font-medium">Own Projects</h1>
-                    <h2>4</h2>
+                    <h2>{user?.own_projects?.length}</h2>
                 </div>
                 <div className="col-span-1 flex flex-col items-center">
                     <h1 className="font-medium">Supported Projects</h1>
-                    <h2>49</h2>
+                    <h2>{user?.supported_projects?.length}</h2>
                 </div>
-                <div className="col-span-1 flex flex-col items-center">
+                {/* <div className="col-span-1 flex flex-col items-center">
                     <h1 className="font-medium">Repos</h1>
                     <h2>5</h2>
-                </div>
+                </div> */}
             </div>
         </div>
     )

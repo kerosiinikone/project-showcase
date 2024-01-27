@@ -19,13 +19,13 @@ export default async function ProjectComponent({
         user,
     } = (await getProjectServer({
         id: params.pid,
-        joinUsers: true,
+        joinUser: true,
     })) as ProjectWithUser
 
     const session = await useAsyncAuth()
 
     return (
-        <div className="container h-screen w-screen flex justify-center items-center p-10">
+        <div className="container h-full w-full flex justify-center items-center p-10">
             <div className="flex flex-col justify-start h-full w-full rounded-xl bg-white border-stone-100 border-2 shadow-lg">
                 <div className="flex flex-row w-full justify-between p-10">
                     <div className="flex flex-col w-2/3">

@@ -4,8 +4,10 @@ import {
     createNewProject,
     deleteExistingProjectById,
     getExistingProjectById,
-    getExistingProjects,
+    getExistingProjectsByQuery,
+    getExistingProjectsByUid,
 } from '@/operations/project.operations'
+import { addProjectToUser } from '@/operations/user.operations'
 import { procedure } from '@/services/trpc'
 import { protectedProcedure } from '@/services/trpc/middleware'
 import { v4 } from 'uuid'
@@ -24,21 +26,51 @@ export default {
                     id: v4(),
                     author_id: session?.user?.id!,
                 })
+
+                // Helper function ?
+                //await addProjectToUser(session?.user?.id!, project.id)
+
                 return (await createNewProject(project))[0] as ProjectType
             } catch (error) {
                 throw error // for now
             }
         }),
-    getProjects: procedure
+    getProjectsById: procedure
         .input(z.string().length(36).optional())
         .query(async ({ input }) => {
-            return (await getExistingProjects(input)) as ProjectType[] // Database Abstraction
+            return (await getExistingProjectsByUid(input)) as ProjectType[] // Database Abstraction
+        }),
+    getProjectsByQuery: procedure
+        .input(
+            z.object({
+                cursor: z.string().optional(),
+                query: z.string().nullable().optional(),
+                lastQuery: z.string().nullable().optional(),
+            })
+        )
+        .query(async ({ input }) => {
+            const { cursor, query, lastQuery: lQuery } = input
+
+            // Refactor Pagination Logic -> a better way?
+
+            const [projects, lastQuery] = await getExistingProjectsByQuery(
+                cursor,
+                query,
+                lQuery
+            )
+            return {
+                data: projects,
+                nextCursor: projects.length
+                    ? projects[projects.length - 1].createdAt!.toISOString()
+                    : null,
+                lastQuery,
+            }
         }),
     getProjectById: procedure
         .input(
             z.object({
                 id: z.string().length(36),
-                joinUsers: z.boolean(),
+                joinUser: z.boolean(),
             })
         )
         .query(async ({ input }) => {

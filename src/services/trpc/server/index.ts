@@ -4,12 +4,13 @@ import { appRouter } from '../router'
 
 export const {
     project: {
-        getProjects: getProjectsServer,
+        getProjects,
+        getProjectsById: getProjectsByIdServer,
         getProjectById: getProjectServer,
         deleteProjectById: deleteProjectServer,
         createProject: createProjectServer,
     },
-    user: { getUserRepos: getRepos },
+    user: { getUserRepos: getRepos, getExistingUserAction: getUserById },
 } = appRouter.createCaller({
     session: null, // Can't be set Async
 })

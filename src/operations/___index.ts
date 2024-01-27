@@ -1,1 +1,1 @@
-export * as projectOperations from './project.operations'
+// Export opreations if necessary

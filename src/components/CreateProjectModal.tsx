@@ -119,7 +119,7 @@ const CreateProjectModal = ({ setShow, repos }: ModalContentParams) => {
                                     {...register('stage')}
                                     id="stage"
                                     name="stage"
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 dark:bg-gray-600 mb-2 w-full"
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 mb-2 w-full"
                                 >
                                     <option value={Stage.IDEA}>Idea</option>
                                     <option value={Stage.PLAN}>Planning</option>
@@ -143,7 +143,7 @@ const CreateProjectModal = ({ setShow, repos }: ModalContentParams) => {
                                     id="github_url"
                                     name="github_url"
                                     defaultValue=""
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 dark:bg-gray-600 mb-2 w-full"
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 mb-2 w-full"
                                 >
                                     <option selected value="">
                                         None

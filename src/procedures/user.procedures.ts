@@ -25,7 +25,7 @@ export default {
         .query(async ({ input }) => {
             const id = input
             try {
-                return (await getExistingUserById(id))[0]
+                return (await getExistingUserById(id))[0] as UserType
             } catch (error) {
                 throw error
             }

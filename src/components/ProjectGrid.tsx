@@ -1,16 +1,22 @@
 import { ProjectType } from '@/models/Project/types'
-import { lazy } from 'react'
+import { Ref, lazy } from 'react'
 
 const ProjectCard = lazy(() => import('./ProjectCard'))
 
-interface ProductContainerProps {
+interface ProjectGridProps {
     projects: ProjectType[]
+    mRef?: Ref<HTMLDivElement> | null
 }
 
 // When Cards span to the second row, gridbox breaks down
 // Third and up works OK
 
-export default function ProjectContainer({ projects }: ProductContainerProps) {
+export default async function ProjectGrid({
+    projects,
+    mRef,
+}: ProjectGridProps) {
+    // Change the props-drilling approach !!!
+
     return (
         <div
             id="catalog"
@@ -19,6 +25,7 @@ export default function ProjectContainer({ projects }: ProductContainerProps) {
             {projects.map((p) => {
                 return <ProjectCard key={p.id} project={p} />
             })}
+            <div ref={mRef}></div>
         </div>
     )
 }
