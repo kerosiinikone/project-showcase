@@ -13,16 +13,15 @@ export const ProjectSchema = z.object({
 })
 
 export class Project implements ProjectType {
-    id: string
-    // supporters: string[] (userId)
-    name: string
     description: string | null
-    image: string | null
-    author_id: string
-    stage: Stage
-    github_url: string | null
+    id: string
+    name: string
     created_at: Date
     updated_at: Date
+    image: string | null
+    github_url: string | null
+    stage: Stage
+    author_id: string
 
     constructor({
         id,
@@ -47,7 +46,10 @@ export class Project implements ProjectType {
     }
 
     private validateGithub() {
-        if (this.github_url && !this.github_url.startsWith(GITHUB_PREFIX)) {
+        if (
+            this.github_url &&
+            !this.github_url.startsWith(GITHUB_PREFIX)
+        ) {
             // Change to ValidationError
             throw new Error('Invalid Github Url')
         }

@@ -14,6 +14,7 @@ const project = router({
     getProjects: projectActions.getProjectsByQuery,
     getProjectById: projectActions.getProjectById,
     deleteProjectById: projectActions.deleteProjectById,
+    followProject: projectActions.followProject,
 })
 
 export const appRouter = router({

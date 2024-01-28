@@ -26,17 +26,6 @@ export const {
     },
     callbacks: {
         async session({ session, token }) {
-            let loggedInUser
-
-            try {
-                loggedInUser = (await getExistingUserById(token.sub!))[0]
-                if (loggedInUser) {
-                    session.user.own_projects = loggedInUser?.own_projects!
-                }
-            } catch (error) {
-                // Invalidate session
-            }
-
             if (session && session.user) {
                 session.user.id = token.sub!
             }

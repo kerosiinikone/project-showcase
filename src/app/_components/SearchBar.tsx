@@ -1,20 +1,16 @@
 'use client'
 
 import { Search } from 'lucide-react'
-import { HTMLProps, Ref, forwardRef } from 'react'
+import { HTMLProps } from 'react'
 import { DebounceInput } from 'react-debounce-input'
+
+// Move hidden inputs to ProjectContainer
 
 interface SearchBarProps {
     handleSearch: () => void
-    nextCursor: string | undefined
-    lastQuery: string | undefined
 }
 
-const SearchBarComponent = ({
-    handleSearch,
-    nextCursor,
-    lastQuery,
-}: SearchBarProps) => {
+const SearchBarComponent = ({ handleSearch }: SearchBarProps) => {
     return (
         <>
             <div className="relative w-full bg-white">
@@ -29,20 +25,6 @@ const SearchBarComponent = ({
                 />
             </div>
             <SearchButton />
-            <input
-                hidden
-                id="nextCursor"
-                readOnly
-                name="nextCursor"
-                value={nextCursor}
-            />
-            <input
-                hidden
-                id="lastQuery"
-                readOnly
-                name="lastQuery"
-                value={lastQuery}
-            />
         </>
     )
 }

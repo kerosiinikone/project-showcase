@@ -1,31 +1,34 @@
 import { ProjectType } from '@/models/Project/types'
-import { Ref, lazy } from 'react'
+import { lazy } from 'react'
 
 const ProjectCard = lazy(() => import('./ProjectCard'))
 
 interface ProjectGridProps {
     projects: ProjectType[]
-    mRef?: Ref<HTMLDivElement> | null
+    onBottom: (e: any) => void
 }
 
-// When Cards span to the second row, gridbox breaks down
-// Third and up works OK
+// Fix card sizes
 
-export default async function ProjectGrid({
+export default function ProjectGrid({
     projects,
-    mRef,
+    onBottom,
 }: ProjectGridProps) {
-    // Change the props-drilling approach !!!
-
     return (
         <div
             id="catalog"
             className="grid grid-flow-row-dense grid-cols-4 p-5 gap-4 grid-wrap bg-white overflow-y-auto rounded-lg h-full w-full font-medium border-gradient-to-r from-slate-150 to-slate-50 border-2"
+            onScroll={onBottom}
         >
             {projects.map((p) => {
-                return <ProjectCard key={p.id} project={p} />
+                return (
+                    <ProjectCard
+                        h={projects.length > 4 ? 'h-full' : 'h-1/2'}
+                        key={p.id}
+                        project={p}
+                    />
+                )
             })}
-            <div ref={mRef}></div>
         </div>
     )
 }

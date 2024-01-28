@@ -1,14 +1,14 @@
 export interface UserType {
     id: string
-    github_url: string
+    name: string | null
     email: string
-    name: string
-    own_projects: string[]
-    emailVerified?: Date | null
-    image?: string | null
-    supported_projects: string[]
-    created_at?: Date
-    updated_at?: Date
+    created_at: Date
+    updated_at: Date
+    image: string | null
+    emailVerified: Date | null
+    github_url: string | null
+    own_projects?: any[] // Fix later
+    supported_projects?: any[] // Fix later
 }
 
 export type UserUpdateType = {

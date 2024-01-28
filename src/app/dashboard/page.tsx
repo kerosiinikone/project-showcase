@@ -10,13 +10,15 @@ import {
 import { Session } from 'next-auth/types'
 import { GithubAccountDBAdapter } from '@/services/auth'
 import GithubApp from '@/services/octokit'
+import { UserType } from '@/models/User/types'
 
 // Move this elsewhere
 async function getUserBio(session: Session | null) {
     try {
-        const access_token = await GithubAccountDBAdapter.getGithubAccessToken(
-            session?.user.id!
-        )
+        const access_token =
+            await GithubAccountDBAdapter.getGithubAccessToken(
+                session?.user.id!
+            )
 
         const githubInstance = new GithubApp(access_token)
         const bio = await githubInstance.getUserBio()
@@ -38,8 +40,10 @@ export default async function DashboardComponent() {
     // Put into respective components
     const bio = await getUserBio(session)
     const repos = await getRepos()
-    const userProjects = await getProjectsByIdServer(session?.user.id!)
-    const user = await getUserById(session?.user.id!)
+    const userProjects = await getProjectsByIdServer({
+        id: session?.user.id!,
+    })
+    const user = (await getUserById(session?.user.id!)) as UserType
 
     return (
         <div className="container h-full w-full flex justify-center items-center p-10">
@@ -51,7 +55,11 @@ export default async function DashboardComponent() {
                     id={session.user?.id ?? 'No ID found'}
                     image={session.user?.image}
                 />
-                <ProjectDashboard projects={userProjects} repos={repos} />
+                <ProjectDashboard
+                    projects={userProjects.data}
+                    session={session}
+                    repos={repos}
+                />
             </div>
         </div>
     )

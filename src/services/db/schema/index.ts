@@ -2,7 +2,6 @@ import {
     text,
     timestamp,
     pgTable,
-    uuid,
     pgEnum,
     integer,
     varchar,
@@ -26,10 +25,12 @@ export const stageEnum = pgEnum('stage', [
 export const users = pgTable(
     'user',
     {
-        id: uuid('id').primaryKey().notNull(),
+        id: text('id').primaryKey().notNull(),
         name: text('name'),
-        own_projects: uuid('own_projects').array().notNull(),
-        supported_projects: uuid('projects').array().notNull(),
+        // own_projects: text('own_projects').array().notNull(),
+        // supported_projects: text('supported_projects')
+        //     .array()
+        //     .notNull(),
         //.references(() => projects.id, { onDelete: 'cascade' }),
         email: varchar('email', { length: 191 }).notNull(),
         emailVerified: timestamp('emailVerified'),
@@ -49,28 +50,72 @@ export const users = pgTable(
 
 export const userProjectRelations = relations(users, ({ many }) => ({
     own_projects: many(projects),
-    supported_projects: many(projects),
+    supported_projects: many(usersToProjects),
 }))
 
-// Add supporters relation
 export const projects = pgTable('project', {
-    id: uuid('id').primaryKey().notNull(),
+    id: text('id').primaryKey(),
     name: text('name').notNull(),
     description: text('description'),
     image: text('image'),
+    // supporters: text('supporters').array().notNull(),
     stage: stageEnum('stage').$type<Stage>().notNull(),
-    author_id: uuid('authorID')
+    author_id: text('author_id')
         .notNull()
         .references(() => users.id),
     github_url: text('github_url'),
-    createdAt: timestamp('createdAt', { mode: 'date' }).defaultNow().notNull(),
-    updatedAt: timestamp('updatedAt', { mode: 'date' }).defaultNow().notNull(),
+    created_at: timestamp('created_at', { mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    updated_at: timestamp('updated_at', { mode: 'date' })
+        .defaultNow()
+        .notNull(),
 })
+
+export const projectUserRelations = relations(
+    projects,
+    ({ one, many }) => ({
+        author: one(users, {
+            fields: [projects.author_id],
+            references: [users.id],
+        }),
+        supporters: many(usersToProjects),
+    })
+)
+
+export const usersToProjects = pgTable(
+    'users_to_projects',
+    {
+        user_id: text('user_id')
+            .notNull()
+            .references(() => users.id),
+        project_id: text('project_id')
+            .notNull()
+            .references(() => projects.id),
+    },
+    (t) => ({
+        pk: primaryKey(t.user_id, t.project_id),
+    })
+)
+
+export const usersToProjectsRelations = relations(
+    usersToProjects,
+    ({ one }) => ({
+        project: one(projects, {
+            fields: [usersToProjects.project_id],
+            references: [projects.id],
+        }),
+        user: one(users, {
+            fields: [usersToProjects.user_id],
+            references: [users.id],
+        }),
+    })
+)
 
 export const accounts = pgTable(
     'account',
     {
-        userId: uuid('userId')
+        userId: text('userId')
             .notNull()
             .references(() => users.id, { onDelete: 'cascade' })
             .primaryKey(),
@@ -95,7 +140,9 @@ export const accounts = pgTable(
         providerProviderAccountIdIndex: uniqueIndex(
             'accounts__provider__providerAccountId__idx'
         ).on(account.provider, account.providerAccountId),
-        userIdIndex: index('accounts__userId__idx').on(account.userId),
+        userIdIndex: index('accounts__userId__idx').on(
+            account.userId
+        ),
     })
 )
 
@@ -103,16 +150,18 @@ export const sessions = pgTable(
     'session',
     {
         sessionToken: text('sessionToken').notNull().primaryKey(),
-        userId: uuid('userId')
+        userId: text('userId')
             .notNull()
             .references(() => users.id, { onDelete: 'cascade' }),
         expires: timestamp('expires', { mode: 'date' }).notNull(),
     },
     (session) => ({
-        sessionTokenIndex: uniqueIndex('sessions__sessionToken__idx').on(
-            session.sessionToken
+        sessionTokenIndex: uniqueIndex(
+            'sessions__sessionToken__idx'
+        ).on(session.sessionToken),
+        userIdIndex: index('sessions__userId__idx').on(
+            session.userId
         ),
-        userIdIndex: index('sessions__userId__idx').on(session.userId),
     })
 )
 

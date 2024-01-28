@@ -1,12 +1,13 @@
 import { ProjectType } from '@/models/Project/types'
 import { Github } from 'lucide-react'
 import Link from 'next/link'
-import { Ref } from 'react'
+import { memo } from 'react'
 
 // Improve !!!
 
 interface ProjectCardProps {
     project: ProjectType
+    h: string
 }
 
 const STAGE_CLASS_BASE = 'font-normal truncate'
@@ -19,15 +20,16 @@ const STAGE_COLORS = {
     PRODUCTION: 'text-indigo-300',
 }
 
-export default function ProjectCard({ project }: ProjectCardProps) {
+function ProjectCard({ project, h }: ProjectCardProps) {
     // JOIN on authorId to get the name
 
-    const { id, name, description, stage, author_id, github_url } = project
+    const { id, name, description, stage, author_id, github_url } =
+        project
 
     return (
         <div
             id="project-card"
-            className="cursor-pointer rounded-lg h-64 w-84 border-gray-200 border-2 bg-white shadow-md"
+            className={`cursor-pointer rounded-lg ${h} w-84 border-gray-200 border-2 bg-white shadow-md`}
         >
             <Link href={`/projects/${id}`}>
                 <div className="flex flex-col h-full w-full p-5 justify-between">
@@ -38,7 +40,9 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                         <h2
                             id="status"
                             className={
-                                STAGE_COLORS[stage] + ' ' + STAGE_CLASS_BASE
+                                STAGE_COLORS[stage] +
+                                ' ' +
+                                STAGE_CLASS_BASE
                             }
                         >
                             {stage}
@@ -49,7 +53,9 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                     </div>
                     <div className="flex flex-row justify-between">
                         <div className="flex flex-col w-2/3">
-                            <span className="font-medium">Author</span>
+                            <span className="font-medium">
+                                Author
+                            </span>
                             <span className="font-normal truncate">
                                 {author_id}
                             </span>
@@ -68,3 +74,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         </div>
     )
 }
+
+export default memo(
+    ProjectCard,
+    (prev: ProjectCardProps, next: ProjectCardProps) => {
+        return prev.project.id == next.project.id
+    }
+)

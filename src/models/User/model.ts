@@ -15,18 +15,24 @@ export const UserSchema = z.object({
 })
 
 export class User implements UserType {
-    name: string
+    name: string | null
     github_url: string
     id: string
     created_at: Date
     updated_at: Date
     email: string
-    emailVerified?: Date | null | undefined
-    image?: string | null | undefined
+    emailVerified: Date | null
+    image: string | null
     own_projects: string[]
     supported_projects: string[]
 
-    constructor({ id, name, email, image, emailVerified = null }: UserType) {
+    constructor({
+        id,
+        name,
+        email,
+        image,
+        emailVerified = null,
+    }: UserType) {
         this.email = email
         this.id = id
         this.github_url = this.createGithubLink()

@@ -11,7 +11,10 @@ export default function RepoContainer({ repos }: RepoContainerProps) {
             <ul className="p-5 bg-white rounded-lg h-full w-full font-medium border-gradient-to-r from-slate-150 to-slate-50 border-2">
                 {repos.map((repo) => {
                     return (
-                        <li className="p-4 border-2 border-slate-150 rounded-lg shadow-md">
+                        <li
+                            key={repo.id}
+                            className="p-4 border-2 border-slate-150 rounded-lg shadow-md"
+                        >
                             <div className="flex flex-row justify-start items-center space-x-4">
                                 <Github />
                                 <div className="flex flex-col justify-start items-center">

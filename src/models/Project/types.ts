@@ -9,18 +9,18 @@ export enum Stage {
 }
 
 export interface ProjectType {
+    description: string | null
     id: string
     name: string
-    description: string | null
+    created_at: Date
+    updated_at: Date
     image: string | null
-    created_at?: Date
-    updated_at?: Date
-    stage: Stage
-    author_id: string
     github_url: string | null
+    stage: Stage
+    supporters?: any[] // Fix later
+    author_id: string
 }
 
-export type ProjectWithUser = {
-    project: ProjectType
-    user: UserType
+export type ProjectWithUser = ProjectType & {
+    author: UserType
 }

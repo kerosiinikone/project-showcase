@@ -5,6 +5,8 @@ export default defineConfig({
     out: './drizzle/migrations',
     driver: 'pg',
     dbCredentials: {
-        connectionString: process.env.DB_URL,
+        connectionString:
+            process.env.DB_URL ||
+            'postgresql://postgres:admin@localhost:5435/postgres',
     },
 }) satisfies Config

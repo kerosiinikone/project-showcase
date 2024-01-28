@@ -7,8 +7,8 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useFormState } from 'react-dom'
 import CreateModalPortal from '../components/CreateProjectModal'
-import { signInGithub, signOutGithub } from './_actions/auth'
-import fetchUserRepos from './_actions/fetchUserRepos'
+import { signInGithub, signOutGithub } from './_actions/authAction'
+import fetchUserRepos from './_actions/fetchUserReposAction'
 
 type NavItemLayoutProps = {
     title: string
@@ -17,7 +17,11 @@ type NavItemLayoutProps = {
 
 // Turn this into a server component and move the CreateProjectModal elsewhere?
 
-const NavItemLayout = ({ children, title, site }: NavItemLayoutProps) => {
+const NavItemLayout = ({
+    children,
+    title,
+    site,
+}: NavItemLayoutProps) => {
     return (
         <li>
             <Link
@@ -34,14 +38,18 @@ const NavItemLayout = ({ children, title, site }: NavItemLayoutProps) => {
 export default function SideNavLayout() {
     const [show, setShow] = useState<boolean>(false)
     const { data: session } = useSession()
-    const [state, fetchReposAction] = useFormState<UserRepo[] | null, FormData>(
-        fetchUserRepos,
-        null
-    )
+    const [state, fetchReposAction] = useFormState<
+        UserRepo[] | null,
+        FormData
+    >(fetchUserRepos, null)
 
     return (
         <>
-            <CreateModalPortal show={show} setShow={setShow} repos={state} />
+            <CreateModalPortal
+                show={show}
+                setShow={setShow}
+                repos={state}
+            />
             <div
                 id="default-sidebar"
                 className="top-0 left-0 z-40 h-screen bg-slate-50 font-medium border-r-2 
@@ -55,7 +63,10 @@ export default function SideNavLayout() {
                         </div>
                         <div className="flex justify-center items-center row-span-5 h-full">
                             <ul className="space-y-4 h-full mt-10">
-                                <NavItemLayout title="Projects" site="">
+                                <NavItemLayout
+                                    title="Projects"
+                                    site=""
+                                >
                                     <Target
                                         size={18}
                                         viewBox="0 0 24 24"
@@ -153,7 +164,10 @@ const CreateProjectButton = ({
 
     return (
         <div id="open-modal-form">
-            <form action={fetch} className="flex justify-center items-center">
+            <form
+                action={fetch}
+                className="flex justify-center items-center"
+            >
                 <button
                     type="submit"
                     onClick={open}

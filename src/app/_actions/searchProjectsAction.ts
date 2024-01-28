@@ -15,23 +15,29 @@ const searchProjects = async (
     prevProjects: SearchFnReturnType,
     formData: FormData
 ) => {
+    const cursor = formData.get('nextCursor') as string
     const query = formData.get('query') as string
     const lastQuery = formData.get('lastQuery') as string
-    const cursor = formData.get('nextCursor') as string
 
-    // Make simpler if possible
     const data = await getProjects({
-        query: query != '' ? query : null,
-        cursor: cursor != '' ? cursor : undefined,
-        lastQuery: lastQuery != '' ? lastQuery : null,
+        query: query ? query : null,
+        cursor: cursor ? cursor : undefined,
+        lastQuery: lastQuery ? lastQuery : null,
     })
 
-    if (data.nextCursor) {
+    data.lastQuery = data.lastQuery ? data.lastQuery : ''
+    prevProjects.nextCursor = data.nextCursor
+
+    // New Search
+    if (query != lastQuery) {
+        return data as SearchFnReturnType
+    }
+
+    // Scroll down
+    if (data.nextCursor && data.lastQuery == query) {
         prevProjects.data = [...prevProjects.data, ...data.data]
         prevProjects.lastQuery = data.lastQuery!
-        prevProjects.nextCursor = data.nextCursor
     }
-    // Not a good approach -> a lot of overhead
     return prevProjects as SearchFnReturnType
 }
 

@@ -8,9 +8,12 @@ import {
     getExistingProjectsByUid,
 } from '@/operations/project.operations'
 import { addProjectToUser } from '@/operations/user.operations'
+import { users } from '@/services/db/schema'
 import { procedure } from '@/services/trpc'
 import { protectedProcedure } from '@/services/trpc/middleware'
+import { eq } from 'drizzle-orm'
 import { v4 } from 'uuid'
+import db from '../services/db.server'
 import { z } from 'zod'
 
 // Project Data Transfer Object
@@ -26,19 +29,32 @@ export default {
                     id: v4(),
                     author_id: session?.user?.id!,
                 })
-
-                // Helper function ?
-                //await addProjectToUser(session?.user?.id!, project.id)
-
-                return (await createNewProject(project))[0] as ProjectType
+                return (await createNewProject(project))[0]
             } catch (error) {
                 throw error // for now
             }
         }),
     getProjectsById: procedure
-        .input(z.string().length(36).optional())
+        .input(
+            z.object({
+                cursor: z.string().optional(),
+                id: z.string().length(36).optional(),
+            })
+        )
         .query(async ({ input }) => {
-            return (await getExistingProjectsByUid(input)) as ProjectType[] // Database Abstraction
+            const projects = (await getExistingProjectsByUid(
+                input.id,
+                input.cursor
+            )) as ProjectType[] // Database Abstraction
+
+            return {
+                data: projects,
+                nextCursor: projects.length
+                    ? projects[
+                          projects.length - 1
+                      ].created_at!.toISOString()
+                    : null,
+            }
         }),
     getProjectsByQuery: procedure
         .input(
@@ -49,19 +65,15 @@ export default {
             })
         )
         .query(async ({ input }) => {
-            const { cursor, query, lastQuery: lQuery } = input
-
-            // Refactor Pagination Logic -> a better way?
-
-            const [projects, lastQuery] = await getExistingProjectsByQuery(
-                cursor,
-                query,
-                lQuery
-            )
+            const { cursor, query, lastQuery: lq } = input
+            const [projects, lastQuery] =
+                await getExistingProjectsByQuery(cursor, query, lq)
             return {
                 data: projects,
                 nextCursor: projects.length
-                    ? projects[projects.length - 1].createdAt!.toISOString()
+                    ? projects[
+                          projects.length - 1
+                      ].created_at!.toISOString()
                     : null,
                 lastQuery,
             }
@@ -74,7 +86,7 @@ export default {
             })
         )
         .query(async ({ input }) => {
-            return (await getExistingProjectById(input))[0] as
+            return (await getExistingProjectById(input)) as
                 | ProjectType
                 | ProjectWithUser // Database Abstraction
         }),
@@ -82,5 +94,34 @@ export default {
         .input(z.string().length(36))
         .mutation(async ({ input: pid }) => {
             return (await deleteExistingProjectById(pid))[0]
+        }),
+    followProject: protectedProcedure
+        .input(
+            z.object({
+                pid: z.string().length(36),
+                uid: z.string().length(36),
+            })
+        )
+        .mutation(async ({ input: { pid, uid } }) => {
+            // Abstract elsewhere !!!
+            const user = await db?.query.users.findFirst({
+                where: eq(users.id, uid),
+                with: {
+                    supported_projects: {
+                        with: {
+                            project: true,
+                        },
+                    },
+                },
+            })
+            if (
+                !user ||
+                !user.supported_projects.some(
+                    ({ project }) => project.id == pid
+                )
+            )
+                return !!(await addProjectToUser(uid, pid))
+
+            return true // User not found or already follows
         }),
 }

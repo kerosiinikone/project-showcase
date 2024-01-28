@@ -19,7 +19,7 @@ export default function UserSectionComponent({
     return (
         <div
             id="user"
-            className="rounded-lg h-[400px] bg-white w-full font-medium border-gradient-to-r from-slate-150 to-slate-50 border-2"
+            className="rounded-lg bg-white w-full font-medium border-gradient-to-r from-slate-150 to-slate-50 border-2"
         >
             <div
                 id="profile-data"
@@ -31,16 +31,23 @@ export default function UserSectionComponent({
                         src={image!}
                     />
                 </div>
-                <div id="profile-info" className="flex flex-col m-6 mt-10">
+                <div
+                    id="profile-info"
+                    className="flex flex-col m-6 mt-10"
+                >
                     <div className="flex flex-row items-center">
                         <Github size="22px" className="mr-2" />
-                        <h1 className="text-2xl font-medium">{name}</h1>
+                        <h1 className="text-2xl font-medium">
+                            {name}
+                        </h1>
                     </div>
                     <h2 className="text-sm text-slate-500">{id}</h2>
                 </div>
                 <div id="bio" className="flex flex-col m-6 mt-10">
                     <h1>Bio</h1>
-                    <h2 className="text-md text-slate-500">{userBio}</h2>
+                    <h2 className="text-md text-slate-500">
+                        {userBio}
+                    </h2>
                 </div>
             </div>
             <div
@@ -48,7 +55,7 @@ export default function UserSectionComponent({
                 className="grid grid-flow-col grid-cols-4 w-full m-4 justify-center items-center"
             >
                 <div className="col-span-1 flex flex-col items-center">
-                    <h1 className="font-medium">Supporters</h1>
+                    <h1 className="font-medium">Supports</h1>
                     <h2>100</h2>
                 </div>
                 <div className="col-span-1 flex flex-col items-center">
@@ -56,13 +63,11 @@ export default function UserSectionComponent({
                     <h2>{user?.own_projects?.length}</h2>
                 </div>
                 <div className="col-span-1 flex flex-col items-center">
-                    <h1 className="font-medium">Supported Projects</h1>
+                    <h1 className="font-medium">
+                        Supported Projects
+                    </h1>
                     <h2>{user?.supported_projects?.length}</h2>
                 </div>
-                {/* <div className="col-span-1 flex flex-col items-center">
-                    <h1 className="font-medium">Repos</h1>
-                    <h2>5</h2>
-                </div> */}
             </div>
         </div>
     )
