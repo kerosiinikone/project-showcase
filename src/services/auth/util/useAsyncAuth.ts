@@ -1,4 +1,4 @@
-import { auth } from '@/services/auth'
+import { auth, signOut } from '@/services/auth'
 
 export const useAsyncAuth = async () => {
     let expiresDate
@@ -6,15 +6,15 @@ export const useAsyncAuth = async () => {
     const session = await auth()
 
     if (!session) {
-        // Logout and delete session
+        console.log('NO SESSION')
     }
 
     if (session?.expires) {
         expiresDate = Date.parse(session?.expires)
-    }
 
-    if (!expiresDate || Date.now() < expiresDate) {
-        // Logout
+        if (Date.now() > expiresDate!) {
+            await signOut({ redirect: false })
+        }
     }
     return session
 }

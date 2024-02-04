@@ -2,13 +2,13 @@ import { UserSchema } from '@/models/User/model'
 import { UserType } from '@/models/User/types'
 import {
     createNewUser,
+    getAggregatedSupportUser,
     getExistingUserById,
 } from '@/operations/user.operations'
 import { GithubAccountDBAdapter } from '@/services/auth'
 import GithubApp from '@/services/octokit'
 import { UserRepo } from '@/services/octokit/types'
 import { protectedProcedure } from '@/services/trpc/middleware'
-import { z } from 'zod'
 
 export default {
     createUserAction: protectedProcedure
@@ -20,12 +20,16 @@ export default {
                 throw error
             }
         }),
-    getExistingUserAction: protectedProcedure
-        .input(z.string().length(36))
-        .query(async ({ input }) => {
-            // Check if user exists first !!!
-            return await getExistingUserById(input)
-        }),
+    getExistingUserAction: protectedProcedure.query(
+        async ({ ctx: { session } }) => {
+            return await getExistingUserById(session?.user?.id!)
+        }
+    ),
+    getAggregatedSupports: protectedProcedure.query(
+        async ({ ctx: { session } }) => {
+            return await getAggregatedSupportUser(session?.user?.id!)
+        }
+    ),
     getUserRepos: protectedProcedure.query(
         async ({ ctx: { session } }) => {
             // Instead of creating a GithubApp instance every time a user click on the button,
@@ -37,7 +41,7 @@ export default {
             try {
                 const access_token =
                     await GithubAccountDBAdapter.getGithubAccessToken(
-                        session?.user.id!
+                        session?.user?.id!
                     )
 
                 const githubInstance = new GithubApp(access_token)
@@ -52,6 +56,27 @@ export default {
                 }) as UserRepo[]
             } catch (error) {
                 return [] as UserRepo[]
+            }
+        }
+    ),
+    getGithubUserBio: protectedProcedure.query(
+        async ({ ctx: { session } }) => {
+            // Instead of creating a GithubApp instance every time a user click on the button,
+            // there should a context-like structure that provides the instance first created
+            // in a successful auth callback
+
+            // access_token must be treated like a password, so use bcrypt
+
+            try {
+                const access_token =
+                    await GithubAccountDBAdapter.getGithubAccessToken(
+                        session?.user?.id!
+                    )
+
+                const githubInstance = new GithubApp(access_token)
+                return (await githubInstance.getUserBio()) as string
+            } catch (error) {
+                return ''
             }
         }
     ),

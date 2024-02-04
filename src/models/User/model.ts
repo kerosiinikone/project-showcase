@@ -6,8 +6,8 @@ export const UserSchema = z.object({
     id: z.string().length(36),
     name: z.string().min(5).max(191),
     email: z.string().email().max(191),
-    own_projects: z.array(z.string().length(36).optional()),
-    supported_projects: z.array(z.string().length(36).optional()),
+    // own_projects: z.array(z.string().length(36).optional()),
+    // supported_projects: z.array(z.string().length(36).optional()),
     created_at: z.date(),
     updated_at: z.date(),
     emailVerifid: z.date().optional(),
@@ -23,8 +23,6 @@ export class User implements UserType {
     email: string
     emailVerified: Date | null
     image: string | null
-    own_projects: string[]
-    supported_projects: string[]
 
     constructor({
         id,
@@ -37,8 +35,6 @@ export class User implements UserType {
         this.id = id
         this.github_url = this.createGithubLink()
         this.emailVerified = emailVerified
-        this.own_projects = []
-        this.supported_projects = []
         this.image = image
         this.created_at = new Date()
         this.updated_at = new Date()

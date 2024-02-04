@@ -1,55 +1,64 @@
-import { redirect } from 'next/navigation'
-import UserSectionComponent from './_components/UserSection'
-import { useAsyncAuth } from '@/hooks/useAsyncAuth'
-import ProjectDashboard from './_components/ProjectDashboard'
+import { UserType } from '@/models/User/types'
+import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import {
+    getAggregatedSupports,
+    getBio,
     getProjectsByIdServer,
     getRepos,
     getUserById,
 } from '@/services/trpc/server'
-import { Session } from 'next-auth/types'
-import { GithubAccountDBAdapter } from '@/services/auth'
-import GithubApp from '@/services/octokit'
-import { UserType } from '@/models/User/types'
+import { redirect } from 'next/navigation'
+import ProjectDashboard from './_components/ProjectDashboard'
+import UserSectionComponent from './_components/UserSection'
 
-// Move this elsewhere
-async function getUserBio(session: Session | null) {
+// Change later
+async function fetchUserData(uid: string) {
+    let results, e
     try {
-        const access_token =
-            await GithubAccountDBAdapter.getGithubAccessToken(
-                session?.user.id!
-            )
-
-        const githubInstance = new GithubApp(access_token)
-        const bio = await githubInstance.getUserBio()
-
-        return bio as string
+        results = await Promise.all([
+            getBio(),
+            getRepos(),
+            getUserById() as Promise<UserType>,
+            getProjectsByIdServer({
+                id: uid,
+            }),
+            getAggregatedSupports(),
+        ])
+        e = null
     } catch (error) {
-        return ''
+        results = [...Array(5).fill(undefined)]
+        e = error
     }
+
+    return [...results, e] as const // Error last
 }
 
 export default async function DashboardComponent() {
     const session = await useAsyncAuth()
 
-    // Change to a Middleware
     if (!session) {
         redirect('/auth/github')
     }
 
-    // Put into respective components
-    const bio = await getUserBio(session)
-    const repos = await getRepos()
-    const userProjects = await getProjectsByIdServer({
-        id: session?.user.id!,
-    })
-    const user = (await getUserById(session?.user.id!)) as UserType
+    const [
+        bio,
+        repos,
+        user,
+        userProjects,
+        aggregatedSupports,
+        error,
+    ] = await fetchUserData(session.user?.id!)
+
+    if (error) {
+        // Handle
+    }
 
     return (
         <div className="container h-full w-full flex justify-center items-center p-10">
             <div className="flex flex-col justify-center h-full w-full">
                 <UserSectionComponent
                     user={user}
+                    aggregatedSupports={aggregatedSupports.value}
                     userBio={bio}
                     name={session.user?.name}
                     id={session.user?.id ?? 'No ID found'}

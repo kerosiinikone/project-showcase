@@ -1,13 +1,16 @@
 'use client'
 
-import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react'
-import { createPortal } from 'react-dom'
-import useCreateProject from '../app/_hooks/useCreateProject'
+import React, {
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useRef,
+} from 'react'
+import { createPortal, useFormState } from 'react-dom'
 import { Stage } from '@/models/Project/types'
-import { SubmitHandler, useForm } from 'react-hook-form'
 import { PlusIcon, X } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { UserRepo } from '@/services/octokit/types'
+import createProjectAction from '@/app/_actions/create-project-action'
 
 type ModalLayoutParams = {
     show: boolean
@@ -20,35 +23,21 @@ type ModalContentParams = {
     setShow: Dispatch<SetStateAction<boolean>>
 }
 
-type IFormInput = {
-    name: string
-    description: string | null
-    github_url: string | null
-    stage: Stage
-}
-
 // Structure !!!
 // Improve !!!
 
-/*
-    Change to SSA w/ tRPC Component Layer
-*/
-
-const CreateProjectModal = ({ setShow, repos }: ModalContentParams) => {
+const CreateProjectModal = ({
+    setShow,
+    repos,
+}: ModalContentParams) => {
+    const [state, dispatch] = useFormState(createProjectAction, null)
     const handleClose = () => setShow(false)
-    const router = useRouter()
-    const { register, handleSubmit, reset } = useForm<IFormInput>()
-    const [createProject] = useCreateProject({}, router, handleClose)
 
-    const onSubmit: SubmitHandler<IFormInput> = (data) => {
-        createProject({
-            name: data.name,
-            description: data.description != '' ? data.description : null,
-            stage: data.stage,
-            github_url: data.github_url != '' ? data.github_url : null,
-        })
-        reset()
-    }
+    useEffect(() => {
+        if (state?.error) {
+            // Handle
+        }
+    }, [state])
 
     return (
         <div className="fixed h-screen w-screen z-50 flex justify-center items-center left-40">
@@ -76,13 +65,16 @@ const CreateProjectModal = ({ setShow, repos }: ModalContentParams) => {
                                 strokeWidth={2}
                                 fill="none"
                             />
-                            <span className="sr-only">Close modal</span>
+                            <span className="sr-only">
+                                Close modal
+                            </span>
                         </button>
                     </div>
                     <form
+                        action={dispatch}
+                        onSubmit={() => handleClose()}
                         id="create-project"
                         className="flex flex-col justify-between p-6 h-[500px]"
-                        onSubmit={handleSubmit(onSubmit)}
                     >
                         <div className="grid gap-4 mb-4 grid-cols-2">
                             <div className="col-span-2">
@@ -90,10 +82,10 @@ const CreateProjectModal = ({ setShow, repos }: ModalContentParams) => {
                                     Name
                                 </label>
                                 <input
-                                    {...register('name')}
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                     rounded-lg py-2 px-3 w-full"
                                     placeholder="Type a project name"
+                                    name="name"
                                 />
                             </div>
                         </div>
@@ -103,10 +95,10 @@ const CreateProjectModal = ({ setShow, repos }: ModalContentParams) => {
                                     Description
                                 </label>
                                 <textarea
-                                    {...register('description')}
                                     className="h-32 max-h-40 min-h-20 bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                     rounded-lg block w-full p-2.5 "
                                     placeholder="Type a project description"
+                                    name="description"
                                 />
                             </div>
                         </div>
@@ -116,13 +108,16 @@ const CreateProjectModal = ({ setShow, repos }: ModalContentParams) => {
                                     Stage
                                 </label>
                                 <select
-                                    {...register('stage')}
                                     id="stage"
                                     name="stage"
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 mb-2 w-full"
                                 >
-                                    <option value={Stage.IDEA}>Idea</option>
-                                    <option value={Stage.PLAN}>Planning</option>
+                                    <option value={Stage.IDEA}>
+                                        Idea
+                                    </option>
+                                    <option value={Stage.PLAN}>
+                                        Planning
+                                    </option>
                                     <option value={Stage.DEVELOPMENT}>
                                         In development
                                     </option>
@@ -139,7 +134,6 @@ const CreateProjectModal = ({ setShow, repos }: ModalContentParams) => {
                                     Github Repo
                                 </label>
                                 <select
-                                    {...register('github_url')}
                                     id="github_url"
                                     name="github_url"
                                     defaultValue=""
@@ -150,7 +144,11 @@ const CreateProjectModal = ({ setShow, repos }: ModalContentParams) => {
                                     </option>
                                     {repos?.map((repo) => {
                                         return (
-                                            <option value={repo.github_url}>
+                                            <option
+                                                value={
+                                                    repo.github_url
+                                                }
+                                            >
                                                 {repo.name}
                                             </option>
                                         )
@@ -190,6 +188,7 @@ const CreateProjectModal = ({ setShow, repos }: ModalContentParams) => {
 }
 
 // Handles interaction and rendering
+// Make reusable
 
 export default function ModalLayout({
     show,

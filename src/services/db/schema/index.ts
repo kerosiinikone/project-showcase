@@ -11,7 +11,7 @@ import {
 } from 'drizzle-orm/pg-core'
 import type { AdapterAccount } from '@auth/core/adapters'
 import { Stage } from '@/models/Project/types'
-import { relations } from 'drizzle-orm'
+import { InferSelectModel, relations } from 'drizzle-orm'
 
 export const stageEnum = pgEnum('stage', [
     'IDEA',
@@ -48,29 +48,41 @@ export const users = pgTable(
     })
 )
 
+export type SchemaUser = InferSelectModel<typeof users>
+
 export const userProjectRelations = relations(users, ({ many }) => ({
     own_projects: many(projects),
     supported_projects: many(usersToProjects),
 }))
 
-export const projects = pgTable('project', {
-    id: text('id').primaryKey(),
-    name: text('name').notNull(),
-    description: text('description'),
-    image: text('image'),
-    // supporters: text('supporters').array().notNull(),
-    stage: stageEnum('stage').$type<Stage>().notNull(),
-    author_id: text('author_id')
-        .notNull()
-        .references(() => users.id),
-    github_url: text('github_url'),
-    created_at: timestamp('created_at', { mode: 'date' })
-        .defaultNow()
-        .notNull(),
-    updated_at: timestamp('updated_at', { mode: 'date' })
-        .defaultNow()
-        .notNull(),
-})
+export const projects = pgTable(
+    'project',
+    {
+        id: text('id').primaryKey(),
+        name: text('name').notNull(),
+        description: text('description'),
+        image: text('image'),
+        // supporters: text('supporters').array().notNull(),
+        stage: stageEnum('stage').$type<Stage>().notNull(),
+        author_id: text('author_id')
+            .notNull()
+            .references(() => users.id),
+        github_url: text('github_url'),
+        created_at: timestamp('created_at', { mode: 'date' })
+            .defaultNow()
+            .notNull(),
+        updated_at: timestamp('updated_at', { mode: 'date' })
+            .defaultNow()
+            .notNull(),
+    },
+    (table) => {
+        return {
+            nameIdx: index('name_idx').on(table.name),
+        }
+    }
+)
+
+export type SchemaProject = InferSelectModel<typeof projects>
 
 export const projectUserRelations = relations(
     projects,
@@ -146,33 +158,33 @@ export const accounts = pgTable(
     })
 )
 
-export const sessions = pgTable(
-    'session',
-    {
-        sessionToken: text('sessionToken').notNull().primaryKey(),
-        userId: text('userId')
-            .notNull()
-            .references(() => users.id, { onDelete: 'cascade' }),
-        expires: timestamp('expires', { mode: 'date' }).notNull(),
-    },
-    (session) => ({
-        sessionTokenIndex: uniqueIndex(
-            'sessions__sessionToken__idx'
-        ).on(session.sessionToken),
-        userIdIndex: index('sessions__userId__idx').on(
-            session.userId
-        ),
-    })
-)
+// export const sessions = pgTable(
+//     'session',
+//     {
+//         sessionToken: text('sessionToken').notNull().primaryKey(),
+//         userId: text('userId')
+//             .notNull()
+//             .references(() => users.id, { onDelete: 'cascade' }),
+//         expires: timestamp('expires', { mode: 'date' }).notNull(),
+//     },
+//     (session) => ({
+//         sessionTokenIndex: uniqueIndex(
+//             'sessions__sessionToken__idx'
+//         ).on(session.sessionToken),
+//         userIdIndex: index('sessions__userId__idx').on(
+//             session.userId
+//         ),
+//     })
+// )
 
-export const verificationTokens = pgTable(
-    'verificationToken',
-    {
-        identifier: text('identifier').notNull(),
-        token: text('token').notNull(),
-        expires: timestamp('expires', { mode: 'date' }).notNull(),
-    },
-    (vt) => ({
-        compoundKey: primaryKey(vt.identifier, vt.token),
-    })
-)
+// export const verificationTokens = pgTable(
+//     'verificationToken',
+//     {
+//         identifier: text('identifier').notNull(),
+//         token: text('token').notNull(),
+//         expires: timestamp('expires', { mode: 'date' }).notNull(),
+//     },
+//     (vt) => ({
+//         compoundKey: primaryKey(vt.identifier, vt.token),
+//     })
+// )

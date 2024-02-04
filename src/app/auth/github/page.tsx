@@ -1,5 +1,5 @@
 import { LoginWithGithubButton } from '@/app/Nav'
-import { useAsyncAuth } from '@/hooks/useAsyncAuth'
+import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import { redirect } from 'next/navigation'
 
 export default async function GithubAuthRedirect() {

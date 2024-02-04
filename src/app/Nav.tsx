@@ -7,8 +7,8 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useFormState } from 'react-dom'
 import CreateModalPortal from '../components/CreateProjectModal'
-import { signInGithub, signOutGithub } from './_actions/authAction'
-import fetchUserRepos from './_actions/fetchUserReposAction'
+import { signInGithub, signOutGithub } from './_actions/auth-action'
+import fetchUserRepos from './_actions/fetch-user-repos-action'
 
 type NavItemLayoutProps = {
     title: string

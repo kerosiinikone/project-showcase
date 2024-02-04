@@ -6,13 +6,16 @@ export const {
     project: {
         getProjects,
         followProject,
+        isFollowProject,
         getProjectsById: getProjectsByIdServer,
         getProjectById: getProjectServer,
         deleteProjectById: deleteProjectServer,
         createProject: createProjectServer,
     },
     user: {
+        getAggregatedSupports,
         getUserRepos: getRepos,
+        getGithubUserBio: getBio,
         getExistingUserAction: getUserById,
     },
 } = appRouter.createCaller({

@@ -1,6 +1,6 @@
 'use client'
 
-import searchProjects from '@/app/_actions/searchProjectsAction'
+import searchProjects from '@/app/_actions/search-projects-action'
 import { ProjectType } from '@/models/Project/types'
 import { MutableRefObject } from 'react'
 import { useFormState } from 'react-dom'

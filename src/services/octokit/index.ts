@@ -21,9 +21,12 @@ export default class GithubApp {
     }
 
     async getUserRepos() {
-        const { data: repos } = await this.instance.request('GET /user/repos', {
-            headers: HEADERS,
-        })
+        const { data: repos } = await this.instance.request(
+            'GET /user/repos',
+            {
+                headers: HEADERS,
+            }
+        )
         return repos
     }
     async getUserBio() {

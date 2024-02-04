@@ -15,10 +15,8 @@ type Adapter = NextAuthConfig['adapter']
 export function createTables() {
     const users = schema.users
     const accounts = schema.accounts
-    const sessions = schema.sessions
-    const verificationTokens = schema.verificationTokens
 
-    return { users, accounts, sessions, verificationTokens }
+    return { users, accounts }
 }
 
 export type DefaultSchema = ReturnType<typeof createTables>
@@ -28,11 +26,14 @@ export function CustomDrizzleAdapter(
 ): Adapter & {
     getGithubAccessToken: (loggedUser: string) => Promise<string>
 } {
-    const { users, accounts, sessions, verificationTokens } = createTables()
+    const { users, accounts } = createTables()
 
     return {
         async createUser(data: any) {
-            const newUser = new User({ ...(data as UserType), id: v4() })
+            const newUser = new User({
+                ...(data as UserType),
+                id: v4(),
+            })
             return await client
                 .insert(users)
                 .values(newUser)
@@ -53,24 +54,24 @@ export function CustomDrizzleAdapter(
                 .where(eq(users.email, data))
                 .then((res) => res[0] ?? null)
         },
-        async createSession(data: any) {
-            return await client
-                .insert(sessions)
-                .values(data)
-                .returning()
-                .then((res) => res[0])
-        },
-        async getSessionAndUser(data: any) {
-            return await client
-                .select({
-                    session: sessions,
-                    user: users,
-                })
-                .from(sessions)
-                .where(eq(sessions.sessionToken, data))
-                .innerJoin(users, eq(users.id, sessions.userId))
-                .then((res) => res[0] ?? null)
-        },
+        // async createSession(data: any) {
+        //     return await client
+        //         .insert(sessions)
+        //         .values(data)
+        //         .returning()
+        //         .then((res) => res[0])
+        // },
+        // async getSessionAndUser(data: any) {
+        //     return await client
+        //         .select({
+        //             session: sessions,
+        //             user: users,
+        //         })
+        //         .from(sessions)
+        //         .where(eq(sessions.sessionToken, data))
+        //         .innerJoin(users, eq(users.id, sessions.userId))
+        //         .then((res) => res[0] ?? null)
+        // },
         async updateUser(data: any) {
             if (!data.id) {
                 throw new Error('No user id.')
@@ -83,14 +84,14 @@ export function CustomDrizzleAdapter(
                 .returning()
                 .then((res) => res[0])
         },
-        async updateSession(data: any) {
-            return await client
-                .update(sessions)
-                .set(data)
-                .where(eq(sessions.sessionToken, data.sessionToken))
-                .returning()
-                .then((res) => res[0])
-        },
+        // async updateSession(data: any) {
+        //     return await client
+        //         .update(sessions)
+        //         .set(data)
+        //         .where(eq(sessions.sessionToken, data.sessionToken))
+        //         .returning()
+        //         .then((res) => res[0])
+        // },
         async linkAccount(rawAccount: any) {
             const updatedAccount = await client
                 .insert(accounts)
@@ -100,16 +101,16 @@ export function CustomDrizzleAdapter(
 
             // Drizzle will return `null` for fields that are not defined.
             // However, the return type is expecting `undefined`.
-            const account = {
-                ...updatedAccount,
-                access_token: updatedAccount.access_token ?? undefined,
-                token_type: updatedAccount.token_type ?? undefined,
-                id_token: updatedAccount.id_token ?? undefined,
-                refresh_token: updatedAccount.refresh_token ?? undefined,
-                scope: updatedAccount.scope ?? undefined,
-                expires_at: updatedAccount.expires_at ?? undefined,
-                session_state: updatedAccount.session_state ?? undefined,
-            }
+            // const account = {
+            //     ...updatedAccount,
+            //     access_token: updatedAccount.access_token ?? undefined,
+            //     token_type: updatedAccount.token_type ?? undefined,
+            //     id_token: updatedAccount.id_token ?? undefined,
+            //     refresh_token: updatedAccount.refresh_token ?? undefined,
+            //     scope: updatedAccount.scope ?? undefined,
+            //     expires_at: updatedAccount.expires_at ?? undefined,
+            //     session_state: updatedAccount.session_state ?? undefined,
+            // }
 
             // return account;
         },
@@ -136,38 +137,38 @@ export function CustomDrizzleAdapter(
 
             return dbAccount.user
         },
-        async deleteSession(sessionToken) {
-            const session = await client
-                .delete(sessions)
-                .where(eq(sessions.sessionToken, sessionToken))
-                .returning()
-                .then((res) => res[0] ?? null)
+        // async deleteSession(sessionToken) {
+        //     const session = await client
+        //         .delete(sessions)
+        //         .where(eq(sessions.sessionToken, sessionToken))
+        //         .returning()
+        //         .then((res) => res[0] ?? null)
 
-            return session
-        },
-        async createVerificationToken(token) {
-            return await client
-                .insert(verificationTokens)
-                .values(token)
-                .returning()
-                .then((res) => res[0])
-        },
-        async useVerificationToken(token) {
-            try {
-                return await client
-                    .delete(verificationTokens)
-                    .where(
-                        and(
-                            eq(verificationTokens.identifier, token.identifier),
-                            eq(verificationTokens.token, token.token)
-                        )
-                    )
-                    .returning()
-                    .then((res) => res[0] ?? null)
-            } catch (err) {
-                throw new Error('No verification token found.')
-            }
-        },
+        //     return session
+        // },
+        // async createVerificationToken(token) {
+        //     return await client
+        //         .insert(verificationTokens)
+        //         .values(token)
+        //         .returning()
+        //         .then((res) => res[0])
+        // },
+        // async useVerificationToken(token) {
+        //     try {
+        //         return await client
+        //             .delete(verificationTokens)
+        //             .where(
+        //                 and(
+        //                     eq(verificationTokens.identifier, token.identifier),
+        //                     eq(verificationTokens.token, token.token)
+        //                 )
+        //             )
+        //             .returning()
+        //             .then((res) => res[0] ?? null)
+        //     } catch (err) {
+        //         throw new Error('No verification token found.')
+        //     }
+        // },
         async deleteUser(id) {
             await client
                 .delete(users)
@@ -176,19 +177,20 @@ export function CustomDrizzleAdapter(
                 .then((res) => res[0] ?? null)
         },
         async unlinkAccount(account) {
-            const { type, provider, providerAccountId, userId } = await client
-                .delete(accounts)
-                .where(
-                    and(
-                        eq(
-                            accounts.providerAccountId,
-                            account.providerAccountId
-                        ),
-                        eq(accounts.provider, account.provider)
+            const { type, provider, providerAccountId, userId } =
+                await client
+                    .delete(accounts)
+                    .where(
+                        and(
+                            eq(
+                                accounts.providerAccountId,
+                                account.providerAccountId
+                            ),
+                            eq(accounts.provider, account.provider)
+                        )
                     )
-                )
-                .returning()
-                .then((res) => res[0] ?? null)
+                    .returning()
+                    .then((res) => res[0] ?? null)
         },
 
         // Make this independent of the "Adapter"

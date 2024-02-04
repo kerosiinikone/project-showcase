@@ -1,4 +1,5 @@
 import { UserType } from '../User/types'
+import type { SchemaProject } from '../../services/db/schema'
 
 export enum Stage {
     IDEA = 'IDEA',
@@ -8,17 +9,8 @@ export enum Stage {
     PRODUCTION = 'PRODUCTION',
 }
 
-export interface ProjectType {
-    description: string | null
-    id: string
-    name: string
-    created_at: Date
-    updated_at: Date
-    image: string | null
-    github_url: string | null
-    stage: Stage
+export type ProjectType = SchemaProject & {
     supporters?: any[] // Fix later
-    author_id: string
 }
 
 export type ProjectWithUser = ProjectType & {

@@ -6,17 +6,24 @@ import {
     getExistingProjectById,
     getExistingProjectsByQuery,
     getExistingProjectsByUid,
+    hasProjectUserSupport,
 } from '@/operations/project.operations'
+import { TRPCError } from '@trpc/server'
 import { addProjectToUser } from '@/operations/user.operations'
-import { users } from '@/services/db/schema'
 import { procedure } from '@/services/trpc'
 import { protectedProcedure } from '@/services/trpc/middleware'
-import { eq } from 'drizzle-orm'
-import { v4 } from 'uuid'
 import db from '../services/db.server'
 import { z } from 'zod'
+import { v4 } from 'uuid'
 
 // Project Data Transfer Object
+
+// throw new TRPCError({
+//     code: 'INTERNAL_SERVER_ERROR',
+//     message: 'An unexpected error occurred, please try again later.',
+//     // optional: pass the original error to retain stack trace
+//     cause: theError,
+// })
 
 export default {
     createProject: protectedProcedure
@@ -29,7 +36,7 @@ export default {
                     id: v4(),
                     author_id: session?.user?.id!,
                 })
-                return (await createNewProject(project))[0]
+                return await createNewProject(project)
             } catch (error) {
                 throw error // for now
             }
@@ -93,7 +100,7 @@ export default {
     deleteProjectById: protectedProcedure
         .input(z.string().length(36))
         .mutation(async ({ input: pid }) => {
-            return (await deleteExistingProjectById(pid))[0]
+            return await deleteExistingProjectById(pid)
         }),
     followProject: protectedProcedure
         .input(
@@ -103,25 +110,23 @@ export default {
             })
         )
         .mutation(async ({ input: { pid, uid } }) => {
-            // Abstract elsewhere !!!
-            const user = await db?.query.users.findFirst({
-                where: eq(users.id, uid),
-                with: {
-                    supported_projects: {
-                        with: {
-                            project: true,
-                        },
-                    },
-                },
-            })
-            if (
-                !user ||
-                !user.supported_projects.some(
-                    ({ project }) => project.id == pid
-                )
+            const foundRelation = await hasProjectUserSupport(
+                pid,
+                uid
             )
+            if (!foundRelation)
                 return !!(await addProjectToUser(uid, pid))
 
             return true // User not found or already follows
+        }),
+    isFollowProject: protectedProcedure
+        .input(
+            z.object({
+                pid: z.string().length(36),
+                uid: z.string().length(36),
+            })
+        )
+        .query(async ({ input: { pid, uid } }) => {
+            return await hasProjectUserSupport(pid, uid)
         }),
 }

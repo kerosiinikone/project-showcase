@@ -1,12 +1,6 @@
-export interface UserType {
-    id: string
-    name: string | null
-    email: string
-    created_at: Date
-    updated_at: Date
-    image: string | null
-    emailVerified: Date | null
-    github_url: string | null
+import type { SchemaUser } from '../../services/db/schema'
+
+export type UserType = SchemaUser & {
     own_projects?: any[] // Fix later
     supported_projects?: any[] // Fix later
 }

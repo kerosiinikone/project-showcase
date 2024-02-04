@@ -1,4 +1,4 @@
-import { useAsyncAuth } from '@/hooks/useAsyncAuth'
+import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import { procedure, t } from '.'
 import db from '../db.server'
 import { TRPCError } from '@trpc/server'

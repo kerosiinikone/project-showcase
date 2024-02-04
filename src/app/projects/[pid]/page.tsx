@@ -1,11 +1,22 @@
-import { useAsyncAuth } from '@/hooks/useAsyncAuth'
+import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import { ProjectWithUser } from '@/models/Project/types'
-import { getProjectServer, getUserById } from '@/services/trpc/server'
+import {
+    getProjectServer,
+    isFollowProject,
+} from '@/services/trpc/server'
 import ProjectWrapper from './_components/ProjectWrapper'
 import { Session } from 'next-auth/types'
 
 interface ProjectComponentProps {
     params: { pid: string }
+}
+
+const isFollowedInitial = async (
+    pid: string,
+    session: Session | null
+) => {
+    if (!session || !session.user) return false
+    return isFollowProject({ pid, uid: session.user.id })
 }
 
 // Abstract into Components
@@ -34,20 +45,4 @@ export default async function ProjectPage({
             />
         </div>
     )
-}
-
-const isFollowedInitial = async (
-    pid: string,
-    session: Session | null
-) => {
-    const user = await getUserById(session?.user.id!)
-    if (
-        !user ||
-        !user.supported_projects.some(
-            ({ project }) => project.id == pid
-        )
-    ) {
-        return false
-    }
-    return true
 }

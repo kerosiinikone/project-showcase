@@ -4,7 +4,7 @@ import { ProjectWithUser } from '@/models/Project/types'
 import { Github, Pencil, UserPlus } from 'lucide-react'
 import { Session } from 'next-auth/types'
 import { useFormState } from 'react-dom'
-import supportProject from '../_actions/followProjectAction'
+import supportProject from '../_actions/follow-project-action'
 
 interface ProjectWrapperProps {
     session: Session | null
@@ -44,14 +44,14 @@ export default function ProjectWrapper({
                 </div>
                 {session && (
                     <div className="flex flex-row gap-2 w-fit justify-center items-center">
-                        {session.user.id == author.id && (
+                        {session.user?.id == author.id && (
                             <EditButton />
                         )}
                         <SupportButton
                             dispatchFollow={dispatch}
                             isFollowed={state}
                             pid={id}
-                            uid={session.user.id}
+                            uid={session.user!.id}
                         />
                     </div>
                 )}

@@ -1,8 +1,8 @@
 import 'server-only'
 
 import { ProjectType } from '@/models/Project/types'
-import { projects } from '@/services/db/schema'
-import { eq, ilike } from 'drizzle-orm'
+import { projects, usersToProjects } from '@/services/db/schema'
+import { and, eq, ilike } from 'drizzle-orm'
 import { withCursorPagination } from 'drizzle-pagination'
 import db from '../services/db.server'
 
@@ -15,8 +15,24 @@ const LIMIT = 9 // Limit search results
 
 // Separate data access logic
 
+export async function hasProjectUserSupport(
+    pid: string,
+    uid: string
+) {
+    return !!(await db?.query.usersToProjects.findFirst({
+        where: and(
+            eq(usersToProjects.user_id, uid),
+            eq(usersToProjects.project_id, pid)
+        ),
+    }))
+}
+
 export async function createNewProject(newProject: ProjectType) {
-    return await db.insert(projects).values(newProject).returning()
+    return await db
+        .insert(projects)
+        .values(newProject)
+        .returning()
+        .then((res) => res[0] ?? null)
 }
 
 // Get user repos from user operations with join on "own_projects"
@@ -85,4 +101,5 @@ export async function deleteExistingProjectById(pid: string) {
         .delete(projects)
         .where(eq(projects.id, pid))
         .returning({ id: projects.id })
+        .then((res) => res[0] ?? null)
 }

@@ -25,7 +25,7 @@ export default function ProjectContainer({
         formRef
     )
     const projectsMemo = useMemo(
-        () => projectsRaw.data,
+        () => (!projectsRaw.error ? projectsRaw.data : []),
         [projectsRaw]
     )
 
@@ -40,14 +40,12 @@ export default function ProjectContainer({
                     <SearchBarComponent handleSearch={search} />
                     <input
                         hidden
-                        id="nextCursor"
                         readOnly
                         name="nextCursor"
                         value={projectsRaw?.nextCursor ?? undefined}
                     />
                     <input
                         hidden
-                        id="lastQuery"
                         readOnly
                         name="lastQuery"
                         value={projectsRaw?.lastQuery ?? undefined}
