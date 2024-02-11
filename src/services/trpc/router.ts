@@ -3,6 +3,7 @@ import userActions from '@/procedures/user.procedures'
 import projectActions from '@/procedures/project.procedures'
 
 const user = router({
+    getSupportedProjects: userActions.getSupportedProjects,
     getAggregatedSupports: userActions.getAggregatedSupports,
     createNewUserAction: userActions.createUserAction,
     getExistingUserAction: userActions.getExistingUserAction,
@@ -11,6 +12,7 @@ const user = router({
 })
 
 const project = router({
+    editProject: projectActions.editProject,
     createProject: projectActions.createProject,
     isFollowProject: projectActions.isFollowProject,
     getProjectsById: projectActions.getProjectsById,
@@ -18,6 +20,7 @@ const project = router({
     getProjectById: projectActions.getProjectById,
     deleteProjectById: projectActions.deleteProjectById,
     followProject: projectActions.followProject,
+    unfollowProject: projectActions.unfollowProject,
 })
 
 export const appRouter = router({

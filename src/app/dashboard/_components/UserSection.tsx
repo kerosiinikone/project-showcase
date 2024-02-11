@@ -1,5 +1,6 @@
 import { UserType } from '@/models/User/types'
 import { Github } from 'lucide-react'
+import UserSupportCount from './modal-list/UserSupportCount'
 
 interface UserSectionProps {
     image?: string | null
@@ -64,12 +65,9 @@ export default function UserSectionComponent({
                     <h1 className="font-medium">Own Projects</h1>
                     <h2>{user?.own_projects?.length}</h2>
                 </div>
-                <div className="col-span-1 flex flex-col px-10 py-2 w-fit items-center justify-center cursor-pointer rounded-lg hover:bg-slate-100 transition">
-                    <h1 className="font-medium">
-                        Supported Projects
-                    </h1>
-                    <h2>{user?.supported_projects?.length}</h2>
-                </div>
+                <UserSupportCount
+                    supports={user?.supported_projects?.length}
+                />
             </div>
         </div>
     )

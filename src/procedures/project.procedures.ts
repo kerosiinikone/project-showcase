@@ -3,18 +3,23 @@ import { ProjectType, ProjectWithUser } from '@/models/Project/types'
 import {
     createNewProject,
     deleteExistingProjectById,
+    editExistingProject,
     getExistingProjectById,
     getExistingProjectsByQuery,
     getExistingProjectsByUid,
     hasProjectUserSupport,
 } from '@/operations/project.operations'
-import { TRPCError } from '@trpc/server'
-import { addProjectToUser } from '@/operations/user.operations'
+import {
+    addProjectToUser,
+    deleteProjectToUser,
+    getExistingUserById,
+} from '@/operations/user.operations'
+import { users } from '@/services/db/schema'
 import { procedure } from '@/services/trpc'
 import { protectedProcedure } from '@/services/trpc/middleware'
-import db from '../services/db.server'
-import { z } from 'zod'
+import { eq } from 'drizzle-orm'
 import { v4 } from 'uuid'
+import { z } from 'zod'
 
 // Project Data Transfer Object
 
@@ -41,16 +46,37 @@ export default {
                 throw error // for now
             }
         }),
-    getProjectsById: procedure
+    editProject: protectedProcedure
+        .input(
+            z.object({
+                pid: z.string().length(36),
+                author_id: z.string().length(36),
+                data: ProjectSchema,
+            })
+        )
+        .mutation(async ({ input, ctx: { session } }) => {
+            if (input.author_id != session?.user?.id) {
+                throw new Error('Not authorized!') // for now
+            }
+            try {
+                return await editExistingProject(
+                    input.pid,
+                    input.data as ProjectType
+                )
+            } catch (error) {
+                throw error // for now
+            }
+        }),
+    getProjectsById: protectedProcedure
         .input(
             z.object({
                 cursor: z.string().optional(),
                 id: z.string().length(36).optional(),
             })
         )
-        .query(async ({ input }) => {
+        .query(async ({ input, ctx: { session } }) => {
             const projects = (await getExistingProjectsByUid(
-                input.id,
+                session?.user?.id!,
                 input.cursor
             )) as ProjectType[] // Database Abstraction
 
@@ -118,6 +144,16 @@ export default {
                 return !!(await addProjectToUser(uid, pid))
 
             return true // User not found or already follows
+        }),
+    unfollowProject: protectedProcedure
+        .input(
+            z.object({
+                pid: z.string().length(36),
+                uid: z.string().length(36),
+            })
+        )
+        .mutation(async ({ input: { pid, uid } }) => {
+            return !!(await deleteProjectToUser(pid, uid))
         }),
     isFollowProject: protectedProcedure
         .input(

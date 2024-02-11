@@ -11,28 +11,6 @@ import { redirect } from 'next/navigation'
 import ProjectDashboard from './_components/ProjectDashboard'
 import UserSectionComponent from './_components/UserSection'
 
-// Change later
-async function fetchUserData(uid: string) {
-    let results, e
-    try {
-        results = await Promise.all([
-            getBio(),
-            getRepos(),
-            getUserById() as Promise<UserType>,
-            getProjectsByIdServer({
-                id: uid,
-            }),
-            getAggregatedSupports(),
-        ])
-        e = null
-    } catch (error) {
-        results = [...Array(5).fill(undefined)]
-        e = error
-    }
-
-    return [...results, e] as const // Error last
-}
-
 export default async function DashboardComponent() {
     const session = await useAsyncAuth()
 
@@ -40,18 +18,17 @@ export default async function DashboardComponent() {
         redirect('/auth/github')
     }
 
-    const [
-        bio,
-        repos,
-        user,
-        userProjects,
-        aggregatedSupports,
-        error,
-    ] = await fetchUserData(session.user?.id!)
-
-    if (error) {
-        // Handle
-    }
+    // Change ??
+    const [bio, repos, user, userProjects, aggregatedSupports] =
+        await Promise.all([
+            getBio(),
+            getRepos(),
+            getUserById() as Promise<UserType>,
+            getProjectsByIdServer({
+                id: session.user?.id!,
+            }),
+            getAggregatedSupports(),
+        ])
 
     return (
         <div className="container h-full w-full flex justify-center items-center p-10">

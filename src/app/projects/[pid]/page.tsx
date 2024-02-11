@@ -16,7 +16,7 @@ const isFollowedInitial = async (
     session: Session | null
 ) => {
     if (!session || !session.user) return false
-    return isFollowProject({ pid, uid: session.user.id })
+    return await isFollowProject({ pid, uid: session.user.id })
 }
 
 // Abstract into Components

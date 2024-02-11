@@ -1,35 +1,24 @@
 'use client'
 
-import React, {
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useRef,
-} from 'react'
-import { createPortal, useFormState } from 'react-dom'
+import React, { useEffect } from 'react'
+import { useFormState } from 'react-dom'
 import { Stage } from '@/models/Project/types'
 import { PlusIcon, X } from 'lucide-react'
 import { UserRepo } from '@/services/octokit/types'
 import createProjectAction from '@/app/_actions/create-project-action'
+import { BaseModalContentParams } from './ModalLayout'
 
-type ModalLayoutParams = {
-    show: boolean
+type ModalContentParams = BaseModalContentParams & {
     repos: UserRepo[] | null
-    setShow: Dispatch<SetStateAction<boolean>>
-}
-
-type ModalContentParams = {
-    repos: UserRepo[] | null
-    setShow: Dispatch<SetStateAction<boolean>>
 }
 
 // Structure !!!
 // Improve !!!
 
-const CreateProjectModal = ({
+export default function CreateProjectModal({
     setShow,
     repos,
-}: ModalContentParams) => {
+}: ModalContentParams) {
     const [state, dispatch] = useFormState(createProjectAction, null)
     const handleClose = () => setShow(false)
 
@@ -185,25 +174,4 @@ const CreateProjectModal = ({
             </div>
         </div>
     )
-}
-
-// Handles interaction and rendering
-// Make reusable
-
-export default function ModalLayout({
-    show,
-    setShow,
-    repos,
-}: ModalLayoutParams) {
-    const ref = useRef<Element | null>(null)
-    useEffect(() => {
-        // "document" undefined before rendering
-        ref.current = document.getElementById('modal')
-    }, [])
-    return show && ref.current
-        ? createPortal(
-              <CreateProjectModal setShow={setShow} repos={repos} />,
-              ref.current
-          )
-        : null
 }

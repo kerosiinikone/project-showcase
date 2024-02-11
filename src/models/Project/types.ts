@@ -16,3 +16,9 @@ export type ProjectType = SchemaProject & {
 export type ProjectWithUser = ProjectType & {
     author: UserType
 }
+
+export type SupportedProjectType = {
+    name: string
+    image?: string
+    id: string
+}

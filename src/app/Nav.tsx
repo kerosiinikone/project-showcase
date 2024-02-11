@@ -6,9 +6,10 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useFormState } from 'react-dom'
-import CreateModalPortal from '../components/CreateProjectModal'
+import CreateProjectModal from '../components/CreateProjectModal'
 import { signInGithub, signOutGithub } from './_actions/auth-action'
 import fetchUserRepos from './_actions/fetch-user-repos-action'
+import ModalLayout from '@/components/ModalLayout'
 
 type NavItemLayoutProps = {
     title: string
@@ -45,11 +46,10 @@ export default function SideNavLayout() {
 
     return (
         <>
-            <CreateModalPortal
-                show={show}
-                setShow={setShow}
-                repos={state}
-            />
+            <ModalLayout show={show}>
+                <CreateProjectModal setShow={setShow} repos={state} />
+            </ModalLayout>
+
             <div
                 id="default-sidebar"
                 className="top-0 left-0 z-40 h-screen bg-slate-50 font-medium border-r-2 
@@ -161,6 +161,7 @@ const CreateProjectButton = ({
     fetch: (payload: FormData) => void
 }) => {
     // Fetch repos from GithubApp "on the server"
+    // Cache also
 
     return (
         <div id="open-modal-form">

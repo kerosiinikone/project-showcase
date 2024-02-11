@@ -16,11 +16,9 @@ const getProjectsById = async (
     formData: FormData
 ) => {
     const cursor = formData.get('nextCursor') as string
-    const id = formData.get('uid') as string
 
     try {
         const data = await getProjectsByIdServer({
-            id,
             cursor: cursor ? cursor : undefined,
         })
 

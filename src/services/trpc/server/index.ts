@@ -2,8 +2,12 @@ import 'server-only'
 
 import { appRouter } from '../router'
 
+// Naming consistency !!!
+
 export const {
     project: {
+        editProject,
+        unfollowProject,
         getProjects,
         followProject,
         isFollowProject,
@@ -13,6 +17,7 @@ export const {
         createProject: createProjectServer,
     },
     user: {
+        getSupportedProjects,
         getAggregatedSupports,
         getUserRepos: getRepos,
         getGithubUserBio: getBio,

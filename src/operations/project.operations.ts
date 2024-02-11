@@ -11,7 +11,7 @@ type SingleProjecParams = {
     joinUser: boolean
 }
 
-const LIMIT = 9 // Limit search results
+export const LIMIT = 9 // Limit search results
 
 // Separate data access logic
 
@@ -32,6 +32,18 @@ export async function createNewProject(newProject: ProjectType) {
         .insert(projects)
         .values(newProject)
         .returning()
+        .then((res) => res[0] ?? null)
+}
+
+// Make a separate type later for edit input
+export async function editExistingProject(
+    pid: string,
+    data: ProjectType
+) {
+    return await db
+        .update(projects)
+        .set(data)
+        .where(eq(projects.id, pid))
         .then((res) => res[0] ?? null)
 }
 

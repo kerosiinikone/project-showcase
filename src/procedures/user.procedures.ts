@@ -1,14 +1,17 @@
 import { UserSchema } from '@/models/User/model'
 import { UserType } from '@/models/User/types'
 import {
+    LIMIT,
     createNewUser,
-    getAggregatedSupportUser,
+    getAggregatedSupportCount,
     getExistingUserById,
+    getSupportedProjectsById,
 } from '@/operations/user.operations'
 import { GithubAccountDBAdapter } from '@/services/auth'
 import GithubApp from '@/services/octokit'
 import { UserRepo } from '@/services/octokit/types'
 import { protectedProcedure } from '@/services/trpc/middleware'
+import { z } from 'zod'
 
 export default {
     createUserAction: protectedProcedure
@@ -27,9 +30,23 @@ export default {
     ),
     getAggregatedSupports: protectedProcedure.query(
         async ({ ctx: { session } }) => {
-            return await getAggregatedSupportUser(session?.user?.id!)
+            return await getAggregatedSupportCount(session?.user?.id!)
         }
     ),
+    getSupportedProjects: protectedProcedure
+        .input(z.string().optional())
+        .query(async ({ ctx: { session }, input }) => {
+            const projects = await getSupportedProjectsById(
+                session?.user?.id!,
+                input
+            )
+            return {
+                data: projects,
+                nextCursor: projects.length
+                    ? projects[projects.length - 1].id // Risky
+                    : null,
+            }
+        }),
     getUserRepos: protectedProcedure.query(
         async ({ ctx: { session } }) => {
             // Instead of creating a GithubApp instance every time a user click on the button,

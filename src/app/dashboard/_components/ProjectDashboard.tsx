@@ -21,7 +21,6 @@ interface ProjectDashboardProps {
 export default function ProjectDashboard({
     repos,
     projects,
-    session,
 }: ProjectDashboardProps) {
     const formRef = useRef<HTMLFormElement | null>(null)
     const initialNextCursor = projects.length
@@ -67,13 +66,6 @@ export default function ProjectDashboard({
                         initialNextCursor ??
                         undefined
                     }
-                />
-                <input
-                    hidden
-                    id="uid"
-                    readOnly
-                    name="uid"
-                    value={session.user?.id}
                 />
             </form>
             <div className="flex flex-col justify-center items-center rounded-lg h-full w-full font-medium bg-gray-100 mr-5">

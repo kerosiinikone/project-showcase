@@ -6,16 +6,16 @@ import {
     users,
     usersToProjects,
 } from '@/services/db/schema'
-import { count, eq, sql } from 'drizzle-orm'
+import { and, count, eq } from 'drizzle-orm'
 import db from '../services/db.server'
+import { withCursorPagination } from 'drizzle-pagination'
+import { ProjectType } from '@/models/Project/types'
+
+export const LIMIT = 9
 
 export async function createNewUser(newUser: UserType) {
     return await db.insert(users).values(newUser).returning()
 }
-
-// Move elsewhere -> maybe a better way to achieve?
-// Change uuid to text on schema id fields or cast id's as uuid
-// Add to Supported
 
 export async function addProjectToUser(id: string, pid: string) {
     return await db
@@ -24,6 +24,19 @@ export async function addProjectToUser(id: string, pid: string) {
             user_id: id,
             project_id: pid,
         })
+        .returning()
+        .then((res) => res[0] ?? null)
+}
+
+export async function deleteProjectToUser(id: string, pid: string) {
+    return await db
+        .delete(usersToProjects)
+        .where(
+            and(
+                eq(usersToProjects.project_id, pid),
+                eq(usersToProjects.user_id, id)
+            )
+        )
         .returning()
         .then((res) => res[0] ?? null)
 }
@@ -38,7 +51,36 @@ export async function getExistingUserById(id: string) {
     })
 }
 
-export async function getAggregatedSupportUser(id: string) {
+export async function getSupportedProjectsById(
+    uid?: string,
+    cursor?: string
+) {
+    return await Promise.all(
+        (
+            await db.query.usersToProjects.findMany(
+                withCursorPagination({
+                    where: uid
+                        ? eq(usersToProjects.user_id, uid)
+                        : undefined,
+                    limit: LIMIT,
+                    cursors: [
+                        [
+                            usersToProjects.project_id, // Fix this
+                            'desc',
+                            cursor ? cursor : undefined,
+                        ],
+                    ],
+                })
+            )
+        ).map(async (project) => {
+            return (await db.query.projects.findFirst({
+                where: eq(projects.id, project.project_id),
+            })) as ProjectType
+        })
+    )
+}
+
+export async function getAggregatedSupportCount(id: string) {
     return await db
         .select({ value: count() })
         .from(projects)
