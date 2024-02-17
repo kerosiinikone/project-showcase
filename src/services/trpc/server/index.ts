@@ -19,6 +19,7 @@ export const {
     user: {
         getSupportedProjects,
         getAggregatedSupports,
+        getAggregatedSupportCount,
         getUserRepos: getRepos,
         getGithubUserBio: getBio,
         getExistingUserAction: getUserById,

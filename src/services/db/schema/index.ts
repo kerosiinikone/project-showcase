@@ -8,6 +8,7 @@ import {
     uniqueIndex,
     index,
     primaryKey,
+    serial,
 } from 'drizzle-orm/pg-core'
 import type { AdapterAccount } from '@auth/core/adapters'
 import { Stage } from '@/models/Project/types'
@@ -27,11 +28,6 @@ export const users = pgTable(
     {
         id: text('id').primaryKey().notNull(),
         name: text('name'),
-        // own_projects: text('own_projects').array().notNull(),
-        // supported_projects: text('supported_projects')
-        //     .array()
-        //     .notNull(),
-        //.references(() => projects.id, { onDelete: 'cascade' }),
         email: varchar('email', { length: 191 }).notNull(),
         emailVerified: timestamp('emailVerified'),
         image: varchar('image', { length: 191 }),
@@ -58,7 +54,8 @@ export const userProjectRelations = relations(users, ({ many }) => ({
 export const projects = pgTable(
     'project',
     {
-        id: text('id').primaryKey(),
+        id: serial('id').primaryKey().notNull(),
+        alt_id: text('alt_id').notNull(),
         name: text('name').notNull(),
         description: text('description'),
         image: text('image'),
@@ -100,12 +97,14 @@ export const usersToProjects = pgTable(
     {
         user_id: text('user_id')
             .notNull()
-            .references(() => users.id, { onDelete: 'set null' }), // ???
-        project_id: text('project_id')
+            .references(() => users.id, { onDelete: 'cascade' }), // ???
+        project_id: integer('project_id')
             .notNull()
-            .references(() => projects.id, { onDelete: 'set null' }), // ???
+            .references(() => projects.id, { onDelete: 'cascade' }), // ???
     },
     (t) => ({
+        userIdx: index('user_idx').on(t.user_id),
+        projectIdx: index('project_idx').on(t.project_id),
         pk: primaryKey(t.user_id, t.project_id),
     })
 )

@@ -29,7 +29,7 @@ const SearchBarComponent = ({ handleSearch }: SearchBarProps) => {
     )
 }
 
-const SearchButton = (props: HTMLProps<HTMLButtonElement>) => (
+const SearchButton = (_: HTMLProps<HTMLButtonElement>) => (
     <button
         type="submit"
         className="cursor-pointer inline-flex py-2.5 px-3 ms-2 text-sm font-medium justify-center items-center bg-white border-2 border-blue-500 rounded-lg 

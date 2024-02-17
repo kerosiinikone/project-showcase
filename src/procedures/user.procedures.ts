@@ -1,9 +1,10 @@
+import { ProjectTypeWithId } from '@/models/Project/types'
 import { UserSchema } from '@/models/User/model'
 import { UserType } from '@/models/User/types'
 import {
-    LIMIT,
     createNewUser,
     getAggregatedSupportCount,
+    getAggregatedSupports,
     getExistingUserById,
     getSupportedProjectsById,
 } from '@/operations/user.operations'
@@ -28,11 +29,25 @@ export default {
             return await getExistingUserById(session?.user?.id!)
         }
     ),
-    getAggregatedSupports: protectedProcedure.query(
+    getAggregatedSupportCount: protectedProcedure.query(
         async ({ ctx: { session } }) => {
             return await getAggregatedSupportCount(session?.user?.id!)
         }
     ),
+    getAggregatedSupportsList: protectedProcedure
+        .input(z.number())
+        .query(async ({ ctx: { session }, input }) => {
+            const projects = await getAggregatedSupports(
+                session?.user?.id!,
+                input
+            )
+            return {
+                data: projects,
+                nextCursor: projects.length
+                    ? projects[projects.length - 1]?.id!
+                    : null,
+            }
+        }),
     getSupportedProjects: protectedProcedure
         .input(z.string().optional())
         .query(async ({ ctx: { session }, input }) => {
@@ -43,7 +58,7 @@ export default {
             return {
                 data: projects,
                 nextCursor: projects.length
-                    ? projects[projects.length - 1].id // Risky
+                    ? projects[projects.length - 1]?.id
                     : null,
             }
         }),

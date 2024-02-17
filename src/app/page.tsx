@@ -2,11 +2,9 @@ import { getProjects } from '@/services/trpc/server'
 import ProjectContainer from './_components/ProjectContainer'
 import { ProjectType } from '@/models/Project/types'
 
-// SSR vs. tRPC Caller ???
-// Proper Loader -> Skeleton ?
+// Tags from URL params
 
 export default async function MainComponent() {
-    // Initial -> make lastQuery optional
     const { data: initial, nextCursor } = await getProjects({})
 
     return (

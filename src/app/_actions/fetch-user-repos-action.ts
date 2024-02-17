@@ -7,7 +7,7 @@ const fetchUserRepos = async (_: any, __: FormData) => {
         const repos = await getRepos()
         return repos
     } catch (error) {
-        throw null // For now
+        return null // For now
     }
 }
 

@@ -1,7 +1,7 @@
 import { UserType } from '@/models/User/types'
 import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import {
-    getAggregatedSupports,
+    getAggregatedSupportCount,
     getBio,
     getProjectsByIdServer,
     getRepos,
@@ -24,10 +24,8 @@ export default async function DashboardComponent() {
             getBio(),
             getRepos(),
             getUserById() as Promise<UserType>,
-            getProjectsByIdServer({
-                id: session.user?.id!,
-            }),
-            getAggregatedSupports(),
+            getProjectsByIdServer(),
+            getAggregatedSupportCount(),
         ])
 
     return (

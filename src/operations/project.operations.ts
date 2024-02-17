@@ -7,7 +7,7 @@ import { withCursorPagination } from 'drizzle-pagination'
 import db from '../services/db.server'
 
 type SingleProjecParams = {
-    id: string
+    id: number
     joinUser: boolean
 }
 
@@ -16,7 +16,7 @@ export const LIMIT = 9 // Limit search results
 // Separate data access logic
 
 export async function hasProjectUserSupport(
-    pid: string,
+    pid: number,
     uid: string
 ) {
     return !!(await db?.query.usersToProjects.findFirst({
@@ -37,7 +37,7 @@ export async function createNewProject(newProject: ProjectType) {
 
 // Make a separate type later for edit input
 export async function editExistingProject(
-    pid: string,
+    pid: number,
     data: ProjectType
 ) {
     return await db
@@ -48,8 +48,6 @@ export async function editExistingProject(
 }
 
 // Get user repos from user operations with join on "own_projects"
-
-// Refactor -> change all to db.findMany or .findOne
 
 export async function getExistingProjectsByUid(
     uid?: string,
@@ -108,7 +106,7 @@ export async function getExistingProjectById({
     })
 }
 
-export async function deleteExistingProjectById(pid: string) {
+export async function deleteExistingProjectById(pid: number) {
     return await db
         .delete(projects)
         .where(eq(projects.id, pid))

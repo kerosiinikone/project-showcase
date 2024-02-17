@@ -3,15 +3,12 @@
 import { unfollowProject } from '@/services/trpc/server'
 
 export default async function unsupportProjectAction(
-    _: any,
-    formData: FormData
+    pid: number,
+    _: FormData
 ) {
     try {
-        return await unfollowProject({
-            pid: formData.get('pid') as string,
-            uid: formData.get('uid') as string,
-        })
+        await unfollowProject(pid)
     } catch (error) {
-        return false // For now
+        throw new Error("Can't unsupport")
     }
 }

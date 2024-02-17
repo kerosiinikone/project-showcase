@@ -1,24 +1,26 @@
 'use server'
 
 import { ProjectTypeWithId } from '@/models/Project/types'
-import { getSupportedProjects } from '@/services/trpc/server'
+import { getAggregatedSupports } from '@/services/trpc/server'
 
 // Refactor
 
-type UserSupportsReturnType = {
+type ASupportsReturnType = {
     data: ProjectTypeWithId[] // Only fields that are required -> refactor
     nextCursor?: number
     error?: unknown
 }
 
-const getSupportedList = async (
-    prev: UserSupportsReturnType,
+const getAggreagtedSupportsList = async (
+    prev: ASupportsReturnType,
     formData: FormData
 ) => {
     const cursor = formData.get('nextCursor') as string
 
     try {
-        const data = await getSupportedProjects(cursor)
+        let parsedCursor = cursor ? parseInt(cursor) : 0
+
+        const data = await getAggregatedSupports(parsedCursor)
 
         prev.nextCursor = data.nextCursor
             ? data.nextCursor
@@ -31,10 +33,10 @@ const getSupportedList = async (
             ]
         }
 
-        return prev as UserSupportsReturnType
+        return prev as ASupportsReturnType
     } catch (error) {
         return { data: [], error } // For now
     }
 }
 
-export default getSupportedList
+export default getAggreagtedSupportsList

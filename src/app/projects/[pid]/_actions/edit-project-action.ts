@@ -11,10 +11,15 @@ export interface EditProjectParams {
     image: string | null
 }
 
-export default async function editProjectAction(formData: FormData) {
-    const pid = formData.get('pid') as string
-    const author_id = formData.get('author_id') as string
-
+export default async function editProjectAction(
+    props: {
+        pid: number
+        author_id: string
+        error?: string
+        done?: boolean
+    },
+    formData: FormData
+) {
     const projectParams: EditProjectParams = {
         name: formData.get('name') as string,
         stage: formData.get('stage') as Stage,
@@ -22,13 +27,25 @@ export default async function editProjectAction(formData: FormData) {
         github_url: null, // For now
         image: null, // For now
     }
+
     try {
         await editProject({
-            pid,
-            author_id,
+            pid: props.pid,
+            author_id: props.author_id,
             data: projectParams,
         })
+
+        return {
+            pid: props.pid,
+            author_id: props.author_id,
+            done: true,
+        }
     } catch (error) {
-        return { error } // For now
+        return {
+            pid: props.pid,
+            author_id: props.author_id,
+            done: true,
+            error: 'Something went wrong!',
+        } // For now
     }
 }

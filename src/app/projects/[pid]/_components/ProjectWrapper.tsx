@@ -1,64 +1,93 @@
 'use client'
 
 import { ProjectWithUser, Stage } from '@/models/Project/types'
-import { Github, Pencil, UserPlus } from 'lucide-react'
+import { Delete, Github, Pencil, UserPlus } from 'lucide-react'
 import { Session } from 'next-auth/types'
 import { useFormState } from 'react-dom'
 import supportProjectAction from '../_actions/follow-project-action'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import editProjectAction from '../_actions/edit-project-action'
 import unsupportProjectAction from '../_actions/unfollow-project-action'
+import deleteProjectAction from '../_actions/delete-project-action'
+import { useRouter } from 'next/navigation'
 
 interface ProjectWrapperProps {
     session: Session | null
     isFollowed: boolean
-    project: ProjectWithUser
+    project: ProjectWithUser & { id: number }
 }
 
 interface SupportButtonProps {
     uid: string
-    pid: string
-    isFollowed: boolean
-    follow: (payload: FormData) => void
-    unfollow: (payload: FormData) => void
+    pid: number
+    unsupportWithParams: (payload: FormData) => void
+    supportWithParams: (payload: FormData) => void
     setIsFollowedState: Dispatch<SetStateAction<boolean>>
+    isFollowed: boolean
 }
+
+// Loading state while edit is submitting -> useFormStatus
 
 export default function ProjectWrapper({
     session,
-    project,
+    project: {
+        name,
+        stage,
+        author,
+        id,
+        description,
+        github_url,
+        author_id,
+    },
     isFollowed,
 }: ProjectWrapperProps) {
-    // Get the "isFollowed" from server later
-    // Add "unsupport" logic
     const [isEdit, setIsEdit] = useState<boolean>(false)
-    const { name, stage, author, id, description, github_url } =
-        project
+    const [isDelete, setIsDelete] = useState<boolean>(false)
     const [isFollowedState, setIsFollowedState] =
         useState<boolean>(isFollowed)
+    const router = useRouter()
 
-    const [_, follow] = useFormState(supportProjectAction, null)
-    const [__, unfollow] = useFormState(unsupportProjectAction, null)
+    const [descriptionInput, setDescriptionInput] = useState<string>(
+        description ?? ''
+    )
+    const [nameInput, setNameInput] = useState<string>(name ?? '')
+    const [stageInput, setStageInput] = useState<string>(stage ?? '')
+
+    const [editState, editAction] = useFormState(editProjectAction, {
+        done: false,
+        pid: id,
+        author_id,
+    })
+
+    const [deleteState, deleteAction] = useFormState(
+        deleteProjectAction,
+        {
+            done: false,
+            pid: id,
+            author_id,
+        }
+    )
+
+    const unsupportWithParams = unsupportProjectAction.bind(null, id)
+    const supportWithParams = supportProjectAction.bind(null, id)
+
+    useEffect(() => {
+        if (editState.done && !editState?.error) {
+            setIsEdit(false)
+            router.refresh()
+        }
+    }, [editState])
+
+    useEffect(() => {
+        if (deleteState.done && !deleteState?.error) {
+            setIsDelete(false)
+            router.push('/dashboard')
+        }
+    }, [deleteState])
 
     return (
         <div className="flex flex-col justify-start h-full w-full rounded-xl bg-white border-stone-100 border-2 shadow-lg">
-            <form
-                id="edit-form"
-                className="flex flex-col justify-start h-full w-full"
-                action={editProjectAction}
-            >
-                <input
-                    name="pid"
-                    value={project.id!}
-                    readOnly
-                    hidden
-                />
-                <input
-                    name="author_id"
-                    value={project.author_id!}
-                    readOnly
-                    hidden
-                />
+            <div className="flex flex-col justify-start h-full w-full">
                 <div className="flex flex-row w-full justify-between p-10">
                     <div className="flex flex-col w-2/3">
                         {!isEdit ? (
@@ -66,7 +95,13 @@ export default function ProjectWrapper({
                                 {name}
                             </h1>
                         ) : (
-                            <input name="name" defaultValue={name} />
+                            <input
+                                name="name"
+                                onChange={(e) => {
+                                    setNameInput(e.target.value)
+                                }}
+                                value={nameInput}
+                            />
                         )}
 
                         {!isEdit ? (
@@ -75,7 +110,10 @@ export default function ProjectWrapper({
                             </h2>
                         ) : (
                             <select
-                                defaultValue={stage}
+                                onChange={(e) => {
+                                    setStageInput(e.target.value)
+                                }}
+                                value={stageInput}
                                 id="stage"
                                 name="stage"
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 mb-2 w-full"
@@ -100,12 +138,56 @@ export default function ProjectWrapper({
                     </div>
                     {session && (
                         <div className="flex flex-row gap-2 w-fit justify-center items-center">
-                            {session.user?.id == author.id && (
-                                <EditButton
-                                    setIsEdit={setIsEdit}
-                                    isEdit={isEdit}
+                            <form
+                                action={
+                                    isDelete
+                                        ? deleteAction
+                                        : undefined
+                                }
+                                className="flex flex-row gap-2 w-fit justify-center items-center"
+                            >
+                                {session.user?.id == author.id && (
+                                    <DeleteButton
+                                        setIsDelete={setIsDelete}
+                                        isDelete={isDelete}
+                                    />
+                                )}
+                            </form>
+                        </div>
+                    )}
+                    {session && (
+                        <div className="flex flex-row gap-2 w-fit justify-center items-center">
+                            <form
+                                action={
+                                    isEdit ? editAction : undefined
+                                }
+                                className="flex flex-row gap-2 w-fit justify-center items-center"
+                            >
+                                {session.user?.id == author.id && (
+                                    <EditButton
+                                        setIsEdit={setIsEdit}
+                                        isEdit={isEdit}
+                                    />
+                                )}
+                                <input
+                                    name="stage"
+                                    value={stageInput}
+                                    hidden
+                                    readOnly
                                 />
-                            )}
+                                <input
+                                    name="name"
+                                    value={nameInput}
+                                    hidden
+                                    readOnly
+                                />
+                                <input
+                                    name="description"
+                                    value={descriptionInput}
+                                    hidden
+                                    readOnly
+                                />
+                            </form>
                         </div>
                     )}
                 </div>
@@ -117,7 +199,10 @@ export default function ProjectWrapper({
                         </h2>
                     ) : (
                         <textarea
-                            defaultValue={description ?? undefined}
+                            onChange={(e) => {
+                                setDescriptionInput(e.target.value)
+                            }}
+                            value={descriptionInput}
                             className="h-32 max-h-40 min-h-20 bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                     rounded-lg block w-full p-2.5 "
                             placeholder="Type a project description"
@@ -125,7 +210,7 @@ export default function ProjectWrapper({
                         />
                     )}
                 </div>
-            </form>
+            </div>
             <div className="flex flex-row justify-between w-full p-10 border-t-2 border-stone-100">
                 <div className="flex flex-col w-2/3">
                     <span className="font-medium text-2xl">
@@ -150,8 +235,8 @@ export default function ProjectWrapper({
                     <div className="flex flex-row gap-2 w-fit justify-center items-center">
                         <SupportButton
                             isFollowed={isFollowedState}
-                            follow={follow}
-                            unfollow={unfollow}
+                            unsupportWithParams={unsupportWithParams}
+                            supportWithParams={supportWithParams}
                             setIsFollowedState={setIsFollowedState}
                             pid={id}
                             uid={session.user!.id}
@@ -167,18 +252,24 @@ const SupportButton = ({
     pid,
     uid,
     isFollowed,
-    follow,
-    unfollow,
     setIsFollowedState,
+    unsupportWithParams,
+    supportWithParams,
 }: SupportButtonProps) => {
     return (
-        <form action={isFollowed ? unfollow : follow}>
+        <form
+            onSubmit={() => {
+                setIsFollowedState(!isFollowed)
+            }}
+            action={
+                isFollowed ? unsupportWithParams : supportWithParams
+            }
+        >
             <div className="flex justiyf-center items-center">
                 <button
                     type="submit"
                     className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-white border-2 border-blue-500 rounded-lg 
             group hover:bg-blue-100 text-blue-500 transition"
-                    onClick={() => setIsFollowedState(!isFollowed)}
                 >
                     <UserPlus
                         className="w-5 h-5 me-2"
@@ -195,8 +286,6 @@ const SupportButton = ({
                         : 'Unsupport Project'}
                 </button>
             </div>
-            <input hidden id="pid" name="pid" value={pid} readOnly />
-            <input hidden id="uid" name="uid" value={uid} readOnly />
         </form>
     )
 }
@@ -213,7 +302,7 @@ const EditButton = ({
     return (
         <div>
             {!isEdit ? (
-                <div className="flex justiyf-center items-center">
+                <div className="flex justify-center items-center">
                     <button
                         onClick={(e) => {
                             e.preventDefault()
@@ -253,6 +342,65 @@ const EditButton = ({
                             viewBox="0 0 22 24"
                         />
                         Submit
+                    </button>
+                </div>
+            )}
+        </div>
+    )
+}
+
+const DeleteButton = ({
+    setIsDelete,
+    isDelete,
+}: {
+    isDelete: boolean
+    setIsDelete: Dispatch<SetStateAction<boolean>>
+}) => {
+    // Opens a modal to edit the project -> redirects to the project page
+
+    return (
+        <div>
+            {!isDelete ? (
+                <div className="flex justify-center items-center">
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault()
+                            setIsDelete(true)
+                        }}
+                        className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-white border-2 border-red-500 rounded-lg 
+            group hover:bg-red-100 text-red-500 transition"
+                    >
+                        <Delete
+                            className="w-5 h-5 me-2"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            aria-hidden="true"
+                            fill="none"
+                            viewBox="0 0 22 24"
+                        />
+                        Delete
+                    </button>
+                </div>
+            ) : (
+                <div className="flex justify-center items-center">
+                    <button
+                        type="submit"
+                        className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-red-500 border-2 border-red-500 rounded-lg 
+            hover:bg-red-600 text-white transition"
+                    >
+                        <Pencil
+                            className="w-5 h-5 me-2"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            aria-hidden="true"
+                            fill="none"
+                            viewBox="0 0 22 24"
+                        />
+                        Confirm
                     </button>
                 </div>
             )}

@@ -1,3 +1,4 @@
+import { v4 } from 'uuid'
 import { ProjectType, Stage } from './types'
 import z from 'zod'
 
@@ -5,7 +6,7 @@ const DEFAULT_DESCRIPTION = 'A Project'
 const GITHUB_PREFIX = 'https://github.com/'
 
 export const ProjectSchema = z.object({
-    name: z.string().min(5).max(191),
+    name: z.string(),
     stage: z.nativeEnum(Stage),
     github_url: z.string().max(2000).nullable(),
     description: z.string().nullable(),
@@ -14,17 +15,16 @@ export const ProjectSchema = z.object({
 
 export class Project implements ProjectType {
     description: string | null
-    id: string
     name: string
     created_at: Date
     updated_at: Date
+    alt_id: string
     image: string | null
     github_url: string | null
     stage: Stage
     author_id: string
 
     constructor({
-        id,
         name,
         image = null,
         description,
@@ -35,7 +35,7 @@ export class Project implements ProjectType {
         this.name = name
         this.image = image
         this.github_url = github_url
-        this.id = id
+        this.alt_id = v4()
         this.created_at = new Date()
         this.updated_at = new Date()
         this.description = description || DEFAULT_DESCRIPTION

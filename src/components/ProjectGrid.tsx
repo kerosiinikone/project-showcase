@@ -8,8 +8,6 @@ interface ProjectGridProps {
     onBottom: (e: any) => void
 }
 
-// Fix card sizes
-
 export default function ProjectGrid({
     projects,
     onBottom,

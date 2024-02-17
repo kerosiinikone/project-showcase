@@ -9,11 +9,26 @@ export enum Stage {
     PRODUCTION = 'PRODUCTION',
 }
 
-export type ProjectType = SchemaProject & {
+// For now -> change to implement SchemaProject from schema.ts
+
+export type ProjectType = {
+    description: string | null
+    name: string
+    alt_id: string
+    stage: Stage
+    github_url: string | null
+    image: string | null
+    author_id: string
+    created_at: Date
+    updated_at: Date
     supporters?: any[] // Fix later
 }
 
-export type ProjectWithUser = ProjectType & {
+export type ProjectTypeWithId = ProjectType & {
+    id: number
+}
+
+export type ProjectWithUser = ProjectTypeWithId & {
     author: UserType
 }
 

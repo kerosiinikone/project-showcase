@@ -1,6 +1,7 @@
 import { UserType } from '@/models/User/types'
 import { Github } from 'lucide-react'
 import UserSupportCount from './modal-list/UserSupportCount'
+import AggregatedSupports from './modal-list/AggregatedSupports'
 
 interface UserSectionProps {
     image?: string | null
@@ -57,10 +58,7 @@ export default function UserSectionComponent({
                 id="follower-projects-info"
                 className="grid grid-flow-col gap-10 grid-cols-3 w-full mx-4 my-2 justify-center justify-items-center items-center"
             >
-                <div className="col-span-1 flex flex-col px-10 py-2 w-fit items-center justify-center cursor-pointer rounded-lg hover:bg-slate-100 transition">
-                    <h1 className="font-medium">Supports</h1>
-                    <h2>{aggregatedSupports}</h2>
-                </div>
+                <AggregatedSupports supports={aggregatedSupports} />
                 <div className="col-span-1 flex flex-col px-10 py-2 w-fit items-center justify-center cursor-pointer rounded-lg hover:bg-slate-100 transition">
                     <h1 className="font-medium">Own Projects</h1>
                     <h2>{user?.own_projects?.length}</h2>

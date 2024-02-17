@@ -3,15 +3,12 @@
 import { followProject } from '@/services/trpc/server'
 
 export default async function supportProjectAction(
-    _: any,
-    formData: FormData
+    pid: number,
+    _: FormData
 ) {
     try {
-        return await followProject({
-            pid: formData.get('pid') as string,
-            uid: formData.get('uid') as string,
-        })
+        await followProject(pid)
     } catch (error) {
-        return false // For now
+        throw new Error("Can't support")
     }
 }

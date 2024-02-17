@@ -1,13 +1,13 @@
 'use client'
 
 import { BaseModalContentParams } from '@/components/ModalLayout'
+import { ProjectTypeWithId } from '@/models/Project/types'
 import { Github, X } from 'lucide-react'
-import { Dispatch, SetStateAction, SyntheticEvent } from 'react'
-import { ProjectType } from '@/models/Project/types'
+import { SyntheticEvent } from 'react'
 
 type ModalContentParams = BaseModalContentParams & {
     title?: string
-    content: ProjectType[]
+    content: ProjectTypeWithId[]
     onBottom: (e: SyntheticEvent) => void
 }
 
@@ -77,7 +77,9 @@ export default function CreateDashboardModal({
                                                         {project.name}
                                                     </h1>
                                                     <h3 className="text-md text-gray-300 truncate">
-                                                        {project.id}
+                                                        {
+                                                            project.alt_id
+                                                        }
                                                     </h3>
                                                 </div>
                                             </div>

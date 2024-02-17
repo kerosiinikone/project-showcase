@@ -11,9 +11,6 @@ interface ProjectContainerProps {
     initialNextCursor: string | null
 }
 
-// Instead of making hidden inputs, it is also possible to
-// keep the values in useState and append them to the FormData object
-
 export default function ProjectContainer({
     initialProjects,
     initialNextCursor,

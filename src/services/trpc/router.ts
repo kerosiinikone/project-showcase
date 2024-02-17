@@ -4,7 +4,8 @@ import projectActions from '@/procedures/project.procedures'
 
 const user = router({
     getSupportedProjects: userActions.getSupportedProjects,
-    getAggregatedSupports: userActions.getAggregatedSupports,
+    getAggregatedSupportCount: userActions.getAggregatedSupportCount,
+    getAggregatedSupports: userActions.getAggregatedSupportsList,
     createNewUserAction: userActions.createUserAction,
     getExistingUserAction: userActions.getExistingUserAction,
     getUserRepos: userActions.getUserRepos,
