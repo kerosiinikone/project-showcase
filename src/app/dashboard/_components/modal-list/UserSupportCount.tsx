@@ -5,6 +5,7 @@ import { memo, useMemo, useRef, useState } from 'react'
 import { useFormState } from 'react-dom'
 import CreateDashboardModal from '../CreateDashboardModal'
 import getSupportedList from '../../_actions/get-supported-projects-list'
+import { Github } from 'lucide-react'
 
 export interface SupportedProjectProps {
     name: string
@@ -53,10 +54,38 @@ export default function UserSupportCount({
             <ModalLayout show={show}>
                 <CreateDashboardModal
                     title="Supported Projects"
-                    onBottom={onBottom}
-                    content={supportedProjectsData}
                     setShow={setShow}
-                />
+                >
+                    <ul
+                        onScroll={onBottom}
+                        className="h-full w-full font-medium overflow-y-auto "
+                    >
+                        {supportedProjectsData.map((project) => {
+                            return (
+                                <li
+                                    key={project.id}
+                                    className="pb-4 rounded-lg my-2"
+                                >
+                                    <div className="flex flex-row justify-start items-center space-x-4">
+                                        {project.github_url && (
+                                            <Github />
+                                        )}
+                                        <div className="flex flex-col justify-start items-center">
+                                            <div className="flex flex-row justify-start items-center gap-2 w-full">
+                                                <h1 className="text-xl font-medium text-gray-900 truncate">
+                                                    {project.name}
+                                                </h1>
+                                                <h3 className="text-md text-gray-300 truncate">
+                                                    {project.alt_id}
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            )
+                        })}
+                    </ul>
+                </CreateDashboardModal>
             </ModalLayout>
             <form action={dispatch} ref={formRef}>
                 <button

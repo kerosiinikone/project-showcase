@@ -18,7 +18,6 @@ export default async function DashboardComponent() {
         redirect('/auth/github')
     }
 
-    // Change ??
     const [bio, repos, user, userProjects, aggregatedSupports] =
         await Promise.all([
             getBio(),

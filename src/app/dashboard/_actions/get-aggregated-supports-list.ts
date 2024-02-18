@@ -6,7 +6,10 @@ import { getAggregatedSupports } from '@/services/trpc/server'
 // Refactor
 
 type ASupportsReturnType = {
-    data: ProjectTypeWithId[] // Only fields that are required -> refactor
+    data: {
+        project: ProjectTypeWithId | null
+        count: number
+    }[]
     nextCursor?: number
     error?: unknown
 }
@@ -27,10 +30,7 @@ const getAggreagtedSupportsList = async (
             : undefined
 
         if (data.nextCursor) {
-            prev.data = [
-                ...prev.data,
-                ...(data.data as ProjectTypeWithId[]),
-            ]
+            prev.data = [...prev.data, ...data.data]
         }
 
         return prev as ASupportsReturnType

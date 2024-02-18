@@ -9,7 +9,10 @@ import {
 import { and, count, eq, gt } from 'drizzle-orm'
 import db from '../services/db.server'
 import { withCursorPagination } from 'drizzle-pagination'
-import { ProjectType } from '@/models/Project/types'
+import {
+    ProjectType,
+    ProjectTypeWithId,
+} from '@/models/Project/types'
 
 export const LIMIT = 9
 
@@ -53,7 +56,7 @@ export async function getExistingUserById(id: string) {
 
 export async function getSupportedProjectsById(
     uid?: string,
-    cursor?: string
+    cursor?: number
 ) {
     return await Promise.all(
         (
@@ -80,28 +83,72 @@ export async function getSupportedProjectsById(
     )
 }
 
+/*
+    SELECT p.project_name, COUNT(*) as support_count
+    FROM Projects p
+    JOIN UserToProjects utp ON p.project_id = utp.project_id
+    JOIN Users u ON utp.user_id = u.user_id
+    WHERE u.author_id = x -- Replace 'x' with the actual author_id
+    GROUP BY p.project_name;
+*/
+
 export async function getAggregatedSupports(
     id: string,
     lastCursor: number
 ) {
-    return (
-        await db
-            .select({
-                project: projects,
-            })
-            .from(projects)
-            .limit(LIMIT)
-            .where(
-                and(
-                    eq(projects.author_id, id),
-                    gt(projects.id, lastCursor)
+    return await Promise.all(
+        (
+            await db
+                .select({
+                    id: projects.id,
+                    count: count(),
+                })
+                .from(projects)
+                .rightJoin(
+                    usersToProjects,
+                    eq(projects.id, usersToProjects.project_id)
                 )
-            )
-            .rightJoin(
-                usersToProjects,
-                eq(projects.id, usersToProjects.project_id)
-            )
-    ).map((p) => p.project)
+                .rightJoin(
+                    users,
+                    eq(usersToProjects.user_id, users.id)
+                )
+                .where(
+                    and(
+                        eq(projects.author_id, id),
+                        gt(projects.id, lastCursor)
+                    )
+                )
+                .limit(LIMIT)
+                .groupBy(projects.id)
+        ).map(async (project) => {
+            const single = await db.query.projects.findFirst({
+                where: eq(projects.id, project.id!),
+            })
+            return {
+                count: project.count,
+                project: single as ProjectTypeWithId,
+            }
+        })
+    )
+
+    // return (
+    //     await db
+    //         .select({
+    //             project: projects,
+    //         })
+    //         .from(projects)
+    //         .limit(LIMIT)
+    //         .where(
+    //             and(
+    //                 eq(projects.author_id, id),
+    //                 gt(projects.id, lastCursor)
+    //             )
+    //         )
+    //         .rightJoin(
+    //             usersToProjects,
+    //             eq(projects.id, usersToProjects.project_id)
+    //         )
+    // ).map((p) => p.project)
 }
 
 export async function getAggregatedSupportCount(id: string) {

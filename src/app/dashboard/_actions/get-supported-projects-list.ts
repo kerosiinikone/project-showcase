@@ -18,7 +18,9 @@ const getSupportedList = async (
     const cursor = formData.get('nextCursor') as string
 
     try {
-        const data = await getSupportedProjects(cursor)
+        let parsedCursor = cursor ? parseInt(cursor) : 0
+
+        const data = await getSupportedProjects(parsedCursor)
 
         prev.nextCursor = data.nextCursor
             ? data.nextCursor

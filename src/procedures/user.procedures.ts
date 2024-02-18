@@ -37,19 +37,19 @@ export default {
     getAggregatedSupportsList: protectedProcedure
         .input(z.number())
         .query(async ({ ctx: { session }, input }) => {
-            const projects = await getAggregatedSupports(
+            const res = await getAggregatedSupports(
                 session?.user?.id!,
                 input
             )
             return {
-                data: projects,
-                nextCursor: projects.length
-                    ? projects[projects.length - 1]?.id!
+                data: res,
+                nextCursor: res.length
+                    ? res[res.length - 1]?.project.id
                     : null,
             }
         }),
     getSupportedProjects: protectedProcedure
-        .input(z.string().optional())
+        .input(z.number().optional())
         .query(async ({ ctx: { session }, input }) => {
             const projects = await getSupportedProjectsById(
                 session?.user?.id!,

@@ -1,14 +1,12 @@
 'use client'
 
 import { BaseModalContentParams } from '@/components/ModalLayout'
-import { ProjectTypeWithId } from '@/models/Project/types'
 import { Github, X } from 'lucide-react'
 import { SyntheticEvent } from 'react'
 
 type ModalContentParams = BaseModalContentParams & {
     title?: string
-    content: ProjectTypeWithId[]
-    onBottom: (e: SyntheticEvent) => void
+    children: React.ReactElement
 }
 
 // Loader before projects appear
@@ -16,8 +14,7 @@ type ModalContentParams = BaseModalContentParams & {
 export default function CreateDashboardModal({
     setShow,
     title,
-    content,
-    onBottom,
+    children,
 }: ModalContentParams) {
     const handleClose = () => {
         setShow(false)
@@ -57,37 +54,7 @@ export default function CreateDashboardModal({
                         id="modal-content"
                         className="flex justify-center w-full items-center h-[300px] px-6 pb-6"
                     >
-                        <ul
-                            onScroll={onBottom}
-                            className="h-full w-full font-medium overflow-y-auto "
-                        >
-                            {content.map((project) => {
-                                return (
-                                    <li
-                                        key={project.id}
-                                        className="pb-4 rounded-lg my-2"
-                                    >
-                                        <div className="flex flex-row justify-start items-center space-x-4">
-                                            {project.github_url && (
-                                                <Github />
-                                            )}
-                                            <div className="flex flex-col justify-start items-center">
-                                                <div className="flex flex-row justify-start items-center gap-2 w-full">
-                                                    <h1 className="text-xl font-medium text-gray-900 truncate">
-                                                        {project.name}
-                                                    </h1>
-                                                    <h3 className="text-md text-gray-300 truncate">
-                                                        {
-                                                            project.alt_id
-                                                        }
-                                                    </h3>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                )
-                            })}
-                        </ul>
+                        {children}
                     </div>
                 </div>
             </div>
