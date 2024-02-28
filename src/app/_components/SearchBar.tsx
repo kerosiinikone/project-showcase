@@ -1,7 +1,12 @@
 'use client'
 
 import { Search } from 'lucide-react'
-import { HTMLProps } from 'react'
+import {
+    HTMLProps,
+    InputHTMLAttributes,
+    MutableRefObject,
+    Ref,
+} from 'react'
 import { DebounceInput } from 'react-debounce-input'
 
 // Move hidden inputs to ProjectContainer

@@ -1,6 +1,8 @@
 import { ProjectType } from '@/models/Project/types'
 import { lazy } from 'react'
 
+// Fix resizing the cards
+
 const ProjectCard = lazy(() => import('./ProjectCard'))
 
 interface ProjectGridProps {
@@ -22,7 +24,7 @@ export default function ProjectGrid({
                 return (
                     <ProjectCard
                         h={projects.length > 4 ? 'h-full' : 'h-1/2'}
-                        key={p.id}
+                        key={p.alt_id}
                         project={p}
                     />
                 )

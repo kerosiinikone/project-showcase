@@ -2,10 +2,14 @@ import { getProjects } from '@/services/trpc/server'
 import ProjectContainer from './_components/ProjectContainer'
 import { ProjectType } from '@/models/Project/types'
 
-// Tags from URL params
+// Tags from URL params or search bar
 
-export default async function MainComponent() {
-    const { data: initial, nextCursor } = await getProjects({})
+export default async function MainPage({
+    searchParams,
+}: {
+    searchParams: { [key: string]: string | string[] | undefined }
+}) {
+    const { data: initial, nextCursor } = await getProjects()
 
     return (
         <div className="container h-full w-full flex justify-center items-center p-10">

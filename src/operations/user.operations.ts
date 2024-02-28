@@ -130,25 +130,6 @@ export async function getAggregatedSupports(
             }
         })
     )
-
-    // return (
-    //     await db
-    //         .select({
-    //             project: projects,
-    //         })
-    //         .from(projects)
-    //         .limit(LIMIT)
-    //         .where(
-    //             and(
-    //                 eq(projects.author_id, id),
-    //                 gt(projects.id, lastCursor)
-    //             )
-    //         )
-    //         .rightJoin(
-    //             usersToProjects,
-    //             eq(projects.id, usersToProjects.project_id)
-    //         )
-    // ).map((p) => p.project)
 }
 
 export async function getAggregatedSupportCount(id: string) {

@@ -5,6 +5,7 @@ import SearchBarComponent from './SearchBar'
 import { Suspense, useMemo, useRef } from 'react'
 import ProjectGrid from '@/components/ProjectGrid'
 import { usePagination } from '@/hooks/useSearchPagination'
+import Filters from './Filters'
 
 interface ProjectContainerProps {
     initialProjects: ProjectType[]
@@ -32,9 +33,18 @@ export default function ProjectContainer({
                 <form
                     ref={formRef}
                     action={dispatch}
-                    className="flex items-center"
+                    className="flex flex-col items-center"
                 >
-                    <SearchBarComponent handleSearch={search} />
+                    <div className="flex w-full flex-row items-center">
+                        <SearchBarComponent handleSearch={search} />
+                    </div>
+                    <div className="flex w-full flex-row items-center">
+                        <Filters
+                            initSearch={search}
+                            stage={projectsRaw.stage}
+                        />
+                    </div>
+
                     <input
                         hidden
                         readOnly

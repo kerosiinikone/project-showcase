@@ -1,5 +1,9 @@
 import { Project, ProjectSchema } from '@/models/Project/model'
-import { ProjectType, ProjectWithUser } from '@/models/Project/types'
+import {
+    ProjectType,
+    ProjectWithUser,
+    Stage,
+} from '@/models/Project/types'
 import {
     createNewProject,
     deleteExistingProjectById,
@@ -88,18 +92,27 @@ export default {
         }),
     getProjectsByQuery: procedure
         .input(
-            z.object({
-                cursor: z.string().optional(),
-                query: z.string().nullable().optional(),
-                lastQuery: z.string().nullable().optional(),
-            })
+            z
+                .object({
+                    cursor: z.string().optional(),
+                    query: z.string().nullable().optional(),
+                    lastQuery: z.string().nullable().optional(),
+                    stage: z.array(z.nativeEnum(Stage)),
+                })
+                .optional()
         )
         .query(async ({ input }) => {
-            const { cursor, query, lastQuery: lq } = input
-            const [projects, lastQuery] =
-                await getExistingProjectsByQuery(cursor, query, lq)
+            input
+            const [projects, lastQuery, stage] =
+                await getExistingProjectsByQuery(
+                    input?.cursor,
+                    input?.query,
+                    input?.lastQuery,
+                    input?.stage
+                )
             return {
                 data: projects,
+                stage,
                 nextCursor: projects.length
                     ? projects[
                           projects.length - 1
@@ -165,13 +178,11 @@ export default {
             ))
         }),
     isFollowProject: protectedProcedure
-        .input(
-            z.object({
-                pid: z.number(),
-                uid: z.string().length(36),
-            })
-        )
-        .query(async ({ input: { pid, uid } }) => {
-            return await hasProjectUserSupport(pid, uid)
+        .input(z.number())
+        .query(async ({ input: pid, ctx: { session } }) => {
+            if (!session?.user) {
+                return false
+            }
+            return await hasProjectUserSupport(pid, session.user.id!)
         }),
 }

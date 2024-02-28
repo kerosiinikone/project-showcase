@@ -13,6 +13,8 @@ interface ProjectComponentProps {
 export default async function ProjectPage({
     params,
 }: ProjectComponentProps) {
+    const session = await useAsyncAuth()
+
     const project = (await getProjectServer({
         id: parseInt(params.pid),
         joinUser: true,
@@ -22,12 +24,7 @@ export default async function ProjectPage({
         return <div>Not found</div>
     }
 
-    const session = await useAsyncAuth()
-
-    const isFollowed = await isFollowProject({
-        pid: project.id,
-        uid: session?.user?.id!,
-    })
+    const isFollowed = await isFollowProject(project.id)
 
     return (
         <div className="container h-full w-full flex justify-center items-center p-10">

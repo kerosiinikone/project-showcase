@@ -1,8 +1,8 @@
 import 'server-only'
 
-import { ProjectType } from '@/models/Project/types'
+import { ProjectType, Stage } from '@/models/Project/types'
 import { projects, usersToProjects } from '@/services/db/schema'
-import { and, eq, ilike } from 'drizzle-orm'
+import { and, eq, ilike, exists, or } from 'drizzle-orm'
 import { withCursorPagination } from 'drizzle-pagination'
 import db from '../services/db.server'
 
@@ -71,13 +71,23 @@ export async function getExistingProjectsByUid(
 export async function getExistingProjectsByQuery(
     cursor?: string | null,
     query?: string | null,
-    lastQuery?: string | null
+    lastQuery?: string | null,
+    stage: Stage[] = []
 ) {
     const data = await db.query.projects.findMany(
         withCursorPagination({
-            where: query
-                ? ilike(projects.name, `%${query}%`)
-                : undefined,
+            where: and(
+                query
+                    ? ilike(projects.name, `%${query}%`)
+                    : undefined,
+                stage.length
+                    ? or(
+                          ...stage.map((s) => {
+                              return eq(projects.stage, s)
+                          })
+                      )
+                    : undefined
+            ),
             limit: LIMIT,
             cursors: [
                 [
@@ -91,7 +101,7 @@ export async function getExistingProjectsByQuery(
         })
     )
 
-    return [data, query] as const
+    return [data, query, stage] as const
 }
 
 export async function getExistingProjectById({

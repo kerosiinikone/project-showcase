@@ -12,6 +12,7 @@ export const usePagination = (
 ) => {
     const [projectsRaw, dispatch] = useFormState(searchProjects, {
         data: initialProjects,
+        stage: [],
         lastQuery: null,
         nextCursor: initialNextCursor,
     })

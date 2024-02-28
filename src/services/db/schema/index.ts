@@ -51,6 +51,11 @@ export const userProjectRelations = relations(users, ({ many }) => ({
     supported_projects: many(usersToProjects),
 }))
 
+export const tags = pgTable('tags', {
+    id: serial('id').primaryKey().notNull(),
+    name: text('name').notNull(),
+})
+
 export const projects = pgTable(
     'project',
     {

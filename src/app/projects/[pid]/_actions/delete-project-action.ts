@@ -12,7 +12,7 @@ export default async function deleteProjectAction(
     _: FormData
 ) {
     try {
-        await deleteProjectServer({
+        const done = await deleteProjectServer({
             pid: props.pid,
             author_id: props.author_id,
         })
@@ -20,7 +20,7 @@ export default async function deleteProjectAction(
         return {
             pid: props.pid,
             author_id: props.author_id,
-            done: true,
+            done,
         }
     } catch (error) {
         return {

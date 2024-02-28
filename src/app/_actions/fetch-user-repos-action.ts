@@ -4,8 +4,7 @@ import { getRepos } from '@/services/trpc/server'
 
 const fetchUserRepos = async (_: any, __: FormData) => {
     try {
-        const repos = await getRepos()
-        return repos
+        return await getRepos()
     } catch (error) {
         return null // For now
     }
