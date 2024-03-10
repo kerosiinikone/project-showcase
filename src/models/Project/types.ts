@@ -15,6 +15,7 @@ export type ProjectType = {
     description: string | null
     name: string
     alt_id: string
+    tags?: string[]
     stage: Stage
     github_url: string | null
     image: string | null

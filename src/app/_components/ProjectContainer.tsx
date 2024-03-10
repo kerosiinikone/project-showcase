@@ -2,10 +2,11 @@
 
 import { ProjectType } from '@/models/Project/types'
 import SearchBarComponent from './SearchBar'
-import { Suspense, useMemo, useRef } from 'react'
+import { Suspense, useMemo, useRef, useState } from 'react'
 import ProjectGrid from '@/components/ProjectGrid'
 import { usePagination } from '@/hooks/useSearchPagination'
 import Filters from './Filters'
+import TagLabel from '@/components/TagItem'
 
 interface ProjectContainerProps {
     initialProjects: ProjectType[]
@@ -17,11 +18,22 @@ export default function ProjectContainer({
     initialNextCursor,
 }: ProjectContainerProps) {
     const formRef = useRef<HTMLFormElement | null>(null)
+    const [tags, setTags] = useState<string[]>([])
     const { projectsRaw, dispatch, onBottom, search } = usePagination(
         initialProjects,
         initialNextCursor,
         formRef
     )
+
+    const addTag = (tag: string) => {
+        setTags((state) => {
+            if (tags.indexOf(tag) === -1) {
+                return [...state, tag]
+            }
+            return state
+        })
+    }
+
     const projectsMemo = useMemo(
         () => (!projectsRaw.error ? projectsRaw.data : []),
         [projectsRaw]
@@ -35,10 +47,42 @@ export default function ProjectContainer({
                     action={dispatch}
                     className="flex flex-col items-center"
                 >
+                    <input
+                        hidden
+                        readOnly
+                        value={`[${tags.map((t) => {
+                            return `"${t}"`
+                        })}]`}
+                        name="tags"
+                    />
                     <div className="flex w-full flex-row items-center">
-                        <SearchBarComponent handleSearch={search} />
+                        <SearchBarComponent
+                            addTag={addTag}
+                            handleSearch={search}
+                        />
                     </div>
-                    <div className="flex w-full flex-row items-center">
+                    <div className="flex w-full flex-row justify-start items-center">
+                        {tags.map((t) => {
+                            return (
+                                <div className="mt-2">
+                                    <TagLabel
+                                        name={t}
+                                        remove={() => {
+                                            setTags((state) => {
+                                                return state.filter(
+                                                    (tag) => tag !== t
+                                                )
+                                            })
+                                            setTimeout(() => {
+                                                search()
+                                            }, 100)
+                                        }}
+                                    />
+                                </div>
+                            )
+                        })}
+                    </div>
+                    <div className="flex w-full flex-row justify-start items-center">
                         <Filters
                             initSearch={search}
                             stage={projectsRaw.stage}
@@ -67,4 +111,15 @@ export default function ProjectContainer({
             </Suspense>
         </>
     )
+}
+
+{
+    /* <input
+    hidden
+    readOnly
+    name="tags"
+    value={`[${tags.map((t) => {
+        return `"${t}"`
+    })}]`}
+/> */
 }

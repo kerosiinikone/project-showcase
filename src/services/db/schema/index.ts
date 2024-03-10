@@ -51,10 +51,22 @@ export const userProjectRelations = relations(users, ({ many }) => ({
     supported_projects: many(usersToProjects),
 }))
 
-export const tags = pgTable('tags', {
-    id: serial('id').primaryKey().notNull(),
-    name: text('name').notNull(),
-})
+export const tags = pgTable(
+    'tags',
+    {
+        id: serial('id').primaryKey().notNull(),
+        name: text('name').notNull(),
+    },
+    (table) => {
+        return {
+            tagIdx: index('tag_idx').on(table.name),
+        }
+    }
+)
+
+export const tagRelations = relations(tags, ({ many }) => ({
+    projects: many(projectsToTags),
+}))
 
 export const projects = pgTable(
     'project',
@@ -73,6 +85,12 @@ export const projects = pgTable(
         created_at: timestamp('created_at', { mode: 'date' })
             .defaultNow()
             .notNull(),
+        /* 
+            customTimestamp('createdAt', {
+                withTimezone: true,
+                precision: 3,
+                })
+            .notNull().default(sql`now()`), */
         updated_at: timestamp('updated_at', { mode: 'date' })
             .defaultNow()
             .notNull(),
@@ -94,6 +112,7 @@ export const projectUserRelations = relations(
             references: [users.id],
         }),
         supporters: many(usersToProjects),
+        tags: many(projectsToTags),
     })
 )
 
@@ -124,6 +143,37 @@ export const usersToProjectsRelations = relations(
         user: one(users, {
             fields: [usersToProjects.user_id],
             references: [users.id],
+        }),
+    })
+)
+
+export const projectsToTags = pgTable(
+    'projects_to_tags',
+    {
+        project_id: integer('project_id')
+            .notNull()
+            .references(() => projects.id, { onDelete: 'cascade' }), // ???
+        tag_id: integer('tag_id')
+            .notNull()
+            .references(() => tags.id, { onDelete: 'cascade' }), // ???
+    },
+    (t) => ({
+        tagTIdx: index('tag_t_idx').on(t.tag_id),
+        projectTIdx: index('project_t_idx').on(t.project_id),
+        pk: primaryKey(t.tag_id, t.project_id),
+    })
+)
+
+export const projectsToTagsRelations = relations(
+    projectsToTags,
+    ({ one }) => ({
+        project: one(projects, {
+            fields: [projectsToTags.project_id],
+            references: [projects.id],
+        }),
+        tag: one(tags, {
+            fields: [projectsToTags.tag_id],
+            references: [tags.id],
         }),
     })
 )
@@ -161,34 +211,3 @@ export const accounts = pgTable(
         ),
     })
 )
-
-// export const sessions = pgTable(
-//     'session',
-//     {
-//         sessionToken: text('sessionToken').notNull().primaryKey(),
-//         userId: text('userId')
-//             .notNull()
-//             .references(() => users.id, { onDelete: 'cascade' }),
-//         expires: timestamp('expires', { mode: 'date' }).notNull(),
-//     },
-//     (session) => ({
-//         sessionTokenIndex: uniqueIndex(
-//             'sessions__sessionToken__idx'
-//         ).on(session.sessionToken),
-//         userIdIndex: index('sessions__userId__idx').on(
-//             session.userId
-//         ),
-//     })
-// )
-
-// export const verificationTokens = pgTable(
-//     'verificationToken',
-//     {
-//         identifier: text('identifier').notNull(),
-//         token: text('token').notNull(),
-//         expires: timestamp('expires', { mode: 'date' }).notNull(),
-//     },
-//     (vt) => ({
-//         compoundKey: primaryKey(vt.identifier, vt.token),
-//     })
-// )

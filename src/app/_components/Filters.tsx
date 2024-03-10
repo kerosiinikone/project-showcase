@@ -26,7 +26,7 @@ export default function Filters({ initSearch, stage }: FilterProps) {
         }
 
         // A simple solution to changing state
-        //and skipping some ticks
+        // and skipping some ticks
 
         setTimeout(() => {
             initSearch()
@@ -38,11 +38,11 @@ export default function Filters({ initSearch, stage }: FilterProps) {
             <div className="flex flex-row gap-2" id="stage-filter">
                 <div
                     onClick={() => handleStageFilter(Stage.IDEA)}
-                    className="flex justify-between items-center w-100 h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
-                                hover:bg-slate-200 transition"
+                    className="flex flex-row justify-between items-center w-fit h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
+                                hover:bg-slate-200 transition cursor-pointer"
                 >
                     {stageFilter?.includes(Stage.IDEA) ? (
-                        <span>
+                        <span className="flex flex-row justify-center items-center gap-2">
                             <X size={15} />
                             Idea
                         </span>
@@ -52,11 +52,11 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                 </div>
                 <div
                     onClick={() => handleStageFilter(Stage.PLAN)}
-                    className="flex justify-between items-center w-100 h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
-                                hover:bg-slate-200 transition"
+                    className="flex flex-row justify-between items-center w-fit h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
+                                hover:bg-slate-200 transition cursor-pointer"
                 >
                     {stageFilter?.includes(Stage.PLAN) ? (
-                        <span>
+                        <span className="flex flex-row justify-center items-center gap-2">
                             <X size={15} />
                             Plan
                         </span>
@@ -68,11 +68,11 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                     onClick={() =>
                         handleStageFilter(Stage.DEVELOPMENT)
                     }
-                    className="flex justify-between items-center w-100 h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
-                                hover:bg-slate-200 transition"
+                    className="flex flex-row justify-between items-center w-fit h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
+                                hover:bg-slate-200 transition cursor-pointer"
                 >
                     {stageFilter?.includes(Stage.DEVELOPMENT) ? (
-                        <span>
+                        <span className="flex flex-row justify-center items-center gap-2">
                             <X size={15} />
                             Development
                         </span>
@@ -82,11 +82,11 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                 </div>
                 <div
                     onClick={() => handleStageFilter(Stage.FINISHED)}
-                    className="flex justify-between items-center w-100 h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
-                                hover:bg-slate-200 transition"
+                    className="flex flex-row justify-between items-center w-fit h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
+                                hover:bg-slate-200 transition cursor-pointer"
                 >
                     {stageFilter?.includes(Stage.FINISHED) ? (
-                        <span>
+                        <span className="flex flex-row justify-center items-center gap-2">
                             <X size={15} />
                             Finished
                         </span>
@@ -98,11 +98,11 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                     onClick={() =>
                         handleStageFilter(Stage.PRODUCTION)
                     }
-                    className="flex justify-between items-center w-100 h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
-                                hover:bg-slate-200 transition"
+                    className="flex flex-row justify-between items-center w-fit h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
+                                hover:bg-slate-200 transition cursor-pointer"
                 >
                     {stageFilter?.includes(Stage.PRODUCTION) ? (
-                        <span>
+                        <span className="flex flex-row justify-center items-center gap-2">
                             <X size={15} />
                             Production
                         </span>
@@ -113,14 +113,14 @@ export default function Filters({ initSearch, stage }: FilterProps) {
             </div>
             <div className="flex flex-row gap-2" id="github-filter">
                 <div
-                    className="flex justify-between items-center w-100 h-fit bg-emerald-200 rounded-md py-2 px-4 border-emerald-300 border-2
-                                hover:bg-emerald-300 transition"
+                    className="flex justify-between items-center w-fit h-fit bg-emerald-200 rounded-md py-2 px-4 border-emerald-300 border-2
+                                hover:bg-emerald-300 transition cursor-pointer"
                 >
                     Github
                 </div>
                 <div
-                    className="flex justify-between items-center w-100 h-fit bg-red-100 rounded-md py-2 px-4 border-red-200 border-2
-                                hover:bg-red-300 transition"
+                    className="flex flex-row justify-between items-center w-fit h-fit bg-red-100 rounded-md py-2 px-4 border-red-200 border-2
+                                hover:bg-red-300 transition cursor-pointer"
                 >
                     No Github
                 </div>

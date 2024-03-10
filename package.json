@@ -26,6 +26,7 @@
         "@trpc/server": "^10.44.1",
         "@types/deep-equal": "^1.0.4",
         "deep-equal": "^2.2.3",
+        "drizzle-cursor": "^0.4.0",
         "drizzle-orm": "^0.29.1",
         "drizzle-pagination": "^1.0.10",
         "lucide-react": "^0.299.0",

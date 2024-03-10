@@ -10,6 +10,7 @@ type SearchFnReturnType = {
     nextCursor: string | null
     stage: Stage[]
     lastQuery: string | null
+    tags: string[]
     error?: any // For now
 }
 
@@ -17,6 +18,7 @@ const DEFAULT_RETURN = {
     data: [],
     nextCursor: null,
     stage: [],
+    tags: [],
     lastQuery: null,
 }
 
@@ -28,24 +30,34 @@ const searchProjects = async (
     const stageFilter = formData.get('stageFilter') as string
     const query = formData.get('query') as string
     const lastQuery = formData.get('lastQuery') as string
+    const tags = formData.get('tags') as string
 
     try {
         const stageComparison =
-            prevProjects.stage == (JSON.parse(stageFilter) as Stage[])
+            JSON.stringify(prevProjects.stage) == stageFilter
+        const tagsComparison =
+            JSON.stringify(prevProjects.tags) == tags
 
         const data = await getProjects({
             stage: JSON.parse(stageFilter) as Stage[],
             query: query ? query : null,
-            cursor: cursor && stageComparison ? cursor : undefined,
+            cursor:
+                cursor && stageComparison && tagsComparison
+                    ? cursor
+                    : undefined,
             lastQuery: lastQuery ? lastQuery : null,
+            tags: JSON.parse(tags) as string[],
         })
 
         data.lastQuery = data.lastQuery || ''
         prevProjects.nextCursor = data.nextCursor
 
         // New Search
-        if (query != lastQuery || !stageComparison) {
-            prevProjects.stage = data.stage
+        if (
+            query != lastQuery ||
+            !stageComparison ||
+            !tagsComparison
+        ) {
             return data as SearchFnReturnType
         }
 
@@ -53,6 +65,7 @@ const searchProjects = async (
         if (data.nextCursor) {
             prevProjects.data = [...prevProjects.data, ...data.data]
             prevProjects.stage = data.stage
+            prevProjects.tags = data.tags!
             prevProjects.lastQuery = data.lastQuery!
         }
         return prevProjects

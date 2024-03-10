@@ -15,6 +15,7 @@ export const usePagination = (
         stage: [],
         lastQuery: null,
         nextCursor: initialNextCursor,
+        tags: [],
     })
 
     const search = () => {

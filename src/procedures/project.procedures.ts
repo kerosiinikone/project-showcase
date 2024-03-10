@@ -4,7 +4,9 @@ import {
     ProjectWithUser,
     Stage,
 } from '@/models/Project/types'
+import { cursor } from '@/operations/cursor'
 import {
+    addTagsToProject,
     createNewProject,
     deleteExistingProjectById,
     editExistingProject,
@@ -42,7 +44,13 @@ export default {
                     ...(input as ProjectType),
                     author_id: session?.user?.id!,
                 })
-                return await createNewProject(project)
+                const newProject = await createNewProject(project)
+
+                if (input.tags.length) {
+                    await addTagsToProject(input.tags, newProject.id)
+                }
+
+                return newProject
             } catch (error) {
                 throw error // for now
             }
@@ -98,26 +106,32 @@ export default {
                     query: z.string().nullable().optional(),
                     lastQuery: z.string().nullable().optional(),
                     stage: z.array(z.nativeEnum(Stage)),
+                    tags: z.array(z.string()), // Validation
                 })
                 .optional()
         )
         .query(async ({ input }) => {
-            input
             const [projects, lastQuery, stage] =
                 await getExistingProjectsByQuery(
                     input?.cursor,
                     input?.query,
                     input?.lastQuery,
-                    input?.stage
+                    input?.stage,
+                    input?.tags
                 )
+
+            const lastToken = cursor.serialize(projects.at(-1))
+
             return {
                 data: projects,
                 stage,
-                nextCursor: projects.length
-                    ? projects[
-                          projects.length - 1
-                      ].created_at!.toISOString()
-                    : null,
+                // nextCursor: projects.length
+                //     ? projects[
+                //           projects.length - 1
+                //       ].created_at!.toISOString()
+                //     : null,
+                tags: input?.tags,
+                nextCursor: lastToken,
                 lastQuery,
             }
         }),

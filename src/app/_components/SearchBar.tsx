@@ -1,27 +1,49 @@
 'use client'
 
 import { Search } from 'lucide-react'
-import {
-    HTMLProps,
-    InputHTMLAttributes,
-    MutableRefObject,
-    Ref,
-} from 'react'
+import { HTMLProps, useState } from 'react'
 import { DebounceInput } from 'react-debounce-input'
 
 // Move hidden inputs to ProjectContainer
 
 interface SearchBarProps {
     handleSearch: () => void
+    addTag: (tag: string) => void
 }
 
-const SearchBarComponent = ({ handleSearch }: SearchBarProps) => {
+const SearchBarComponent = ({
+    handleSearch,
+    addTag,
+}: SearchBarProps) => {
+    const [dInput, setDInput] = useState<string>('')
     return (
         <>
             <div className="relative w-full bg-white">
                 <DebounceInput
                     minLength={4}
-                    onChange={handleSearch}
+                    value={dInput}
+                    onKeyDown={(
+                        e: React.KeyboardEvent<HTMLInputElement> & {
+                            target: {
+                                value: string
+                            }
+                        }
+                    ) => {
+                        if (e.code === 'Enter') {
+                            e.preventDefault()
+                            addTag(e.target.value)
+                            setTimeout(() => {
+                                handleSearch()
+                                setDInput('')
+                            }, 100)
+                        }
+                    }}
+                    onChange={(e) => {
+                        setDInput(e.target.value)
+                        setTimeout(() => {
+                            handleSearch()
+                        }, 100)
+                    }}
                     debounceTimeout={500}
                     id="query"
                     name="query"
