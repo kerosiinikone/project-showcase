@@ -6,4 +6,8 @@ export type UserRepo = {
     github_url: string
 }
 
-export type UserRepoResponse = Endpoints['GET /user/repos']['response']
+export type UserRepoResponse =
+    Endpoints['GET /user/repos']['response']
+
+export type ReadmeResponse =
+    Endpoints['GET /repos/{owner}/{repo}/readme']['response']

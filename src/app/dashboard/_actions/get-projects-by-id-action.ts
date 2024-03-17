@@ -1,6 +1,6 @@
 'use server'
 
-import { ProjectType } from '@/models/Project/types'
+import { ProjectTypeWithId } from '@/models/Project/types'
 import { getProjectsByIdServer } from '@/services/trpc/server'
 
 // Refactor
@@ -8,7 +8,7 @@ import { getProjectsByIdServer } from '@/services/trpc/server'
 // Maybe change to serial cursor based pagination later
 
 type FetchFnReturnType = {
-    data: ProjectType[]
+    data: ProjectTypeWithId[]
     nextCursor: string | null
     error?: unknown
 }

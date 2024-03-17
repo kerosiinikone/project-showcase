@@ -37,4 +37,18 @@ export default class GithubApp {
         })
         return bio
     }
+    async getReadmeFile(repoName: string, user: string) {
+        const { data } = await this.instance.request(
+            'GET /repos/{owner}/{repo}/readme',
+            {
+                owner: user,
+                repo: repoName,
+                headers: {
+                    ...HEADERS,
+                    accept: 'application/vnd.github+json',
+                },
+            }
+        )
+        return data
+    }
 }

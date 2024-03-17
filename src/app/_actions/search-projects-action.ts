@@ -1,12 +1,16 @@
 'use server'
 
-import { ProjectType, Stage } from '@/models/Project/types'
+import {
+    ProjectType,
+    ProjectTypeWithId,
+    Stage,
+} from '@/models/Project/types'
 import { getProjects } from '@/services/trpc/server'
 
 // Refactor
 
 type SearchFnReturnType = {
-    data: ProjectType[]
+    data: ProjectTypeWithId[]
     nextCursor: string | null
     stage: Stage[]
     lastQuery: string | null

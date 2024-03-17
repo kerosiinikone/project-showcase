@@ -16,7 +16,7 @@ export default async function RootLayout({
             <body>
                 <SessionProvider session={session}>
                     <Provider>
-                        <div className="flex w-screen h-screen">
+                        <div className="flex h-screen">
                             <div id="modal" />
                             <SideNavLayout />
                             <div className="w-full h-full flex justify-center items-center bg-gradient-to-r from-slate-50 to-white">

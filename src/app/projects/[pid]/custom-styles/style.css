@@ -1,0 +1,33 @@
+#readme * {
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+#readme h1 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+#readme h2 {
+    font-size: 1.75rem;
+    font-weight: bold;
+}
+
+#readme h3 {
+    font-size: 1.2rem;
+    font-weight: bolder;
+}
+
+#readme code {
+    background-color: #e1e1e1;
+    padding: 3px 5px;
+    border-radius: 5px;
+    font-family: Consolas;
+}
+
+#readme blockquote {
+    border-left: 2px solid #c9c9c9;
+}
+
+#readme blockquote p {
+    margin-left: 10px;
+}

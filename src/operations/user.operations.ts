@@ -9,10 +9,7 @@ import {
 import { and, count, eq, gt } from 'drizzle-orm'
 import db from '../services/db.server'
 import { withCursorPagination } from 'drizzle-pagination'
-import {
-    ProjectType,
-    ProjectTypeWithId,
-} from '@/models/Project/types'
+import { ProjectTypeWithId } from '@/models/Project/types'
 
 export const LIMIT = 9
 
@@ -82,15 +79,6 @@ export async function getSupportedProjectsById(
         })
     )
 }
-
-/*
-    SELECT p.project_name, COUNT(*) as support_count
-    FROM Projects p
-    JOIN UserToProjects utp ON p.project_id = utp.project_id
-    JOIN Users u ON utp.user_id = u.user_id
-    WHERE u.author_id = x -- Replace 'x' with the actual author_id
-    GROUP BY p.project_name;
-*/
 
 export async function getAggregatedSupports(
     id: string,

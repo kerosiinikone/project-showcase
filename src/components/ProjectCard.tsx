@@ -1,4 +1,7 @@
-import { ProjectType } from '@/models/Project/types'
+import {
+    ProjectType,
+    ProjectTypeWithId,
+} from '@/models/Project/types'
 import { Github } from 'lucide-react'
 import Link from 'next/link'
 import { memo } from 'react'
@@ -6,7 +9,7 @@ import { memo } from 'react'
 // Improve !!!
 
 interface ProjectCardProps {
-    project: ProjectType
+    project: ProjectTypeWithId
     h: string
 }
 
@@ -24,7 +27,7 @@ function ProjectCard({ project, h }: ProjectCardProps) {
     // JOIN on authorId to get the name
 
     const { id, name, description, stage, author_id, github_url } =
-        project
+        project as ProjectTypeWithId
 
     return (
         <div

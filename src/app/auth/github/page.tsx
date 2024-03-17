@@ -5,8 +5,6 @@ import { redirect } from 'next/navigation'
 export default async function GithubAuthRedirect() {
     const session = await useAsyncAuth()
 
-    // Could use a middleware
-
     if (session) {
         redirect('/dashboard')
     }

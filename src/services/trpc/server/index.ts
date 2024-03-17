@@ -10,6 +10,7 @@ export const {
         unfollowProject,
         getProjects,
         followProject,
+        getReadmeFile,
         isFollowProject,
         getProjectsById: getProjectsByIdServer,
         getProjectById: getProjectServer,

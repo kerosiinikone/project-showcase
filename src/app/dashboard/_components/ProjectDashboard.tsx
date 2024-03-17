@@ -1,17 +1,18 @@
 'use client'
 
-import { ProjectType } from '@/models/Project/types'
+import { ProjectTypeWithId } from '@/models/Project/types'
 import { UserRepo } from '@/services/octokit/types'
 import RepoContainer from './RepositoryContainer'
 import ProjectGrid from '@/components/ProjectGrid'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Session } from 'next-auth/types'
 import { useFormState } from 'react-dom'
 import getProjectsById from '../_actions/get-projects-by-id-action'
 
 interface ProjectDashboardProps {
     repos: UserRepo[]
-    projects: ProjectType[]
+    projects: ProjectTypeWithId[]
+    initialCursor: string | null
     session: Session
 }
 
@@ -21,15 +22,13 @@ interface ProjectDashboardProps {
 export default function ProjectDashboard({
     repos,
     projects,
+    initialCursor,
 }: ProjectDashboardProps) {
     const formRef = useRef<HTMLFormElement | null>(null)
-    const initialNextCursor = projects.length
-        ? projects[projects.length - 1].created_at!.toISOString()
-        : null
 
     const [projectsRaw, dispatch] = useFormState(getProjectsById, {
         data: projects,
-        nextCursor: initialNextCursor,
+        nextCursor: initialCursor,
     })
 
     const fetch = () => {
@@ -63,7 +62,7 @@ export default function ProjectDashboard({
                     name="nextCursor"
                     value={
                         projectsRaw?.nextCursor ??
-                        initialNextCursor ??
+                        initialCursor ??
                         undefined
                     }
                 />

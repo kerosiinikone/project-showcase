@@ -1,4 +1,4 @@
-import { ProjectType } from '@/models/Project/types'
+import { ProjectTypeWithId } from '@/models/Project/types'
 import { lazy } from 'react'
 
 // Fix resizing the cards
@@ -6,7 +6,7 @@ import { lazy } from 'react'
 const ProjectCard = lazy(() => import('./ProjectCard'))
 
 interface ProjectGridProps {
-    projects: ProjectType[]
+    projects: ProjectTypeWithId[]
     onBottom: (e: any) => void
 }
 

@@ -7,10 +7,8 @@ import {
     tags,
     usersToProjects,
 } from '@/services/db/schema'
-import { and, eq, ilike, exists, or, inArray } from 'drizzle-orm'
-import { withCursorPagination } from 'drizzle-pagination'
+import { and, eq, ilike, or, inArray } from 'drizzle-orm'
 import db from '../services/db.server'
-import { serialize } from 'drizzle-cursor'
 import { cursor } from './cursor'
 
 type SingleProjecParams = {
@@ -58,21 +56,19 @@ export async function editExistingProject(
 
 export async function getExistingProjectsByUid(
     uid?: string,
-    cursor?: string
+    cur?: string
 ) {
-    return await db.query.projects.findMany(
-        withCursorPagination({
-            where: uid ? eq(projects.author_id, uid) : undefined,
-            limit: LIMIT,
-            cursors: [
-                [
-                    projects.created_at,
-                    'desc',
-                    cursor ? new Date(cursor) : undefined,
-                ],
-            ],
-        })
-    )
+    return await db
+        .select()
+        .from(projects)
+        .orderBy(...cursor.orderBy)
+        .where(
+            and(
+                cursor.where(cur ? cursor.parse(cur) : null),
+                uid ? eq(projects.author_id, uid) : undefined
+            )
+        )
+        .limit(LIMIT)
 }
 
 export async function getExistingProjectsByQuery(
@@ -82,33 +78,6 @@ export async function getExistingProjectsByQuery(
     stage: Stage[] = [],
     tagList: string[] = []
 ) {
-    // const data = await db.query.projects.findMany(
-    //     withCursorPagination({
-    //         where: and(
-    //             query
-    //                 ? ilike(projects.name, `%${query}%`)
-    //                 : undefined,
-    //             stage.length
-    //                 ? or(
-    //                       ...stage.map((s) => {
-    //                           return eq(projects.stage, s)
-    //                       })
-    //                   )
-    //                 : undefined
-    //         ),
-    //         limit: LIMIT,
-    //         cursors: [
-    //             [
-    //                 projects.created_at,
-    //                 'desc',
-    //                 cursor && query == lastQuery
-    //                     ? new Date(cursor)
-    //                     : undefined,
-    //             ],
-    //         ],
-    //     })
-    // )
-
     const data = (
         await db
             .selectDistinctOn([projects.id])
@@ -148,6 +117,8 @@ export async function getExistingProjectsByQuery(
     return [data, query, stage] as const
 }
 
+// Optimize or return a success -> mutate the database async
+
 export async function addTagsToProject(tag: string[], pid: number) {
     for (let t of tag) {
         const existingTag = await db
@@ -181,12 +152,26 @@ export async function getExistingProjectById({
     id,
     joinUser,
 }: SingleProjecParams) {
-    return await db.query.projects.findFirst({
+    const data = await db.query.projects.findFirst({
         where: eq(projects.id, id),
         with: {
+            tags: {
+                with: {
+                    tag: {
+                        columns: {
+                            name: true,
+                        },
+                    },
+                },
+            },
             author: joinUser ? true : undefined,
         },
     })
+
+    return {
+        ...data,
+        tags: data?.tags.map((t) => t.tag.name),
+    }
 }
 
 export async function deleteExistingProjectById(pid: number) {

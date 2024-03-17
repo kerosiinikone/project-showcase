@@ -10,6 +10,7 @@ import {
 import { redirect } from 'next/navigation'
 import ProjectDashboard from './_components/ProjectDashboard'
 import UserSectionComponent from './_components/UserSection'
+import { cursor } from '@/operations/cursor'
 
 export default async function DashboardComponent() {
     const session = await useAsyncAuth()
@@ -41,6 +42,9 @@ export default async function DashboardComponent() {
                 <ProjectDashboard
                     projects={userProjects.data}
                     session={session}
+                    initialCursor={cursor.serialize(
+                        userProjects.data.at(-1)
+                    )}
                     repos={repos}
                 />
             </div>

@@ -1,20 +1,22 @@
 'use client'
 
 import { ProjectWithUser, Stage } from '@/models/Project/types'
-import { Delete, Github, Pencil, UserPlus } from 'lucide-react'
+import { Delete, Github, Pencil, UserPlus, X } from 'lucide-react'
 import { Session } from 'next-auth/types'
-import { useFormState } from 'react-dom'
-import supportProjectAction from '../_actions/follow-project-action'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import editProjectAction from '../_actions/edit-project-action'
-import unsupportProjectAction from '../_actions/unfollow-project-action'
-import deleteProjectAction from '../_actions/delete-project-action'
 import { useRouter } from 'next/navigation'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { useFormState } from 'react-dom'
+import deleteProjectAction from '../_actions/delete-project-action'
+import editProjectAction from '../_actions/edit-project-action'
+import supportProjectAction from '../_actions/follow-project-action'
+import unsupportProjectAction from '../_actions/unfollow-project-action'
+import { Markdown } from './Markdown'
 
 interface ProjectWrapperProps {
     session: Session | null
     isFollowed: boolean
     project: ProjectWithUser & { id: number }
+    readme?: string | null
 }
 
 interface SupportButtonProps {
@@ -34,11 +36,13 @@ export default function ProjectWrapper({
         name,
         stage,
         author,
+        tags,
         id,
         description,
         github_url,
         author_id,
     },
+    readme,
     isFollowed,
 }: ProjectWrapperProps) {
     const [isEdit, setIsEdit] = useState<boolean>(false)
@@ -51,7 +55,9 @@ export default function ProjectWrapper({
         description ?? ''
     )
     const [nameInput, setNameInput] = useState<string>(name ?? '')
+    const [tagInput, setTagInput] = useState<string[]>(tags ?? [])
     const [stageInput, setStageInput] = useState<string>(stage ?? '')
+    const [ghInput, SetGhInput] = useState<string>(github_url ?? '')
 
     const [editState, editAction] = useFormState(editProjectAction, {
         done: false,
@@ -97,6 +103,7 @@ export default function ProjectWrapper({
                         ) : (
                             <input
                                 name="name"
+                                placeholder="Name"
                                 onChange={(e) => {
                                     setNameInput(e.target.value)
                                 }}
@@ -136,80 +143,164 @@ export default function ProjectWrapper({
                             </select>
                         )}
                     </div>
-                    {session && (
-                        <div className="flex flex-row gap-2 w-fit justify-center items-center">
-                            <form
-                                action={
-                                    isDelete
-                                        ? deleteAction
-                                        : undefined
-                                }
-                                className="flex flex-row gap-2 w-fit justify-center items-center"
-                            >
-                                {session.user?.id == author.id && (
-                                    <DeleteButton
-                                        setIsDelete={setIsDelete}
-                                        isDelete={isDelete}
+                    <div className="flex flex-row gap-2">
+                        {session && (
+                            <div className="flex flex-row gap-2 w-fit justify-center items-center">
+                                <form
+                                    action={
+                                        isDelete
+                                            ? deleteAction
+                                            : undefined
+                                    }
+                                    className="flex flex-row gap-2 w-fit justify-center items-center"
+                                >
+                                    {session.user?.id ==
+                                        author.id && (
+                                        <DeleteButton
+                                            setIsDelete={setIsDelete}
+                                            isDelete={isDelete}
+                                        />
+                                    )}
+                                </form>
+                            </div>
+                        )}
+                        {session && (
+                            <div className="flex flex-row gap-2 w-fit justify-center items-center">
+                                <form
+                                    action={
+                                        isEdit
+                                            ? editAction
+                                            : undefined
+                                    }
+                                    className="flex flex-row gap-2 w-fit justify-center items-center"
+                                >
+                                    {session.user?.id ==
+                                        author.id && (
+                                        <EditButton
+                                            setIsEdit={setIsEdit}
+                                            isEdit={isEdit}
+                                        />
+                                    )}
+                                    <input
+                                        name="stage"
+                                        value={stageInput}
+                                        hidden
+                                        readOnly
                                     />
-                                )}
-                            </form>
-                        </div>
-                    )}
-                    {session && (
-                        <div className="flex flex-row gap-2 w-fit justify-center items-center">
-                            <form
-                                action={
-                                    isEdit ? editAction : undefined
-                                }
-                                className="flex flex-row gap-2 w-fit justify-center items-center"
-                            >
-                                {session.user?.id == author.id && (
-                                    <EditButton
-                                        setIsEdit={setIsEdit}
-                                        isEdit={isEdit}
+                                    <input
+                                        hidden
+                                        readOnly
+                                        name="tags"
+                                        value={`[${tagInput.map(
+                                            (t) => {
+                                                return `"${t}"`
+                                            }
+                                        )}]`}
                                     />
-                                )}
-                                <input
-                                    name="stage"
-                                    value={stageInput}
-                                    hidden
-                                    readOnly
-                                />
-                                <input
-                                    name="name"
-                                    value={nameInput}
-                                    hidden
-                                    readOnly
-                                />
-                                <input
-                                    name="description"
-                                    value={descriptionInput}
-                                    hidden
-                                    readOnly
-                                />
-                            </form>
-                        </div>
-                    )}
+                                    <input
+                                        name="github_url"
+                                        value={ghInput}
+                                        hidden
+                                        readOnly
+                                    />
+                                    <input
+                                        name="name"
+                                        value={nameInput}
+                                        hidden
+                                        readOnly
+                                    />
+                                    <input
+                                        name="description"
+                                        value={descriptionInput}
+                                        hidden
+                                        readOnly
+                                    />
+                                </form>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <div className="flex flex-row border-t-2 h-full w-full p-10">
+                <div className="flex flex-row border-t-2 gap-4 h-full w-full p-10">
                     {!isEdit ? (
-                        <h2 className="font-normal text-wrap w-1/2 truncate text-xl">
-                            {description}
-                        </h2>
+                        <div className="h-full w-full">
+                            <h1 className="p-2 mb-2 text-xl">
+                                Description
+                            </h1>
+                            <div className="h-3/4 w-full p-5 border-2 border-stone-300 rounded-xl">
+                                <h2 className="font-normal text-wrap truncate text-xl">
+                                    {description}
+                                </h2>
+                            </div>
+                        </div>
                     ) : (
                         <textarea
                             onChange={(e) => {
                                 setDescriptionInput(e.target.value)
                             }}
                             value={descriptionInput}
-                            className="h-32 max-h-40 min-h-20 bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg block w-full p-2.5 "
+                            className="h-32 max-h-40 min-h-20 w-1/2 bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                                    rounded-lg block p-2.5 "
                             placeholder="Type a project description"
                             name="description"
                         />
                     )}
+                    {!isEdit && readme && (
+                        <div className="h-full w-full">
+                            <h1 className="p-2 mb-2 text-xl">
+                                README.md
+                            </h1>
+                            <div className="w-full h-3/4 border-2 p-5 border-stone-300 rounded-xl">
+                                <Markdown readme={readme} />
+                            </div>
+                        </div>
+                    )}
                 </div>
+                {tags && (
+                    <div className="flex flex-row gap-4 h-full w-full px-10 py-4">
+                        {!isEdit
+                            ? tags.map((t) => {
+                                  return (
+                                      <div className="mt-2" key={t}>
+                                          <div className="flex items-center justify-center gap-2 flex-row w-max py-2 px-3 bg-blue-600 rounded-xl cursor-pointer">
+                                              <h2 className="text-white font-medium text-sm">
+                                                  {t}
+                                              </h2>
+                                          </div>
+                                      </div>
+                                  )
+                              })
+                            : tagInput.map((t) => {
+                                  return (
+                                      <div
+                                          className="flex items-center h-fit justify-center gap-2 flex-row w-max py-2 px-3 bg-blue-600 rounded-xl group cursor-pointer"
+                                          onClick={() => {
+                                              setTagInput((state) => {
+                                                  return state.filter(
+                                                      (tag) => {
+                                                          return (
+                                                              tag !==
+                                                              t
+                                                          )
+                                                      }
+                                                  )
+                                              })
+                                          }}
+                                      >
+                                          <span className="group-hover:inline hidden">
+                                              <X
+                                                  size={15}
+                                                  color="white"
+                                              />
+                                          </span>
+                                          <h2 className="text-white font-medium text-sm">
+                                              {t}
+                                          </h2>
+                                      </div>
+                                  )
+                              })}
+                    </div>
+                )}
             </div>
             <div className="flex flex-row justify-between w-full p-10 border-t-2 border-stone-100">
                 <div className="flex flex-col w-2/3">
@@ -221,36 +312,53 @@ export default function ProjectWrapper({
                     </span>
                     <span className="font-light">{author.id}</span>
                 </div>
-                {github_url && (
-                    <div
-                        id="github-icon"
-                        className="flex flex-col w-fit justify-center items-center cursor-pointer"
-                    >
-                        <a href={github_url}>
-                            <Github size="30" />
-                        </a>
-                    </div>
-                )}
-                {session && (
-                    <div className="flex flex-row gap-2 w-fit justify-center items-center">
-                        <SupportButton
-                            isFollowed={isFollowedState}
-                            unsupportWithParams={unsupportWithParams}
-                            supportWithParams={supportWithParams}
-                            setIsFollowedState={setIsFollowedState}
-                            pid={id}
-                            uid={session.user!.id}
-                        />
-                    </div>
-                )}
+                <div className="flex flex-row items-center gap-6">
+                    {(isEdit || github_url) && (
+                        <div
+                            id="github-icon"
+                            className="flex flex-col w-fit h-fit p-2 justify-center items-center cursor-pointer border-2 border-black rounded-md hover:bg-gray-300 transition"
+                        >
+                            {!isEdit && github_url && (
+                                <a href={github_url} target="_blank">
+                                    <Github size="30" />
+                                </a>
+                            )}
+                            {isEdit && (
+                                <input
+                                    name="github"
+                                    placeholder="Github URL"
+                                    onChange={(e) => {
+                                        SetGhInput(e.target.value)
+                                    }}
+                                    value={ghInput}
+                                />
+                            )}
+                        </div>
+                    )}
+
+                    {session && (
+                        <div className="flex flex-row gap-2 w-fit justify-center items-center">
+                            <SupportButton
+                                isFollowed={isFollowedState}
+                                unsupportWithParams={
+                                    unsupportWithParams
+                                }
+                                supportWithParams={supportWithParams}
+                                setIsFollowedState={
+                                    setIsFollowedState
+                                }
+                                pid={id}
+                                uid={session.user!.id}
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     )
 }
 
 const SupportButton = ({
-    pid,
-    uid,
     isFollowed,
     setIsFollowedState,
     unsupportWithParams,

@@ -5,7 +5,7 @@ export default function TagLabel({
     remove,
 }: {
     name: string
-    remove: () => void
+    remove?: () => void
 }) {
     return (
         <div

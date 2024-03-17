@@ -16,6 +16,8 @@ type ModalContentParams = BaseModalContentParams & {
 // Structure !!!
 // Improve !!!
 
+// Abstract Tags code to a separate component
+
 export default function CreateProjectModal({
     setShow,
     repos,

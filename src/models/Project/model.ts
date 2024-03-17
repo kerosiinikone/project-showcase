@@ -2,7 +2,7 @@ import { v4 } from 'uuid'
 import { ProjectType, Stage } from './types'
 import z from 'zod'
 
-const DEFAULT_DESCRIPTION = 'A Project'
+export const DEFAULT_DESCRIPTION = 'A Project'
 const GITHUB_PREFIX = 'https://github.com/'
 
 export const ProjectSchema = z.object({
@@ -11,8 +11,10 @@ export const ProjectSchema = z.object({
     github_url: z.string().max(2000).nullable(),
     description: z.string().nullable(),
     image: z.string().max(191).nullable(),
-    tags: z.array(z.string().max(15)).max(3), // Change max according to need
+    tags: z.array(z.string().max(15)).max(3).optional(), // Change max according to need
 })
+
+// Necessary ???
 
 export class Project implements ProjectType {
     description: string | null

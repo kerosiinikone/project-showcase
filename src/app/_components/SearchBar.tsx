@@ -11,11 +11,14 @@ interface SearchBarProps {
     addTag: (tag: string) => void
 }
 
+const REG = /^[a-zA-Z]+$/
+
 const SearchBarComponent = ({
     handleSearch,
     addTag,
 }: SearchBarProps) => {
     const [dInput, setDInput] = useState<string>('')
+
     return (
         <>
             <div className="relative w-full bg-white">
@@ -30,12 +33,15 @@ const SearchBarComponent = ({
                         }
                     ) => {
                         if (e.code === 'Enter') {
+                            const query = e.target.value
                             e.preventDefault()
-                            addTag(e.target.value)
-                            setTimeout(() => {
-                                handleSearch()
-                                setDInput('')
-                            }, 100)
+                            if (REG.test(query)) {
+                                addTag(query)
+                                setTimeout(() => {
+                                    handleSearch()
+                                    setDInput('')
+                                }, 100)
+                            }
                         }
                     }}
                     onChange={(e) => {

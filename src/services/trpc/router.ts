@@ -16,6 +16,7 @@ const project = router({
     editProject: projectActions.editProject,
     createProject: projectActions.createProject,
     isFollowProject: projectActions.isFollowProject,
+    getReadmeFile: projectActions.getReadmeFile,
     getProjectsById: projectActions.getProjectsById,
     getProjects: projectActions.getProjectsByQuery,
     getProjectById: projectActions.getProjectById,
@@ -25,7 +26,7 @@ const project = router({
 })
 
 export const appRouter = router({
-    health_check: procedure.query(() => {
+    main: procedure.query(() => {
         return {
             status: 'Healthy',
         }

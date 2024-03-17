@@ -1,6 +1,8 @@
-import { getProjects } from '@/services/trpc/server'
+import { getProjects, getReadmeFile } from '@/services/trpc/server'
 import ProjectContainer from './_components/ProjectContainer'
 import { ProjectType } from '@/models/Project/types'
+import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
+import { ReadmeResponse } from '@/services/octokit/types'
 
 // Tags from URL params or search bar
 

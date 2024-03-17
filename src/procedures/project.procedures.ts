@@ -1,6 +1,7 @@
 import { Project, ProjectSchema } from '@/models/Project/model'
 import {
     ProjectType,
+    ProjectTypeWithId,
     ProjectWithUser,
     Stage,
 } from '@/models/Project/types'
@@ -19,6 +20,8 @@ import {
     addProjectToUser,
     deleteProjectToUser,
 } from '@/operations/user.operations'
+import { GithubAccountDBAdapter } from '@/services/auth'
+import GithubApp from '@/services/octokit'
 import { procedure } from '@/services/trpc'
 import { protectedProcedure } from '@/services/trpc/middleware'
 import { TRPCError } from '@trpc/server'
@@ -46,7 +49,7 @@ export default {
                 })
                 const newProject = await createNewProject(project)
 
-                if (input.tags.length) {
+                if (input.tags && input.tags.length) {
                     await addTagsToProject(input.tags, newProject.id)
                 }
 
@@ -87,15 +90,13 @@ export default {
             const projects = (await getExistingProjectsByUid(
                 session?.user?.id!,
                 input
-            )) as ProjectType[] // Database Abstraction
+            )) as ProjectTypeWithId[] // Database Abstraction
+
+            const lastToken = cursor.serialize(projects.at(-1))
 
             return {
                 data: projects,
-                nextCursor: projects.length
-                    ? projects[
-                          projects.length - 1
-                      ].created_at!.toISOString()
-                    : null,
+                nextCursor: lastToken,
             }
         }),
     getProjectsByQuery: procedure
@@ -125,11 +126,6 @@ export default {
             return {
                 data: projects,
                 stage,
-                // nextCursor: projects.length
-                //     ? projects[
-                //           projects.length - 1
-                //       ].created_at!.toISOString()
-                //     : null,
                 tags: input?.tags,
                 nextCursor: lastToken,
                 lastQuery,
@@ -199,4 +195,24 @@ export default {
             }
             return await hasProjectUserSupport(pid, session.user.id!)
         }),
+    getReadmeFile: protectedProcedure
+        .input(z.object({ repo: z.string(), user: z.string() }))
+        .query(
+            async ({ input: { user, repo }, ctx: { session } }) => {
+                try {
+                    const access_token =
+                        await GithubAccountDBAdapter.getGithubAccessToken(
+                            session?.user?.id!
+                        )
+
+                    const githubInstance = new GithubApp(access_token)
+                    return await githubInstance.getReadmeFile(
+                        repo,
+                        user
+                    )
+                } catch (error) {
+                    return ''
+                }
+            }
+        ),
 }

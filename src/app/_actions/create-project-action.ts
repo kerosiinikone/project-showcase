@@ -22,13 +22,11 @@ export default async function createProjectAction(
     const projectParams: ProjectParams = {
         name: formData.get('name') as string,
         stage: formData.get('stage') as Stage,
-        github_url: formData.get('githb_url') as string,
+        github_url: formData.get('github_url') as string,
         description: formData.get('description') as string,
         tags: formData.get('tags') as string,
     }
     try {
-        console.log(projectParams.tags)
-
         await createProjectServer({
             ...projectParams,
             tags: JSON.parse(projectParams.tags) as string[],
