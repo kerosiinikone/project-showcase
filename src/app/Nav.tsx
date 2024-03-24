@@ -1,6 +1,6 @@
 'use client'
 
-import { UserRepo } from '@/services/octokit/types'
+import { UserRepo } from '@/services/github'
 import { Github, LayoutDashboard, Target } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'

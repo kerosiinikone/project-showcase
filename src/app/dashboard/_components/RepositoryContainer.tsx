@@ -1,4 +1,4 @@
-import { UserRepo } from '@/services/octokit/types'
+import { UserRepo } from '@/services/github'
 import { Github } from 'lucide-react'
 
 interface RepoContainerProps {

@@ -1,6 +1,9 @@
 'use client'
 
-import { ProjectType } from '@/models/Project/types'
+import {
+    ProjectType,
+    ProjectTypeWithId,
+} from '@/models/Project/types'
 import SearchBarComponent from './SearchBar'
 import { Suspense, useMemo, useRef, useState } from 'react'
 import ProjectGrid from '@/components/ProjectGrid'
@@ -9,16 +12,18 @@ import Filters from './Filters'
 import TagLabel from '@/components/TagItem'
 
 interface ProjectContainerProps {
-    initialProjects: ProjectType[]
+    initialProjects: ProjectTypeWithId[]
+    tagsFromParam: string[] | null
     initialNextCursor: string | null
 }
 
 export default function ProjectContainer({
     initialProjects,
     initialNextCursor,
+    tagsFromParam,
 }: ProjectContainerProps) {
     const formRef = useRef<HTMLFormElement | null>(null)
-    const [tags, setTags] = useState<string[]>([])
+    const [tags, setTags] = useState<string[]>(tagsFromParam || [])
     const { projectsRaw, dispatch, onBottom, search } = usePagination(
         initialProjects,
         initialNextCursor,

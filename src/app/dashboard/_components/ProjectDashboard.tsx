@@ -1,7 +1,7 @@
 'use client'
 
 import { ProjectTypeWithId } from '@/models/Project/types'
-import { UserRepo } from '@/services/octokit/types'
+import { UserRepo } from '@/services/github'
 import RepoContainer from './RepositoryContainer'
 import ProjectGrid from '@/components/ProjectGrid'
 import { useEffect, useMemo, useRef } from 'react'

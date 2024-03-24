@@ -11,6 +11,7 @@ import editProjectAction from '../_actions/edit-project-action'
 import supportProjectAction from '../_actions/follow-project-action'
 import unsupportProjectAction from '../_actions/unfollow-project-action'
 import { Markdown } from './Markdown'
+import Link from 'next/link'
 
 interface ProjectWrapperProps {
     session: Session | null
@@ -262,17 +263,20 @@ export default function ProjectWrapper({
                             ? tags.map((t) => {
                                   return (
                                       <div className="mt-2" key={t}>
-                                          <div className="flex items-center justify-center gap-2 flex-row w-max py-2 px-3 bg-blue-600 rounded-xl cursor-pointer">
-                                              <h2 className="text-white font-medium text-sm">
-                                                  {t}
-                                              </h2>
-                                          </div>
+                                          <Link href={`/?tag=${t}`}>
+                                              <div className="flex items-center justify-center gap-2 flex-row w-max py-2 px-3 bg-blue-600 rounded-xl cursor-pointer hover:bg-blue-800 tansition">
+                                                  <h2 className="text-white font-medium text-sm">
+                                                      {t}
+                                                  </h2>
+                                              </div>
+                                          </Link>
                                       </div>
                                   )
                               })
                             : tagInput.map((t) => {
                                   return (
                                       <div
+                                          key={t}
                                           className="flex items-center h-fit justify-center gap-2 flex-row w-max py-2 px-3 bg-blue-600 rounded-xl group cursor-pointer"
                                           onClick={() => {
                                               setTagInput((state) => {

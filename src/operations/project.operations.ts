@@ -10,6 +10,7 @@ import {
 import { and, eq, ilike, or, inArray } from 'drizzle-orm'
 import db from '../services/db.server'
 import { cursor } from './cursor'
+import { unstable_cache } from 'next/cache'
 
 type SingleProjecParams = {
     id: number

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useFormState } from 'react-dom'
 import { Stage } from '@/models/Project/types'
 import { PlusIcon, X } from 'lucide-react'
-import { UserRepo } from '@/services/octokit/types'
+import { UserRepo } from '@/services/github'
 import createProjectAction from '@/app/_actions/create-project-action'
 import { BaseModalContentParams } from './ModalLayout'
 import TagLabel from './TagItem'
@@ -12,9 +12,6 @@ import TagLabel from './TagItem'
 type ModalContentParams = BaseModalContentParams & {
     repos: UserRepo[] | null
 }
-
-// Structure !!!
-// Improve !!!
 
 // Abstract Tags code to a separate component
 

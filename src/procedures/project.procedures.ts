@@ -21,7 +21,7 @@ import {
     deleteProjectToUser,
 } from '@/operations/user.operations'
 import { GithubAccountDBAdapter } from '@/services/auth'
-import GithubApp from '@/services/octokit'
+import { ReadmeResponse } from '@/services/github'
 import { procedure } from '@/services/trpc'
 import { protectedProcedure } from '@/services/trpc/middleware'
 import { TRPCError } from '@trpc/server'
@@ -35,6 +35,11 @@ import { z } from 'zod'
 //     // optional: pass the original error to retain stack trace
 //     cause: theError,
 // })
+
+const BASE_HEADERS = {
+    'X-GitHub-Api-Version': '2022-11-28',
+    Accept: 'application/vnd.github+json',
+}
 
 export default {
     createProject: protectedProcedure
@@ -198,18 +203,25 @@ export default {
     getReadmeFile: protectedProcedure
         .input(z.object({ repo: z.string(), user: z.string() }))
         .query(
-            async ({ input: { user, repo }, ctx: { session } }) => {
+            async ({ input: { repo, user }, ctx: { session } }) => {
                 try {
                     const access_token =
                         await GithubAccountDBAdapter.getGithubAccessToken(
                             session?.user?.id!
                         )
-
-                    const githubInstance = new GithubApp(access_token)
-                    return await githubInstance.getReadmeFile(
-                        repo,
-                        user
+                    const data = await fetch(
+                        `https://api.github.com/repos/${user}/${repo}/readme`,
+                        {
+                            headers: {
+                                ...BASE_HEADERS,
+                                Authorization: `Bearer ${access_token}`,
+                            },
+                        }
                     )
+
+                    const { content } = await data.json()
+
+                    return content as string
                 } catch (error) {
                     return ''
                 }

@@ -1,12 +1,12 @@
 'use client'
 
 import searchProjects from '@/app/_actions/search-projects-action'
-import { ProjectType } from '@/models/Project/types'
+import { ProjectTypeWithId } from '@/models/Project/types'
 import { MutableRefObject } from 'react'
 import { useFormState } from 'react-dom'
 
 export const usePagination = (
-    initialProjects: ProjectType[],
+    initialProjects: ProjectTypeWithId[],
     initialNextCursor: string | null,
     formRef: MutableRefObject<HTMLFormElement | null>
 ) => {

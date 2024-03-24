@@ -9,6 +9,7 @@ const handler = (req: Request) =>
         createContext: () => ({
             session: null,
         }),
+
         // responseMeta(opts) {
         //     const { ctx, paths, errors, type } = opts
         //     const allPublic =

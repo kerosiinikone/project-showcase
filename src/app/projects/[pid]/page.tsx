@@ -31,23 +31,25 @@ export default async function ProjectPage({
     params,
 }: ProjectComponentProps) {
     let readme
+
     const session = await useAsyncAuth()
 
     const project = (await getProjectServer({
         id: parseInt(params.pid),
         joinUser: true,
     })) as ProjectWithUser
+    const isFollowed = await isFollowProject(project.id)
 
     if (project.github_url) {
         const splitUrl = project.github_url.split('/')
         try {
-            const data = await getReadmeFile({
+            const contents = await getReadmeFile({
                 repo: splitUrl[splitUrl.length - 1],
-                user: session?.user?.name!,
+                user: project.author.name!,
             })
 
-            if (data !== '') {
-                readme = b64DecodeUnicode(data.content)
+            if (contents !== '') {
+                readme = b64DecodeUnicode(contents)
             }
         } catch (error) {
             readme = null
@@ -57,8 +59,6 @@ export default async function ProjectPage({
     if (!project) {
         return <div>Not found</div>
     }
-
-    const isFollowed = await isFollowProject(project.id)
 
     return (
         <div className="container h-full w-full flex justify-center items-center p-10">

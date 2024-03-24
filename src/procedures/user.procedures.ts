@@ -9,10 +9,17 @@ import {
     getSupportedProjectsById,
 } from '@/operations/user.operations'
 import { GithubAccountDBAdapter } from '@/services/auth'
-import GithubApp from '@/services/octokit'
-import { UserRepo } from '@/services/octokit/types'
+import {
+    UserRepo,
+    UserRepoResponse,
+    UserResponse,
+} from '@/services/github'
 import { protectedProcedure } from '@/services/trpc/middleware'
 import { z } from 'zod'
+
+const BASE_HEADERS = {
+    'X-GitHub-Api-Version': '2022-11-28',
+}
 
 export default {
     createUserAction: protectedProcedure
@@ -64,10 +71,6 @@ export default {
         }),
     getUserRepos: protectedProcedure.query(
         async ({ ctx: { session } }) => {
-            // Instead of creating a GithubApp instance every time a user click on the button,
-            // there should a context-like structure that provides the instance first created
-            // in a successful auth callback
-
             // access_token must be treated like a password, so use bcrypt
 
             try {
@@ -75,11 +78,18 @@ export default {
                     await GithubAccountDBAdapter.getGithubAccessToken(
                         session?.user?.id!
                     )
+                const data = await fetch(
+                    `https://api.github.com/users/${session?.user?.name}/repos`,
+                    {
+                        headers: {
+                            ...BASE_HEADERS,
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                    }
+                )
+                const repos = await data.json()
 
-                const githubInstance = new GithubApp(access_token)
-                const repos = await githubInstance.getUserRepos()
-
-                return repos.map((repo) => {
+                return repos.map((repo: any) => {
                     return {
                         id: repo.id,
                         name: repo.name,
@@ -93,10 +103,6 @@ export default {
     ),
     getGithubUserBio: protectedProcedure.query(
         async ({ ctx: { session } }) => {
-            // Instead of creating a GithubApp instance every time a user click on the button,
-            // there should a context-like structure that provides the instance first created
-            // in a successful auth callback
-
             // access_token must be treated like a password, so use bcrypt
 
             try {
@@ -104,9 +110,18 @@ export default {
                     await GithubAccountDBAdapter.getGithubAccessToken(
                         session?.user?.id!
                     )
+                const data = await fetch(
+                    `https://api.github.com/users/${session?.user?.name}`,
+                    {
+                        headers: {
+                            ...BASE_HEADERS,
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                    }
+                )
+                const { bio } = await data.json()
 
-                const githubInstance = new GithubApp(access_token)
-                return (await githubInstance.getUserBio()) as string
+                return bio as string
             } catch (error) {
                 return ''
             }

@@ -3,7 +3,6 @@
 import { Stage } from '@/models/Project/types'
 import { createProjectServer } from '@/services/trpc/server'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 
 export interface ProjectParams {
     name: string
@@ -32,11 +31,9 @@ export default async function createProjectAction(
             tags: JSON.parse(projectParams.tags) as string[],
             image: null, // For now
         })
+
+        revalidatePath('/')
     } catch (error) {
         return { error } // For now
     }
-
-    // Find some way to revalidate and referesh the main page
-    // revalidatePath('/')
-    // redirect('/')
 }

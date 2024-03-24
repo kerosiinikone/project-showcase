@@ -1,8 +1,6 @@
-import { getProjects, getReadmeFile } from '@/services/trpc/server'
+import { getProjects } from '@/services/trpc/server'
 import ProjectContainer from './_components/ProjectContainer'
-import { ProjectType } from '@/models/Project/types'
-import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
-import { ReadmeResponse } from '@/services/octokit/types'
+import { ProjectTypeWithId } from '@/models/Project/types'
 
 // Tags from URL params or search bar
 
@@ -11,7 +9,13 @@ export default async function MainPage({
 }: {
     searchParams: { [key: string]: string | string[] | undefined }
 }) {
-    const { data: initial, nextCursor } = await getProjects()
+    const tagsFromParams =
+        'tag' in searchParams ? [searchParams['tag'] as string] : []
+
+    const { data: initial, nextCursor } = await getProjects({
+        tags: tagsFromParams,
+        stage: [],
+    })
 
     return (
         <div className="container h-full w-full flex justify-center items-center p-10">
@@ -30,8 +34,9 @@ export default async function MainPage({
                     </div>
                 </div>
                 <ProjectContainer
-                    initialProjects={initial as ProjectType[]}
+                    initialProjects={initial as ProjectTypeWithId[]}
                     initialNextCursor={nextCursor}
+                    tagsFromParam={tagsFromParams}
                 />
             </div>
         </div>
