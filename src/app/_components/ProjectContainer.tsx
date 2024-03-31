@@ -117,14 +117,3 @@ export default function ProjectContainer({
         </>
     )
 }
-
-{
-    /* <input
-    hidden
-    readOnly
-    name="tags"
-    value={`[${tags.map((t) => {
-        return `"${t}"`
-    })}]`}
-/> */
-}

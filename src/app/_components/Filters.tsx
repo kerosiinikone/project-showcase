@@ -13,6 +13,34 @@ export default function Filters({ initSearch, stage }: FilterProps) {
     const [stageFilter, setStateFilter] = useState<Stage[]>(
         stage ?? []
     )
+    const [hasGithubFilter, setHasGithubFilter] = useState<
+        null | boolean
+    >(null)
+
+    const handleChangeWithSearch = (f: () => void) => {
+        return () => {
+            f()
+            setTimeout(() => {
+                initSearch()
+            }, 500)
+        }
+    }
+
+    const handelSetGithubTrue = () => {
+        if (hasGithubFilter !== null && hasGithubFilter) {
+            setHasGithubFilter(null)
+        } else {
+            setHasGithubFilter(true)
+        }
+    }
+
+    const handleSetGithubFalse = () => {
+        if (hasGithubFilter !== null && !hasGithubFilter) {
+            setHasGithubFilter(null)
+        } else {
+            setHasGithubFilter(false)
+        }
+    }
 
     const handleStageFilter = (s: Stage) => {
         if (stageFilter?.includes(s)) {
@@ -112,18 +140,48 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                 </div>
             </div>
             <div className="flex flex-row gap-2" id="github-filter">
-                <div
-                    className="flex justify-between items-center w-fit h-fit bg-emerald-200 rounded-md py-2 px-4 border-emerald-300 border-2
+                {hasGithubFilter !== null && hasGithubFilter ? (
+                    <div
+                        onClick={handleChangeWithSearch(
+                            handelSetGithubTrue
+                        )}
+                        className="flex justify-between items-center w-fit h-fit bg-emerald-300 rounded-md py-2 px-4 border-emerald-300 border-2
+                                hover:bg-emerald-400 transition cursor-pointer"
+                    >
+                        Github
+                    </div>
+                ) : (
+                    <div
+                        onClick={handleChangeWithSearch(
+                            handelSetGithubTrue
+                        )}
+                        className="flex justify-between items-center w-fit h-fit bg-emerald-200 rounded-md py-2 px-4 border-emerald-300 border-2
                                 hover:bg-emerald-300 transition cursor-pointer"
-                >
-                    Github
-                </div>
-                <div
-                    className="flex flex-row justify-between items-center w-fit h-fit bg-red-100 rounded-md py-2 px-4 border-red-200 border-2
+                    >
+                        Github
+                    </div>
+                )}
+                {hasGithubFilter !== null && !hasGithubFilter ? (
+                    <div
+                        onClick={handleChangeWithSearch(
+                            handleSetGithubFalse
+                        )}
+                        className="flex justify-between items-center w-fit h-fit bg-red-300 rounded-md py-2 px-4 border-red-300 border-2
+                                hover:bg-red-400 transition cursor-pointer"
+                    >
+                        No Github
+                    </div>
+                ) : (
+                    <div
+                        onClick={handleChangeWithSearch(
+                            handleSetGithubFalse
+                        )}
+                        className="flex justify-between items-center w-fit h-fit bg-red-200 rounded-md py-2 px-4 border-red-300 border-2
                                 hover:bg-red-300 transition cursor-pointer"
-                >
-                    No Github
-                </div>
+                    >
+                        No Github
+                    </div>
+                )}
             </div>
             <input
                 name="stageFilter"
@@ -132,10 +190,14 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                 hidden
             />
             <input
-                name="githubFilter"
-                value={undefined}
-                readOnly
                 hidden
+                readOnly
+                name="hasGithub"
+                value={
+                    hasGithubFilter == null
+                        ? ''
+                        : JSON.stringify(hasGithubFilter)
+                }
             />
         </div>
     )

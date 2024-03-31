@@ -7,10 +7,10 @@ const GITHUB_PREFIX = 'https://github.com/'
 
 export const ProjectSchema = z.object({
     name: z.string().min(5).max(50),
+    website: z.string().max(80).optional().nullable(),
     stage: z.nativeEnum(Stage),
     github_url: z.string().max(2000).nullable(),
     description: z.string().nullable(),
-    image: z.string().max(191).nullable(),
     tags: z.array(z.string().max(15)).max(3).optional(), // Change max according to need
 })
 
@@ -21,6 +21,7 @@ export class Project implements ProjectType {
     name: string
     created_at: Date
     updated_at: Date
+    website?: string | null
     alt_id: string
     image: string | null
     github_url: string | null
@@ -33,12 +34,14 @@ export class Project implements ProjectType {
         image = null,
         description,
         tags = [],
+        website = null,
         author_id,
         github_url = null,
         stage,
     }: ProjectType) {
         this.name = name
         this.tags = tags
+        this.website = website
         this.image = image
         this.github_url = github_url
         this.alt_id = v4()

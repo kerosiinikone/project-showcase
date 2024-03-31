@@ -172,7 +172,7 @@ export default function CreateProjectModal({
                             </div>
                         </div>
                         <div className="grid gap-4 mb-4 grid-cols-2">
-                            <div className="col-span-2">
+                            <div className="row-span-2">
                                 <label className="block mb-2 text-sm font-medium text-gray-900">
                                     Tags
                                 </label>
@@ -211,6 +211,21 @@ export default function CreateProjectModal({
                                     placeholder="Give your project tags"
                                 />
                             </div>
+
+                            <div className="row-span-2">
+                                <label className="block mb-2 text-sm font-medium text-gray-900">
+                                    Project Website
+                                </label>
+                                <input
+                                    id="website"
+                                    name="website"
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                                    rounded-lg py-2 px-3 w-full"
+                                    placeholder="Type your project's website"
+                                />
+                            </div>
+                        </div>
+                        <div className="grid gap-4 mb-4 grid-cols-1">
                             <div className="flex flex-row gap-2">
                                 {tags.map((t) => {
                                     return (

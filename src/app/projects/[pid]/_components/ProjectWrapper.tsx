@@ -18,6 +18,7 @@ interface ProjectWrapperProps {
     isFollowed: boolean
     project: ProjectWithUser & { id: number }
     readme?: string | null
+    supportCountFormatted: string | number | null
 }
 
 interface SupportButtonProps {
@@ -33,12 +34,14 @@ interface SupportButtonProps {
 
 export default function ProjectWrapper({
     session,
+    supportCountFormatted,
     project: {
         name,
         stage,
         author,
         tags,
         id,
+        website,
         description,
         github_url,
         author_id,
@@ -98,9 +101,22 @@ export default function ProjectWrapper({
                 <div className="flex flex-row w-full justify-between p-10">
                     <div className="flex flex-col w-2/3">
                         {!isEdit ? (
-                            <h1 className="font-medium truncate text-3xl">
-                                {name}
-                            </h1>
+                            <div className="flex w-full h-full items-center gap-6">
+                                <h1 className="font-medium truncate text-3xl">
+                                    {name}
+                                </h1>
+                                {website && (
+                                    <a
+                                        className="group"
+                                        href={website}
+                                        target="__blank"
+                                    >
+                                        <h2 className="truncate text-xl text-slate-600 cursor-pointer group-hover:text-slate-900 transition">
+                                            {website}
+                                        </h2>
+                                    </a>
+                                )}
+                            </div>
                         ) : (
                             <input
                                 name="name"
@@ -259,50 +275,98 @@ export default function ProjectWrapper({
                 </div>
                 {tags && (
                     <div className="flex flex-row gap-4 h-full w-full px-10 py-4">
-                        {!isEdit
-                            ? tags.map((t) => {
-                                  return (
-                                      <div className="mt-2" key={t}>
-                                          <Link href={`/?tag=${t}`}>
-                                              <div className="flex items-center justify-center gap-2 flex-row w-max py-2 px-3 bg-blue-600 rounded-xl cursor-pointer hover:bg-blue-800 tansition">
-                                                  <h2 className="text-white font-medium text-sm">
-                                                      {t}
-                                                  </h2>
-                                              </div>
-                                          </Link>
-                                      </div>
-                                  )
-                              })
-                            : tagInput.map((t) => {
-                                  return (
-                                      <div
-                                          key={t}
-                                          className="flex items-center h-fit justify-center gap-2 flex-row w-max py-2 px-3 bg-blue-600 rounded-xl group cursor-pointer"
-                                          onClick={() => {
-                                              setTagInput((state) => {
-                                                  return state.filter(
-                                                      (tag) => {
-                                                          return (
-                                                              tag !==
-                                                              t
-                                                          )
-                                                      }
-                                                  )
-                                              })
-                                          }}
-                                      >
-                                          <span className="group-hover:inline hidden">
-                                              <X
-                                                  size={15}
-                                                  color="white"
-                                              />
-                                          </span>
-                                          <h2 className="text-white font-medium text-sm">
-                                              {t}
-                                          </h2>
-                                      </div>
-                                  )
-                              })}
+                        {!isEdit ? (
+                            tags.map((t) => {
+                                return (
+                                    <div className="mt-2" key={t}>
+                                        <Link href={`/?tag=${t}`}>
+                                            <div className="flex items-center justify-center gap-2 flex-row w-max py-2 px-3 bg-blue-600 rounded-xl cursor-pointer hover:bg-blue-800 tansition">
+                                                <h2 className="text-white font-medium text-sm">
+                                                    {t}
+                                                </h2>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                )
+                            })
+                        ) : (
+                            <>
+                                <div className="col-span-2">
+                                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                                        Tags
+                                    </label>
+                                    <input
+                                        onKeyDown={(
+                                            e: React.KeyboardEvent<HTMLInputElement> & {
+                                                target: {
+                                                    value: string
+                                                }
+                                            }
+                                        ) => {
+                                            if (e.code === 'Enter') {
+                                                e.preventDefault()
+                                                if (
+                                                    tags.indexOf(
+                                                        e.target.value
+                                                    ) === -1 &&
+                                                    tags.length < 3 // Global limit somewhere ??
+                                                ) {
+                                                    setTagInput(
+                                                        (state) => {
+                                                            return [
+                                                                ...state,
+                                                                e
+                                                                    .target
+                                                                    .value,
+                                                            ]
+                                                        }
+                                                    )
+                                                    setTimeout(() => {
+                                                        e.target.value =
+                                                            ''
+                                                    }, 100)
+                                                }
+                                            }
+                                        }}
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                                    rounded-lg py-2 px-3 w-full"
+                                        placeholder="Give your project tags"
+                                    />
+                                </div>
+                                {tagInput.map((t) => {
+                                    return (
+                                        <div
+                                            key={t}
+                                            className="flex items-center h-fit justify-center gap-2 flex-row w-max py-2 px-3 bg-blue-600 rounded-xl group cursor-pointer"
+                                            onClick={() => {
+                                                setTagInput(
+                                                    (state) => {
+                                                        return state.filter(
+                                                            (tag) => {
+                                                                return (
+                                                                    tag !==
+                                                                    t
+                                                                )
+                                                            }
+                                                        )
+                                                    }
+                                                )
+                                            }}
+                                        >
+                                            <span className="group-hover:inline hidden">
+                                                <X
+                                                    size={15}
+                                                    color="white"
+                                                />
+                                            </span>
+                                            <h2 className="text-white font-medium text-sm">
+                                                {t}
+                                            </h2>
+                                        </div>
+                                    )
+                                })}
+                            </>
+                        )}
                     </div>
                 )}
             </div>
@@ -317,6 +381,15 @@ export default function ProjectWrapper({
                     <span className="font-light">{author.id}</span>
                 </div>
                 <div className="flex flex-row items-center gap-6">
+                    {supportCountFormatted && (
+                        <div>
+                            <h2 className="mx-5 text-lg font-medium">
+                                {supportCountFormatted == 1
+                                    ? `${supportCountFormatted} supporter`
+                                    : `${supportCountFormatted} supporters`}
+                            </h2>
+                        </div>
+                    )}
                     {(isEdit || github_url) && (
                         <div
                             id="github-icon"

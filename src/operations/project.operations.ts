@@ -7,10 +7,18 @@ import {
     tags,
     usersToProjects,
 } from '@/services/db/schema'
-import { and, eq, ilike, or, inArray } from 'drizzle-orm'
+import {
+    and,
+    eq,
+    ilike,
+    or,
+    inArray,
+    count,
+    isNotNull,
+    isNull,
+} from 'drizzle-orm'
 import db from '../services/db.server'
 import { cursor } from './cursor'
-import { unstable_cache } from 'next/cache'
 
 type SingleProjecParams = {
     id: number
@@ -50,6 +58,7 @@ export async function editExistingProject(
         .update(projects)
         .set(data)
         .where(eq(projects.id, pid))
+        .returning()
         .then((res) => res[0] ?? null)
 }
 
@@ -77,7 +86,8 @@ export async function getExistingProjectsByQuery(
     query?: string | null,
     lastQuery?: string | null,
     stage: Stage[] = [],
-    tagList: string[] = []
+    tagList: string[] = [],
+    hasGithub: boolean | null = null
 ) {
     const data = (
         await db
@@ -109,6 +119,11 @@ export async function getExistingProjectsByQuery(
                         : undefined,
                     tagList.length
                         ? inArray(tags.name, tagList)
+                        : undefined,
+                    hasGithub != null
+                        ? hasGithub
+                            ? isNotNull(projects.github_url)
+                            : isNull(projects.github_url)
                         : undefined
                 )
             )
@@ -121,6 +136,23 @@ export async function getExistingProjectsByQuery(
 // Optimize or return a success -> mutate the database async
 
 export async function addTagsToProject(tag: string[], pid: number) {
+    // When deleting tag relations, delete unused tags
+
+    const projectTags = await db
+        .select({ tags })
+        .from(projectsToTags)
+        .leftJoin(tags, eq(tags.id, projectsToTags.tag_id))
+        .where(eq(projectsToTags.project_id, pid))
+        .then((res) => res.map((t) => t.tags) ?? null)
+
+    // Clear tags when editing
+    for (let t of projectTags) {
+        await db
+            .delete(projectsToTags)
+            .where(eq(projectsToTags.tag_id, t?.id!))
+    }
+
+    // Promise.all([])
     for (let t of tag) {
         const existingTag = await db
             .select()
@@ -153,7 +185,7 @@ export async function getExistingProjectById({
     id,
     joinUser,
 }: SingleProjecParams) {
-    const data = await db.query.projects.findFirst({
+    const data = db.query.projects.findFirst({
         where: eq(projects.id, id),
         with: {
             tags: {
@@ -169,9 +201,21 @@ export async function getExistingProjectById({
         },
     })
 
+    const supportData = db
+        .selectDistinct({ value: count() })
+        .from(usersToProjects)
+        .where(eq(usersToProjects.project_id, id))
+        .then((res) => res[0] ?? null)
+
+    const [project, supportCount] = await Promise.all([
+        data,
+        supportData,
+    ])
+
     return {
-        ...data,
-        tags: data?.tags.map((t) => t.tag.name),
+        ...project,
+        supportCount: supportCount.value,
+        tags: project?.tags.map((t) => t.tag.name),
     }
 }
 

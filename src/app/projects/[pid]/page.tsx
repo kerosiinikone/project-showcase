@@ -1,5 +1,5 @@
 import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
-import { ProjectWithUser } from '@/models/Project/types'
+import { ProjectWithUser, SupportCount } from '@/models/Project/types'
 import {
     getProjectServer,
     getReadmeFile,
@@ -10,6 +10,15 @@ import sanitize from 'sanitize-html'
 
 interface ProjectComponentProps {
     params: { pid: string }
+}
+
+// https://stackoverflow.com/a/9461657
+
+function kFormatter(num: number) {
+    return Math.abs(num) > 999
+        ? (Math.sign(num) * Math.round(Math.abs(num) / 100)) / 10 +
+              'k'
+        : Math.sign(num) * Math.abs(num)
 }
 
 // Promise.all() the two API calls
@@ -34,10 +43,15 @@ export default async function ProjectPage({
 
     const session = await useAsyncAuth()
 
-    const project = (await getProjectServer({
+    const opts = {
         id: parseInt(params.pid),
         joinUser: true,
-    })) as ProjectWithUser
+    }
+
+    const project = (await getProjectServer(
+        opts
+    )) as ProjectWithUser & SupportCount
+
     const isFollowed = await isFollowProject(project.id)
 
     if (project.github_url) {
@@ -65,6 +79,11 @@ export default async function ProjectPage({
             <ProjectWrapper
                 session={session}
                 project={project}
+                supportCountFormatted={
+                    project.supportCount
+                        ? kFormatter(project.supportCount) // 1100 -> 1.1k & 600 -> 600
+                        : null
+                }
                 readme={
                     readme
                         ? sanitize(readme, {

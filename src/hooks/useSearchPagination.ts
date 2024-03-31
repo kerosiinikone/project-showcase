@@ -14,6 +14,7 @@ export const usePagination = (
         data: initialProjects,
         stage: [],
         lastQuery: null,
+        hasGithub: null,
         nextCursor: initialNextCursor,
         tags: [],
     })

@@ -16,6 +16,7 @@ export type ProjectType = {
     name: string
     alt_id: string
     tags?: string[]
+    website?: string | null
     stage: Stage
     github_url: string | null
     image: string | null
@@ -38,3 +39,8 @@ export type SupportedProjectType = {
     image?: string
     id: string
 }
+
+export type SupportCount = { supportCount: number }
+
+export type SingleProjectType = (ProjectWithUser | ProjectType) &
+    SupportCount

@@ -82,6 +82,7 @@ export const projects = pgTable(
             .notNull()
             .references(() => users.id),
         github_url: text('github_url'),
+        website: text('website'),
         created_at: timestamp('created_at', { mode: 'date' })
             .defaultNow()
             .notNull(),

@@ -9,13 +9,13 @@ const config: Config = {
         './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     ],
     theme: {
-        colors: {
-            primary: '',
-            secondary: '',
-            accent: '',
-            'text-body': '',
-            'text-header': '',
-        },
+        // colors: {
+        //     primary: '',
+        //     secondary: '',
+        //     accent: '',
+        //     'text-body': '',
+        //     'text-header': '',
+        // },
         extend: {
             backgroundImage: {
                 'gradient-radial':

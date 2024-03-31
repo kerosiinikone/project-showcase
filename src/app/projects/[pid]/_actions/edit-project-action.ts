@@ -9,7 +9,7 @@ export interface EditProjectParams {
     stage: Stage
     github_url: string | null
     description: string | null
-    image: string | null
+    tags: string[]
 }
 
 export default async function editProjectAction(
@@ -21,29 +21,34 @@ export default async function editProjectAction(
     },
     formData: FormData
 ) {
+    const tags = formData.get('tags') as string
     const projectParams: EditProjectParams = {
         name: formData.get('name') as string,
         stage: formData.get('stage') as Stage,
+        tags: JSON.parse(tags) as string[],
         description: formData.get('description') as string,
         github_url: formData.get('github_url') as string, // For now
-        image: null, // For now
     }
 
     try {
-        await editProject({
+        const done = !!(await editProject({
             pid: props.pid,
             author_id: props.author_id,
             data: {
                 ...projectParams,
+                github_url:
+                    projectParams.github_url === ''
+                        ? null
+                        : projectParams.github_url,
                 description:
                     projectParams.description || DEFAULT_DESCRIPTION,
             },
-        })
+        }))
 
         return {
             pid: props.pid,
             author_id: props.author_id,
-            done: true,
+            done,
         }
     } catch (error) {
         return {

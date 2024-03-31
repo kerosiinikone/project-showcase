@@ -7,13 +7,14 @@ import {
 } from '@/models/Project/types'
 import { getProjects } from '@/services/trpc/server'
 
-// Refactor
+// TODO: Refactor the logic
 
 type SearchFnReturnType = {
     data: ProjectTypeWithId[]
     nextCursor: string | null
     stage: Stage[]
     lastQuery: string | null
+    hasGithub: boolean | null
     tags: string[]
     error?: any // For now
 }
@@ -22,6 +23,7 @@ const DEFAULT_RETURN = {
     data: [],
     nextCursor: null,
     stage: [],
+    hasGithub: null,
     tags: [],
     lastQuery: null,
 }
@@ -33,6 +35,7 @@ const searchProjects = async (
     const cursor = formData.get('nextCursor') as string
     const stageFilter = formData.get('stageFilter') as string
     const query = formData.get('query') as string
+    const hasGithub = formData.get('hasGithub') as string
     const lastQuery = formData.get('lastQuery') as string
     const tags = formData.get('tags') as string
 
@@ -41,16 +44,23 @@ const searchProjects = async (
             JSON.stringify(prevProjects.stage) == stageFilter
         const tagsComparison =
             JSON.stringify(prevProjects.tags) == tags
+        const hasGithubComparison =
+            (hasGithub == '' ? 'null' : hasGithub) ==
+            JSON.stringify(prevProjects.hasGithub)
 
         const data = await getProjects({
             stage: JSON.parse(stageFilter) as Stage[],
             query: query ? query : null,
             cursor:
-                cursor && stageComparison && tagsComparison
+                cursor &&
+                stageComparison &&
+                tagsComparison &&
+                hasGithubComparison
                     ? cursor
                     : undefined,
             lastQuery: lastQuery ? lastQuery : null,
             tags: JSON.parse(tags) as string[],
+            hasGithub: hasGithub === '' ? null : hasGithub === 'true',
         })
 
         data.lastQuery = data.lastQuery || ''
@@ -60,7 +70,8 @@ const searchProjects = async (
         if (
             query != lastQuery ||
             !stageComparison ||
-            !tagsComparison
+            !tagsComparison ||
+            !hasGithubComparison
         ) {
             return data as SearchFnReturnType
         }
@@ -70,6 +81,7 @@ const searchProjects = async (
             prevProjects.data = [...prevProjects.data, ...data.data]
             prevProjects.stage = data.stage
             prevProjects.tags = data.tags!
+            prevProjects.hasGithub = data.hasGithub!
             prevProjects.lastQuery = data.lastQuery!
         }
         return prevProjects

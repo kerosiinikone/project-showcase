@@ -3,6 +3,7 @@ import {
     ProjectType,
     ProjectTypeWithId,
     ProjectWithUser,
+    SingleProjectType,
     Stage,
 } from '@/models/Project/types'
 import { cursor } from '@/operations/cursor'
@@ -48,6 +49,7 @@ export default {
             // Can be typecasted as "ProjectType" since "ProjectParams" works here
 
             try {
+                // UNNECESSARY -> delete later
                 const project = new Project({
                     ...(input as ProjectType),
                     author_id: session?.user?.id!,
@@ -76,17 +78,24 @@ export default {
                 input: { pid, author_id, data },
                 ctx: { session },
             }) => {
+                const { tags, ...restData } = data
+
                 if (author_id != session?.user?.id) {
                     throw new Error('Not authorized!') // for now
                 }
-                try {
-                    return await editExistingProject(
-                        pid,
-                        data as ProjectType
-                    )
-                } catch (error) {
-                    throw error // for now
-                }
+
+                // EditTags logic
+                const result = (
+                    await Promise.all([
+                        addTagsToProject(tags ?? [], pid),
+                        editExistingProject(
+                            pid,
+                            restData as ProjectType
+                        ),
+                    ])
+                )[1]
+
+                return result
             }
         ),
     getProjectsById: protectedProcedure
@@ -113,6 +122,7 @@ export default {
                     lastQuery: z.string().nullable().optional(),
                     stage: z.array(z.nativeEnum(Stage)),
                     tags: z.array(z.string()), // Validation
+                    hasGithub: z.boolean().nullable().optional(),
                 })
                 .optional()
         )
@@ -123,7 +133,8 @@ export default {
                     input?.query,
                     input?.lastQuery,
                     input?.stage,
-                    input?.tags
+                    input?.tags,
+                    input?.hasGithub
                 )
 
             const lastToken = cursor.serialize(projects.at(-1))
@@ -131,6 +142,7 @@ export default {
             return {
                 data: projects,
                 stage,
+                hasGithub: input?.hasGithub,
                 tags: input?.tags,
                 nextCursor: lastToken,
                 lastQuery,
@@ -144,9 +156,9 @@ export default {
             })
         )
         .query(async ({ input }) => {
-            return (await getExistingProjectById(input)) as
-                | ProjectType
-                | ProjectWithUser // Database Abstraction
+            return (await getExistingProjectById(
+                input
+            )) as SingleProjectType
         }),
     deleteProjectById: protectedProcedure
         .input(

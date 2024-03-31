@@ -35,7 +35,9 @@ export default async function MainPage({
                 </div>
                 <ProjectContainer
                     initialProjects={initial as ProjectTypeWithId[]}
-                    initialNextCursor={nextCursor}
+                    initialNextCursor={
+                        !tagsFromParams.length ? nextCursor : null
+                    }
                     tagsFromParam={tagsFromParams}
                 />
             </div>
