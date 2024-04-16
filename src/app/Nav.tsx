@@ -2,14 +2,16 @@
 
 import { UserRepo } from '@/services/github'
 import { Github, LayoutDashboard, Target } from 'lucide-react'
-import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFormState } from 'react-dom'
 import CreateProjectModal from '../components/CreateProjectModal'
 import { signInGithub, signOutGithub } from './_actions/auth-action'
 import fetchUserRepos from './_actions/fetch-user-repos-action'
 import ModalLayout from '@/components/ModalLayout'
+import { Session } from 'next-auth'
+import { toast } from 'react-toastify'
+import createProjectAction from './_actions/create-project-action'
 
 type NavItemLayoutProps = {
     title: string
@@ -36,18 +38,46 @@ const NavItemLayout = ({
     )
 }
 
-export default function SideNavLayout() {
+export default function SideNavLayout({
+    session,
+}: {
+    session: Session | null
+}) {
     const [show, setShow] = useState<boolean>(false)
-    const { data: session } = useSession()
-    const [state, fetchReposAction] = useFormState<
-        UserRepo[] | null,
-        FormData
-    >(fetchUserRepos, null)
+    // const { data: session } = useSession()
+    const [createState, dispatch] = useFormState(
+        createProjectAction,
+        {
+            message: '',
+        }
+    )
+    const [repoState, fetchReposAction] = useFormState(
+        fetchUserRepos,
+        null
+    )
+
+    useEffect(() => {
+        if (createState && createState.message) {
+            toast('Error: ' + createState.message, {
+                position: 'bottom-center',
+                autoClose: 5000,
+                type: 'error',
+                hideProgressBar: true,
+                closeOnClick: true,
+                progress: undefined,
+                theme: 'colored',
+            })
+        }
+    }, [createState])
 
     return (
         <>
             <ModalLayout show={show}>
-                <CreateProjectModal setShow={setShow} repos={state} />
+                <CreateProjectModal
+                    dispatch={dispatch}
+                    setShow={setShow}
+                    repos={repoState?.data ?? []}
+                />
             </ModalLayout>
 
             <div

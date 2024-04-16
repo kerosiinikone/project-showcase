@@ -9,13 +9,13 @@ import {
 } from '@/services/db/schema'
 import {
     and,
+    count,
     eq,
     ilike,
-    or,
     inArray,
-    count,
     isNotNull,
     isNull,
+    or,
 } from 'drizzle-orm'
 import db from '../services/db.server'
 import { cursor } from './cursor'
@@ -97,7 +97,7 @@ export async function getExistingProjectsByQuery(
                 projectsToTags,
                 eq(projectsToTags.project_id, projects.id)
             )
-            .leftJoin(tags, eq(tags.id, projectsToTags.tag_id))
+            .leftJoin(tags, eq(tags.id, projectsToTags.tag_id)) // ERROR
             .orderBy(...cursor.orderBy)
             .where(
                 and(

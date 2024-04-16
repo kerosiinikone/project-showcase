@@ -1,11 +1,12 @@
 'use client'
 
 import ModalLayout from '@/components/ModalLayout'
-import { memo, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useFormState } from 'react-dom'
 import CreateDashboardModal from '../CreateDashboardModal'
 import getSupportedList from '../../_actions/get-supported-projects-list'
 import { Github } from 'lucide-react'
+import { toast } from 'react-toastify'
 
 export interface SupportedProjectProps {
     name: string
@@ -48,6 +49,20 @@ export default function UserSupportCount({
                 : [],
         [supportedProjectsRaw]
     )
+
+    useEffect(() => {
+        if (supportedProjectsRaw && supportedProjectsRaw.error) {
+            toast('Error: ' + supportedProjectsRaw.error, {
+                position: 'bottom-center',
+                autoClose: 5000,
+                type: 'error',
+                hideProgressBar: true,
+                closeOnClick: true,
+                progress: undefined,
+                theme: 'colored',
+            })
+        }
+    }, [supportedProjectsRaw])
 
     return (
         <>

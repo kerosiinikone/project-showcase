@@ -9,27 +9,8 @@ const handler = (req: Request) =>
         createContext: () => ({
             session: null,
         }),
-
-        // responseMeta(opts) {
-        //     const { ctx, paths, errors, type } = opts
-        //     const allPublic =
-        //         paths &&
-        //         paths.every((path) => path.includes('public'))
-        //     const allOk = errors.length === 0
-        //     const isQuery = type === 'query'
-        //     if (allPublic && allOk && isQuery) {
-        //         const ONE_DAY_IN_SECONDS = 60 * 60 * 24
-        //         return {
-        //             headers: {
-        //                 'cache-control': `s-maxage=1, stale-while-revalidate=${ONE_DAY_IN_SECONDS}`,
-        //             },
-        //         }
-        //     }
-        //     return {}
-        // },
         onError(opts) {
-            const { error, type, path, input, ctx, req } = opts
-            console.error('Error:', error)
+            const { error } = opts
             if (error.code === 'INTERNAL_SERVER_ERROR') {
                 // send to bug reporting (later)
             }

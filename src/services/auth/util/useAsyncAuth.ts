@@ -6,7 +6,7 @@ export const useAsyncAuth = async () => {
     const session = await auth()
 
     if (!session) {
-        console.log('NO SESSION')
+        // Sign IN
     }
 
     if (session?.expires) {

@@ -7,7 +7,6 @@ import {
     getRepos,
     getUserById,
 } from '@/services/trpc/server'
-import { redirect } from 'next/navigation'
 import ProjectDashboard from './_components/ProjectDashboard'
 import UserSectionComponent from './_components/UserSection'
 import { cursor } from '@/operations/cursor'
@@ -15,15 +14,11 @@ import { cursor } from '@/operations/cursor'
 export default async function DashboardComponent() {
     const session = await useAsyncAuth()
 
-    if (!session) {
-        redirect('/auth/github')
-    }
-
     const [bio, repos, user, userProjects, aggregatedSupports] =
         await Promise.all([
             getBio(),
             getRepos(),
-            getUserById() as Promise<UserType>,
+            getUserById(),
             getProjectsByIdServer(),
             getAggregatedSupportCount(),
         ])
@@ -35,13 +30,13 @@ export default async function DashboardComponent() {
                     user={user}
                     aggregatedSupports={aggregatedSupports.value}
                     userBio={bio}
-                    name={session.user?.name}
-                    id={session.user?.id ?? 'No ID found'}
-                    image={session.user?.image}
+                    name={session!.user?.name}
+                    id={session!.user?.id ?? 'No ID found'}
+                    image={session!.user?.image}
                 />
                 <ProjectDashboard
                     projects={userProjects.data}
-                    session={session}
+                    session={session!}
                     initialCursor={cursor.serialize(
                         userProjects.data.at(-1)
                     )}

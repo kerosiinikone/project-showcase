@@ -10,8 +10,8 @@ export default {
     providers: [
         Github({
             authorization: { params: { scope: REQUEST_SCOPE } },
-            clientId: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET,
+            clientId: process.env.AUTH_GITHUB_ID,
+            clientSecret: process.env.AUTH_GITHUB_SECRET,
         }),
     ],
 } satisfies NextAuthConfig

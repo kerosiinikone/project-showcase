@@ -1,10 +1,11 @@
 'use client'
 
 import ModalLayout from '@/components/ModalLayout'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useFormState } from 'react-dom'
 import CreateDashboardModal from '../CreateDashboardModal'
 import getAggreagtedSupportsList from '../../_actions/get-aggregated-supports-list'
+import { toast } from 'react-toastify'
 
 export interface SupportedProjectProps {
     name: string
@@ -45,6 +46,20 @@ export default function AggregatedSupports({
                 : [],
         [aggregatedSupportsRaw]
     )
+
+    useEffect(() => {
+        if (aggregatedSupportsRaw && aggregatedSupportsRaw.error) {
+            toast('Error: ' + aggregatedSupportsRaw.error, {
+                position: 'bottom-center',
+                autoClose: 5000,
+                type: 'error',
+                hideProgressBar: true,
+                closeOnClick: true,
+                progress: undefined,
+                theme: 'colored',
+            })
+        }
+    }, [aggregatedSupportsRaw])
 
     return (
         <>

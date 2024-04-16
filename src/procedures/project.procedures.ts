@@ -1,11 +1,10 @@
-import { Project, ProjectSchema } from '@/models/Project/model'
 import {
     ProjectType,
     ProjectTypeWithId,
-    ProjectWithUser,
     SingleProjectType,
     Stage,
 } from '@/models/Project/types'
+import { ProjectSchema } from '@/models/Project/validation'
 import { cursor } from '@/operations/cursor'
 import {
     addTagsToProject,
@@ -20,49 +19,75 @@ import {
 import {
     addProjectToUser,
     deleteProjectToUser,
+    getGithubAccessToken,
 } from '@/operations/user.operations'
-import { GithubAccountDBAdapter } from '@/services/auth'
-import { ReadmeResponse } from '@/services/github'
 import { procedure } from '@/services/trpc'
 import { protectedProcedure } from '@/services/trpc/middleware'
 import { TRPCError } from '@trpc/server'
+import { v4 } from 'uuid'
+import * as winston from 'winston'
 import { z } from 'zod'
 
 // Project Data Transfer Object
-
-// throw new TRPCError({
-//     code: 'INTERNAL_SERVER_ERROR',
-//     message: 'An unexpected error occurred, please try again later.',
-//     // optional: pass the original error to retain stack trace
-//     cause: theError,
-// })
 
 const BASE_HEADERS = {
     'X-GitHub-Api-Version': '2022-11-28',
     Accept: 'application/vnd.github+json',
 }
 
+const DEFAULT_DESCRIPTION = 'A Project'
+
+const GITHUB_PREFIX = 'https://github.com/'
+
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.cli(),
+    transports: [new winston.transports.Console()],
+})
+
 export default {
     createProject: protectedProcedure
-        .input(ProjectSchema)
+        .input(ProjectSchema) // ZOD
         .mutation(async ({ input, ctx: { session } }) => {
-            // Can be typecasted as "ProjectType" since "ProjectParams" works here
+            if (
+                input.github_url &&
+                !input.github_url.startsWith(GITHUB_PREFIX)
+            ) {
+                logger.error('Validation error in createProject', {
+                    input,
+                })
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'Bad Github URL',
+                })
+            }
 
             try {
-                // UNNECESSARY -> delete later
-                const project = new Project({
-                    ...(input as ProjectType),
+                const newProject = await createNewProject({
+                    ...input,
                     author_id: session?.user?.id!,
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    description:
+                        input.description || DEFAULT_DESCRIPTION,
+                    image: null,
+                    alt_id: v4(),
                 })
-                const newProject = await createNewProject(project)
 
                 if (input.tags && input.tags.length) {
                     await addTagsToProject(input.tags, newProject.id)
                 }
 
-                return newProject
+                return newProject as ProjectTypeWithId
             } catch (error) {
-                throw error // for now
+                logger.error('Database error in createProject', {
+                    error,
+                    input,
+                })
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Database: Error saving project.',
+                })
             }
         }),
     editProject: protectedProcedure
@@ -81,36 +106,69 @@ export default {
                 const { tags, ...restData } = data
 
                 if (author_id != session?.user?.id) {
-                    throw new Error('Not authorized!') // for now
+                    logger.error('Auth error in editProject', {
+                        session,
+                        input: { pid, author_id, data },
+                    })
+                    throw new TRPCError({
+                        message: 'Not authorized!',
+                        code: 'UNAUTHORIZED',
+                    })
+                }
+
+                try {
+                    const result = (
+                        await Promise.all([
+                            addTagsToProject(tags ?? [], pid),
+                            editExistingProject(
+                                pid,
+                                restData as ProjectType
+                            ),
+                        ])
+                    )[1]
+
+                    return !!result
+                } catch (error) {
+                    logger.error('Database error in editProject', {
+                        error,
+                        input: { pid, author_id, data },
+                    })
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Database: Error editing project.',
+                    })
                 }
 
                 // EditTags logic
-                const result = (
-                    await Promise.all([
-                        addTagsToProject(tags ?? [], pid),
-                        editExistingProject(
-                            pid,
-                            restData as ProjectType
-                        ),
-                    ])
-                )[1]
-
-                return result
             }
         ),
     getProjectsById: protectedProcedure
         .input(z.string().optional())
         .query(async ({ input, ctx: { session } }) => {
-            const projects = (await getExistingProjectsByUid(
-                session?.user?.id!,
-                input
-            )) as ProjectTypeWithId[] // Database Abstraction
+            try {
+                const projects = (await getExistingProjectsByUid(
+                    session?.user?.id!,
+                    input
+                )) as ProjectTypeWithId[] // Database Abstraction
 
-            const lastToken = cursor.serialize(projects.at(-1))
+                const lastToken = cursor.serialize(projects.at(-1))
 
-            return {
-                data: projects,
-                nextCursor: lastToken,
+                return {
+                    data: projects,
+                    nextCursor: lastToken,
+                }
+            } catch (error) {
+                logger.error('Database error in getProjectsById', {
+                    error,
+                    input,
+                })
+                return {
+                    data: [],
+                }
+                // throw new TRPCError({
+                //     code: 'INTERNAL_SERVER_ERROR',
+                //     message: 'Database: Error fetching projects.',
+                // })
             }
         }),
     getProjectsByQuery: procedure
@@ -127,25 +185,39 @@ export default {
                 .optional()
         )
         .query(async ({ input }) => {
-            const [projects, lastQuery, stage] =
-                await getExistingProjectsByQuery(
-                    input?.cursor,
-                    input?.query,
-                    input?.lastQuery,
-                    input?.stage,
-                    input?.tags,
-                    input?.hasGithub
-                )
+            try {
+                const [projects, lastQuery, stage] =
+                    await getExistingProjectsByQuery(
+                        input?.cursor,
+                        input?.query,
+                        input?.lastQuery,
+                        input?.stage,
+                        input?.tags,
+                        input?.hasGithub
+                    )
 
-            const lastToken = cursor.serialize(projects.at(-1))
+                const lastToken = cursor.serialize(projects.at(-1))
 
-            return {
-                data: projects,
-                stage,
-                hasGithub: input?.hasGithub,
-                tags: input?.tags,
-                nextCursor: lastToken,
-                lastQuery,
+                return {
+                    data: projects as ProjectTypeWithId[],
+                    stage,
+                    hasGithub: input?.hasGithub,
+                    tags: input?.tags,
+                    nextCursor: lastToken,
+                    lastQuery,
+                }
+            } catch (error) {
+                logger.error('Database error in getProjectsByQuery', {
+                    error,
+                    input,
+                })
+                return {
+                    data: [],
+                }
+                // throw new TRPCError({
+                //     code: 'INTERNAL_SERVER_ERROR',
+                //     message: 'Database: Error fetching project.',
+                // })
             }
         }),
     getProjectById: procedure
@@ -156,9 +228,21 @@ export default {
             })
         )
         .query(async ({ input }) => {
-            return (await getExistingProjectById(
-                input
-            )) as SingleProjectType
+            try {
+                return (await getExistingProjectById(
+                    input
+                )) as SingleProjectType
+            } catch (error) {
+                logger.error('Database error in getProjectById', {
+                    error,
+                    input,
+                })
+                return []
+                // throw new TRPCError({
+                //     code: 'INTERNAL_SERVER_ERROR',
+                //     message: 'Database: Error fetching project.',
+                // })
+            }
         }),
     deleteProjectById: protectedProcedure
         .input(
@@ -178,31 +262,67 @@ export default {
                         code: 'UNAUTHORIZED',
                     })
                 }
-                return !!(await deleteExistingProjectById(pid))
+                try {
+                    return !!(await deleteExistingProjectById(pid))
+                } catch (error) {
+                    logger.error(
+                        'Database error in deleteProjectById',
+                        {
+                            error,
+                            input: { pid, author_id },
+                        }
+                    )
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Database: Error deleting project.',
+                    })
+                }
             }
         ),
     followProject: protectedProcedure
         .input(z.number())
         .mutation(async ({ input: pid, ctx: { session } }) => {
-            const foundRelation = await hasProjectUserSupport(
-                pid,
-                session?.user?.id!
-            )
-            if (!foundRelation)
-                return !!(await addProjectToUser(
-                    session?.user?.id!,
-                    pid
-                ))
+            try {
+                const foundRelation = await hasProjectUserSupport(
+                    pid,
+                    session?.user?.id!
+                )
+                if (!foundRelation)
+                    return !!(await addProjectToUser(
+                        session?.user?.id!,
+                        pid
+                    ))
 
-            return true // User not found or already follows
+                return true // User not found or already follows
+            } catch (error) {
+                logger.error('Database error in followProject', {
+                    error,
+                    input: { pid },
+                })
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Database: Error following project.',
+                })
+            }
         }),
     unfollowProject: protectedProcedure
         .input(z.number())
         .mutation(async ({ input: pid, ctx: { session } }) => {
-            return !!(await deleteProjectToUser(
-                pid,
-                session?.user?.id!
-            ))
+            try {
+                return !!(await deleteProjectToUser(
+                    pid,
+                    session?.user?.id!
+                ))
+            } catch (error) {
+                logger.error('Database error in unfollowProject', {
+                    error,
+                    input: { pid },
+                })
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Database: Error unfollowing project.',
+                })
+            }
         }),
     isFollowProject: protectedProcedure
         .input(z.number())
@@ -210,17 +330,30 @@ export default {
             if (!session?.user) {
                 return false
             }
-            return await hasProjectUserSupport(pid, session.user.id!)
+            try {
+                return await hasProjectUserSupport(
+                    pid,
+                    session.user.id!
+                )
+            } catch (error) {
+                logger.error('Database error in isFollowProject', {
+                    error,
+                    input: { pid },
+                })
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Database: Error.',
+                })
+            }
         }),
     getReadmeFile: protectedProcedure
         .input(z.object({ repo: z.string(), user: z.string() }))
         .query(
             async ({ input: { repo, user }, ctx: { session } }) => {
                 try {
-                    const access_token =
-                        await GithubAccountDBAdapter.getGithubAccessToken(
-                            session?.user?.id!
-                        )
+                    const access_token = await getGithubAccessToken(
+                        session?.user?.id!
+                    )
                     const data = await fetch(
                         `https://api.github.com/repos/${user}/${repo}/readme`,
                         {
@@ -235,6 +368,10 @@ export default {
 
                     return content as string
                 } catch (error) {
+                    logger.error('Database error in getReadmeFile', {
+                        error,
+                        input: { repo, user },
+                    })
                     return ''
                 }
             }

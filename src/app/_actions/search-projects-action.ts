@@ -6,6 +6,7 @@ import {
     Stage,
 } from '@/models/Project/types'
 import { getProjects } from '@/services/trpc/server'
+import { TRPCError } from '@trpc/server'
 
 // TODO: Refactor the logic
 
@@ -48,23 +49,25 @@ const searchProjects = async (
             (hasGithub == '' ? 'null' : hasGithub) ==
             JSON.stringify(prevProjects.hasGithub)
 
+        const hasCursor =
+            cursor &&
+            stageComparison &&
+            tagsComparison &&
+            hasGithubComparison
+                ? cursor
+                : undefined
+
         const data = await getProjects({
             stage: JSON.parse(stageFilter) as Stage[],
             query: query ? query : null,
-            cursor:
-                cursor &&
-                stageComparison &&
-                tagsComparison &&
-                hasGithubComparison
-                    ? cursor
-                    : undefined,
+            cursor: hasCursor,
             lastQuery: lastQuery ? lastQuery : null,
             tags: JSON.parse(tags) as string[],
             hasGithub: hasGithub === '' ? null : hasGithub === 'true',
         })
 
         data.lastQuery = data.lastQuery || ''
-        prevProjects.nextCursor = data.nextCursor
+        prevProjects.nextCursor = data.nextCursor ?? null
 
         // New Search
         if (
@@ -86,10 +89,24 @@ const searchProjects = async (
         }
         return prevProjects
     } catch (error) {
+        let err = error as any
+
+        // TODO: Make this error logic run globally on all requests
+
+        if (err instanceof TRPCError) {
+            if (Array.isArray(err)) {
+                err = JSON.parse(err.message)[0].message
+            } else {
+                err = err.message
+            }
+        } else {
+            err = JSON.stringify(err)
+        }
+
         return {
             ...DEFAULT_RETURN,
-            error,
-        } // For now
+            error: err,
+        }
     }
 }
 

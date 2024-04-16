@@ -2,8 +2,9 @@
 
 import searchProjects from '@/app/_actions/search-projects-action'
 import { ProjectTypeWithId } from '@/models/Project/types'
-import { MutableRefObject } from 'react'
+import { MutableRefObject, useEffect } from 'react'
 import { useFormState } from 'react-dom'
+import { toast } from 'react-toastify'
 
 export const usePagination = (
     initialProjects: ProjectTypeWithId[],
@@ -31,6 +32,20 @@ export const usePagination = (
         )
             search()
     }
+
+    useEffect(() => {
+        if (projectsRaw && projectsRaw.error) {
+            toast('Error: ' + projectsRaw.error, {
+                position: 'bottom-center',
+                autoClose: 5000,
+                type: 'error',
+                hideProgressBar: true,
+                closeOnClick: true,
+                progress: undefined,
+                theme: 'colored',
+            })
+        }
+    }, [projectsRaw])
 
     return { projectsRaw, dispatch, onBottom, search }
 }

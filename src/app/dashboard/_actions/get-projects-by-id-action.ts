@@ -2,6 +2,7 @@
 
 import { ProjectTypeWithId } from '@/models/Project/types'
 import { getProjectsByIdServer } from '@/services/trpc/server'
+import { TRPCError } from '@trpc/server'
 
 // Refactor
 
@@ -24,7 +25,7 @@ const getProjectsById = async (
             cursor ? cursor : undefined
         )
 
-        prevProjects.nextCursor = data.nextCursor
+        prevProjects.nextCursor = data.nextCursor ?? null
 
         if (data.nextCursor) {
             prevProjects.data = [...prevProjects.data, ...data.data]
@@ -32,7 +33,25 @@ const getProjectsById = async (
 
         return prevProjects as FetchFnReturnType
     } catch (error) {
-        return { data: [], nextCursor: null, error } // For now
+        let err = error as any
+
+        // TODO: Make this error logic run globally on all requests
+
+        if (err instanceof TRPCError) {
+            if (Array.isArray(err)) {
+                err = JSON.parse(err.message)[0].message
+            } else {
+                err = err.message
+            }
+        } else {
+            err = JSON.stringify(err)
+        }
+
+        return {
+            data: [],
+            nextCursor: null,
+            error: err,
+        }
     }
 }
 

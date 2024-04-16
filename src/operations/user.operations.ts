@@ -2,6 +2,7 @@ import 'server-only'
 
 import { UserType } from '@/models/User/types'
 import {
+    accounts,
     projects,
     users,
     usersToProjects,
@@ -14,18 +15,17 @@ import { ProjectTypeWithId } from '@/models/Project/types'
 export const LIMIT = 9
 
 export async function createNewUser(newUser: UserType) {
-    return await db.insert(users).values(newUser).returning()
+    return await db
+        .insert(users)
+        .values(newUser)
+        .then((res) => res[0] ?? null)
 }
 
 export async function addProjectToUser(id: string, pid: number) {
-    return await db
-        .insert(usersToProjects)
-        .values({
-            user_id: id,
-            project_id: pid,
-        })
-        .returning()
-        .then((res) => res[0] ?? null)
+    return await db.insert(usersToProjects).values({
+        user_id: id,
+        project_id: pid,
+    })
 }
 
 export async function deleteProjectToUser(pid: number, id: string) {
@@ -37,8 +37,6 @@ export async function deleteProjectToUser(pid: number, id: string) {
                 eq(usersToProjects.user_id, id)
             )
         )
-        .returning()
-        .then((res) => res[0] ?? null)
 }
 
 export async function getExistingUserById(id: string) {
@@ -130,4 +128,16 @@ export async function getAggregatedSupportCount(id: string) {
             eq(projects.id, usersToProjects.project_id)
         )
         .then((res) => res[0] ?? null)
+}
+
+export async function getGithubAccessToken(loggedUser: string) {
+    const { token } = (
+        await db
+            .select({
+                token: accounts.access_token,
+            })
+            .from(accounts)
+            .where(eq(accounts.userId, loggedUser))
+    )[0]
+    return token as string
 }

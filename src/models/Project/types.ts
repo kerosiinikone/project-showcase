@@ -1,5 +1,4 @@
 import { UserType } from '../User/types'
-import type { SchemaProject } from '../../services/db/schema'
 
 export enum Stage {
     IDEA = 'IDEA',

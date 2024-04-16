@@ -1,15 +1,17 @@
+import { UserType } from '@/models/User/types'
+import { UserSchema } from '@/models/User/validation'
 import { and, eq } from 'drizzle-orm'
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
-import * as schema from '../../db/schema'
 import type { NextAuthConfig } from 'next-auth'
 import { v4 } from 'uuid'
-import { User } from '@/models/User/model'
-import { UserType } from '@/models/User/types'
+import { z } from 'zod'
+import * as schema from '../../db/schema'
 
 type Adapter = NextAuthConfig['adapter']
+type PartialAdapter = Partial<Adapter>
 
 /*
-    Mostly copied from the actual "DrizzleAdapter"
+    Mostly copied from the actual "@auth/drizzle"
 */
 
 export function createTables() {
@@ -21,58 +23,58 @@ export function createTables() {
 
 export type DefaultSchema = ReturnType<typeof createTables>
 
+function createGithubLink(name: string) {
+    const BASE_LINK = 'https://github.com'
+    return `${BASE_LINK}/${name}`
+}
+
+function validate_schema(schema: z.ZodSchema, data: unknown) {
+    const result = schema.safeParse(data)
+    if (!result.success) {
+        throw new Error(
+            result.error.issues
+                .map((issue) => issue.message)
+                .join(', ')
+        )
+    }
+}
+
 export function CustomDrizzleAdapter(
     client: PostgresJsDatabase<typeof schema>
-): Adapter & {
-    getGithubAccessToken: (loggedUser: string) => Promise<string>
-} {
+): Adapter {
     const { users, accounts } = createTables()
 
     return {
         async createUser(data: any) {
-            const newUser = new User({
+            const newUser = {
                 ...(data as UserType),
                 id: v4(),
-            })
+                github_url: createGithubLink(data.name),
+            }
+
+            validate_schema(UserSchema, data)
+
             return await client
                 .insert(users)
                 .values(newUser)
                 .returning()
                 .then((res) => res[0] ?? null)
         },
-        async getUser(data: any) {
+        async getUser(data) {
             return await client
                 .select()
                 .from(users)
                 .where(eq(users.id, data))
                 .then((res) => res[0] ?? null)
         },
-        async getUserByEmail(data: any) {
+        async getUserByEmail(data) {
             return await client
                 .select()
                 .from(users)
                 .where(eq(users.email, data))
                 .then((res) => res[0] ?? null)
         },
-        // async createSession(data: any) {
-        //     return await client
-        //         .insert(sessions)
-        //         .values(data)
-        //         .returning()
-        //         .then((res) => res[0])
-        // },
-        // async getSessionAndUser(data: any) {
-        //     return await client
-        //         .select({
-        //             session: sessions,
-        //             user: users,
-        //         })
-        //         .from(sessions)
-        //         .where(eq(sessions.sessionToken, data))
-        //         .innerJoin(users, eq(users.id, sessions.userId))
-        //         .then((res) => res[0] ?? null)
-        // },
-        async updateUser(data: any) {
+        async updateUser(data) {
             if (!data.id) {
                 throw new Error('No user id.')
             }
@@ -84,14 +86,6 @@ export function CustomDrizzleAdapter(
                 .returning()
                 .then((res) => res[0])
         },
-        // async updateSession(data: any) {
-        //     return await client
-        //         .update(sessions)
-        //         .set(data)
-        //         .where(eq(sessions.sessionToken, data.sessionToken))
-        //         .returning()
-        //         .then((res) => res[0])
-        // },
         async linkAccount(rawAccount: any) {
             const updatedAccount = await client
                 .insert(accounts)
@@ -131,44 +125,8 @@ export function CustomDrizzleAdapter(
                     .leftJoin(users, eq(accounts.userId, users.id))
                     .then((res) => res[0])) ?? null
 
-            if (!dbAccount) {
-                return null
-            }
-
-            return dbAccount.user
+            return dbAccount?.user ?? null
         },
-        // async deleteSession(sessionToken) {
-        //     const session = await client
-        //         .delete(sessions)
-        //         .where(eq(sessions.sessionToken, sessionToken))
-        //         .returning()
-        //         .then((res) => res[0] ?? null)
-
-        //     return session
-        // },
-        // async createVerificationToken(token) {
-        //     return await client
-        //         .insert(verificationTokens)
-        //         .values(token)
-        //         .returning()
-        //         .then((res) => res[0])
-        // },
-        // async useVerificationToken(token) {
-        //     try {
-        //         return await client
-        //             .delete(verificationTokens)
-        //             .where(
-        //                 and(
-        //                     eq(verificationTokens.identifier, token.identifier),
-        //                     eq(verificationTokens.token, token.token)
-        //                 )
-        //             )
-        //             .returning()
-        //             .then((res) => res[0] ?? null)
-        //     } catch (err) {
-        //         throw new Error('No verification token found.')
-        //     }
-        // },
         async deleteUser(id) {
             await client
                 .delete(users)
@@ -191,19 +149,8 @@ export function CustomDrizzleAdapter(
                     )
                     .returning()
                     .then((res) => res[0] ?? null)
-        },
 
-        // Make this independent of the "Adapter"
-        async getGithubAccessToken(loggedUser: string) {
-            const { token } = (
-                await client
-                    .select({
-                        token: accounts.access_token,
-                    })
-                    .from(accounts)
-                    .where(eq(accounts.userId, loggedUser))
-            )[0]
-            return token as string
+            return { provider, type, providerAccountId, userId }
         },
     }
 }

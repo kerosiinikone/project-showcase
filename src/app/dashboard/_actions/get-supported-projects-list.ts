@@ -2,6 +2,7 @@
 
 import { ProjectTypeWithId } from '@/models/Project/types'
 import { getSupportedProjects } from '@/services/trpc/server'
+import { TRPCError } from '@trpc/server'
 
 // Refactor
 
@@ -35,7 +36,25 @@ const getSupportedList = async (
 
         return prev as UserSupportsReturnType
     } catch (error) {
-        return { data: [], error } // For now
+        let err = error as any
+
+        // TODO: Make this error logic run globally on all requests
+
+        if (err instanceof TRPCError) {
+            if (Array.isArray(err)) {
+                err = JSON.parse(err.message)[0].message
+            } else {
+                err = err.message
+            }
+        } else {
+            err = JSON.stringify(err)
+        }
+
+        return {
+            data: [],
+            nextCursor: 0,
+            error: err,
+        }
     }
 }
 

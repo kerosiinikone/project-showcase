@@ -1,17 +1,7 @@
-import NextAuth, { DefaultSession } from 'next-auth'
-import authConfig from './auth.config'
-import { getExistingUserById } from '@/operations/user.operations'
+import NextAuth from 'next-auth'
 import db from '../db.server'
 import { CustomDrizzleAdapter } from './adapter/drizzle'
-
-// declare module 'next-auth' {
-//     interface Session extends DefaultSession {
-//         user: {
-//             id: string
-//             own_projects: string[]
-//         } & DefaultSession['user']
-//     }
-// }
+import authConfig from './auth.config'
 
 export const GithubAccountDBAdapter = CustomDrizzleAdapter(db)
 
@@ -33,7 +23,7 @@ export const {
             return session
         },
     },
-    adapter: GithubAccountDBAdapter, // Database vs. JWT
+    adapter: GithubAccountDBAdapter,
     session: { strategy: 'jwt' },
     secret: process.env.SECRET!,
     ...authConfig,

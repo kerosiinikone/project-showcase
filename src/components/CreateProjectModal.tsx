@@ -8,9 +8,11 @@ import { UserRepo } from '@/services/github'
 import createProjectAction from '@/app/_actions/create-project-action'
 import { BaseModalContentParams } from './ModalLayout'
 import TagLabel from './TagItem'
+import { toast } from 'react-toastify'
 
 type ModalContentParams = BaseModalContentParams & {
     repos: UserRepo[] | null
+    dispatch: any
 }
 
 // Abstract Tags code to a separate component
@@ -18,18 +20,12 @@ type ModalContentParams = BaseModalContentParams & {
 export default function CreateProjectModal({
     setShow,
     repos,
+    dispatch,
 }: ModalContentParams) {
-    const [state, dispatch] = useFormState(createProjectAction, null)
     const [tags, setTags] = useState<string[]>([])
     const handleClose = () => {
         setShow(false)
     }
-
-    useEffect(() => {
-        if (state?.error) {
-            // Handle
-        }
-    }, [state])
 
     return (
         <div className="fixed h-screen w-screen z-50 flex justify-center items-center left-40">

@@ -5,9 +5,10 @@ import { UserRepo } from '@/services/github'
 import RepoContainer from './RepositoryContainer'
 import ProjectGrid from '@/components/ProjectGrid'
 import { useEffect, useMemo, useRef } from 'react'
-import { Session } from 'next-auth/types'
 import { useFormState } from 'react-dom'
 import getProjectsById from '../_actions/get-projects-by-id-action'
+import { Session } from 'next-auth'
+import { toast } from 'react-toastify'
 
 interface ProjectDashboardProps {
     repos: UserRepo[]
@@ -48,6 +49,20 @@ export default function ProjectDashboard({
         () => (!projectsRaw.error ? projectsRaw.data : []),
         [projectsRaw]
     )
+
+    useEffect(() => {
+        if (projectsRaw && projectsRaw.error) {
+            toast('Error: ' + projectsRaw.error, {
+                position: 'bottom-center',
+                autoClose: 5000,
+                type: 'error',
+                hideProgressBar: true,
+                closeOnClick: true,
+                progress: undefined,
+                theme: 'colored',
+            })
+        }
+    }, [projectsRaw])
 
     return (
         <div
