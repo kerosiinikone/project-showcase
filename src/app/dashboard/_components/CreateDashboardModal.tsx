@@ -1,8 +1,7 @@
 'use client'
 
 import { BaseModalContentParams } from '@/components/ModalLayout'
-import { Github, X } from 'lucide-react'
-import { SyntheticEvent } from 'react'
+import { X } from 'lucide-react'
 
 type ModalContentParams = BaseModalContentParams & {
     title?: string

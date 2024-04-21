@@ -29,8 +29,6 @@ interface SupportButtonProps {
     isFollowed: boolean
 }
 
-// Loading state while edit is submitting -> useFormStatus
-
 export default function ProjectWrapper({
     session,
     supportCountFormatted,

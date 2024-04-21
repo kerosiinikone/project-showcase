@@ -4,8 +4,8 @@ import { ProjectTypeWithId } from '@/models/Project/types'
 import { UserRepo } from '@/services/github'
 import RepoContainer from './RepositoryContainer'
 import ProjectGrid from '@/components/ProjectGrid'
-import { useEffect, useMemo, useRef } from 'react'
-import { useFormState } from 'react-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useFormState, useFormStatus } from 'react-dom'
 import getProjectsById from '../_actions/get-projects-by-id-action'
 import { Session } from 'next-auth'
 import { toast } from 'react-toastify'
@@ -15,25 +15,27 @@ interface ProjectDashboardProps {
     projects: ProjectTypeWithId[]
     initialCursor: string | null
     session: Session
+    initialError: boolean
 }
-
-// Instead of making hidden inputs, it is also possible to
-// keep the values in úseState and append them to the FormData object
 
 export default function ProjectDashboard({
     repos,
     projects,
+    initialError,
     initialCursor,
 }: ProjectDashboardProps) {
     const formRef = useRef<HTMLFormElement | null>(null)
-
+    const [pending, setPending] = useState<boolean>(false)
     const [projectsRaw, dispatch] = useFormState(getProjectsById, {
         data: projects,
         nextCursor: initialCursor,
     })
 
     const fetch = () => {
-        formRef.current?.requestSubmit()
+        if (formRef) {
+            setPending(true)
+            formRef.current?.requestSubmit()
+        }
     }
 
     const onBottom = (e: any) => {
@@ -51,6 +53,7 @@ export default function ProjectDashboard({
     )
 
     useEffect(() => {
+        setPending(false)
         if (projectsRaw && projectsRaw.error) {
             toast('Error: ' + projectsRaw.error, {
                 position: 'bottom-center',
@@ -64,34 +67,59 @@ export default function ProjectDashboard({
         }
     }, [projectsRaw])
 
+    useEffect(() => {
+        if (initialError) {
+            toast('Error', {
+                position: 'bottom-center',
+                autoClose: 5000,
+                type: 'error',
+                hideProgressBar: true,
+                closeOnClick: true,
+                progress: undefined,
+                theme: 'colored',
+            })
+        }
+    }, [initialError])
+
     return (
         <div
             id="projects-repos"
             className="flex flex-row h-3/4 w-full mt-5"
         >
-            <form ref={formRef} action={dispatch} hidden>
-                <input
-                    hidden
-                    id="nextCursor"
-                    readOnly
-                    name="nextCursor"
-                    value={
-                        projectsRaw?.nextCursor ??
-                        initialCursor ??
-                        undefined
-                    }
-                />
-            </form>
-            <div className="flex flex-col justify-center items-center rounded-lg h-full w-full font-medium bg-gray-100 mr-5">
-                {projectsMemo.length ? (
-                    <ProjectGrid
-                        onBottom={onBottom}
-                        projects={projectsMemo}
+            <form ref={formRef} action={dispatch}>
+                <div hidden>
+                    <input
+                        hidden
+                        id="nextCursor"
+                        readOnly
+                        name="nextCursor"
+                        value={
+                            projectsRaw?.nextCursor ??
+                            initialCursor ??
+                            undefined
+                        }
                     />
-                ) : (
-                    <h1>No Projects yet!</h1>
-                )}
-            </div>
+                </div>
+                <div className="flex flex-col justify-center items-center rounded-lg h-full w-full font-medium bg-gray-100 mr-5">
+                    {projectsMemo.length ? (
+                        <>
+                            {pending ? (
+                                <h1>Skeleton Component</h1>
+                            ) : (
+                                <ProjectGrid
+                                    onBottom={onBottom}
+                                    projects={projectsMemo}
+                                />
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <h1>No Projects</h1>
+                            <h2>Add a new project</h2>
+                        </>
+                    )}
+                </div>
+            </form>
             <div className="flex flex-col justify-center items-center rounded-lg h-full w-full font-medium ml-5 bg-gray-100 mr-5">
                 {repos.length ? (
                     <RepoContainer repos={repos} />

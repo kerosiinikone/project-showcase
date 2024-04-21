@@ -1,7 +1,6 @@
 import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import { initTRPC } from '@trpc/server'
 import { CreateNextContextOptions } from '@trpc/server/adapters/next'
-import { ZodError } from 'zod'
 
 export type Context = Awaited<ReturnType<typeof createContext>>
 

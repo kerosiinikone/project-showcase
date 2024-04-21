@@ -2,8 +2,6 @@ import { getProjects } from '@/services/trpc/server'
 import ProjectContainer from './_components/ProjectContainer'
 import { ProjectTypeWithId } from '@/models/Project/types'
 
-// Tags from URL params or search bar
-
 export default async function MainPage({
     searchParams,
 }: {
@@ -12,7 +10,11 @@ export default async function MainPage({
     const tagsFromParams =
         'tag' in searchParams ? [searchParams['tag'] as string] : []
 
-    const { data: initial, nextCursor } = await getProjects({
+    const {
+        data: initial,
+        nextCursor,
+        initialError,
+    } = await getProjects({
         tags: tagsFromParams,
         stage: [],
     })
@@ -36,8 +38,11 @@ export default async function MainPage({
                 <ProjectContainer
                     initialProjects={initial as ProjectTypeWithId[]}
                     initialNextCursor={
-                        !tagsFromParams.length ? nextCursor : null
+                        !tagsFromParams.length && nextCursor
+                            ? nextCursor
+                            : null
                     }
+                    initialError={initialError ?? false}
                     tagsFromParam={tagsFromParams}
                 />
             </div>

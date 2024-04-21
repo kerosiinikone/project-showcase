@@ -38,6 +38,12 @@ yarn-error.log*
 next-env.d.ts
 
 # drizzle migs
-/drizzle/
 /drizzle
 drizzle
+drizzle/
+/drizzle/*
+/drizzle/migrations/*
+
+# tmp - drive
+.tmp.*
+/.tmp.*/

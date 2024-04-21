@@ -1,21 +1,26 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { useFormState } from 'react-dom'
 import { Stage } from '@/models/Project/types'
-import { PlusIcon, X } from 'lucide-react'
 import { UserRepo } from '@/services/github'
-import createProjectAction from '@/app/_actions/create-project-action'
+import { PlusIcon, X } from 'lucide-react'
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { BaseModalContentParams } from './ModalLayout'
 import TagLabel from './TagItem'
-import { toast } from 'react-toastify'
 
 type ModalContentParams = BaseModalContentParams & {
     repos: UserRepo[] | null
     dispatch: any
 }
 
-// Abstract Tags code to a separate component
+type FormValues = {
+    name: string
+    description: string
+    stage: Stage
+    tags: string[]
+    website: string
+    github_url: string
+}
 
 export default function CreateProjectModal({
     setShow,
@@ -23,6 +28,7 @@ export default function CreateProjectModal({
     dispatch,
 }: ModalContentParams) {
     const [tags, setTags] = useState<string[]>([])
+    const { register } = useForm<FormValues>()
     const handleClose = () => {
         setShow(false)
     }
@@ -65,6 +71,10 @@ export default function CreateProjectModal({
                         className="flex flex-col justify-between p-6 h-max"
                     >
                         <input
+                            {...register('tags', {
+                                required: true,
+                                maxLength: 3,
+                            })}
                             hidden
                             readOnly
                             name="tags"
@@ -78,6 +88,10 @@ export default function CreateProjectModal({
                                     Name
                                 </label>
                                 <input
+                                    {...register('name', {
+                                        required: true,
+                                        maxLength: 100,
+                                    })}
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                     rounded-lg py-2 px-3 w-full"
                                     placeholder="Type a project name"
@@ -91,6 +105,10 @@ export default function CreateProjectModal({
                                     Description
                                 </label>
                                 <textarea
+                                    {...register('description', {
+                                        required: true,
+                                        maxLength: 500, // For now
+                                    })}
                                     className="h-32 max-h-40 min-h-20 bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                     rounded-lg block w-full p-2.5 "
                                     placeholder="Type a project description"
@@ -104,6 +122,9 @@ export default function CreateProjectModal({
                                     Stage
                                 </label>
                                 <select
+                                    {...register('stage', {
+                                        required: true,
+                                    })}
                                     id="stage"
                                     name="stage"
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 mb-2 w-full"
@@ -145,6 +166,10 @@ export default function CreateProjectModal({
                                     Github Repo
                                 </label>
                                 <select
+                                    {...register('github_url', {
+                                        required: true,
+                                        // validate: () => true,
+                                    })}
                                     id="github_url"
                                     name="github_url"
                                     defaultValue=""
@@ -213,6 +238,11 @@ export default function CreateProjectModal({
                                     Project Website
                                 </label>
                                 <input
+                                    {...register('website', {
+                                        required: true,
+                                        maxLength: 150,
+                                        // validate: () => true,
+                                    })}
                                     id="website"
                                     name="website"
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 

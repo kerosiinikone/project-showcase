@@ -2,7 +2,7 @@
 
 import searchProjects from '@/app/_actions/search-projects-action'
 import { ProjectTypeWithId } from '@/models/Project/types'
-import { MutableRefObject, useEffect } from 'react'
+import { MutableRefObject, useEffect, useState } from 'react'
 import { useFormState } from 'react-dom'
 import { toast } from 'react-toastify'
 
@@ -11,6 +11,7 @@ export const usePagination = (
     initialNextCursor: string | null,
     formRef: MutableRefObject<HTMLFormElement | null>
 ) => {
+    const [pending, setPending] = useState<boolean>(false)
     const [projectsRaw, dispatch] = useFormState(searchProjects, {
         data: initialProjects,
         stage: [],
@@ -21,7 +22,10 @@ export const usePagination = (
     })
 
     const search = () => {
-        formRef.current?.requestSubmit()
+        if (formRef) {
+            setPending(true)
+            formRef.current?.requestSubmit()
+        }
     }
 
     const onBottom = (e: any) => {
@@ -34,6 +38,7 @@ export const usePagination = (
     }
 
     useEffect(() => {
+        setPending(false)
         if (projectsRaw && projectsRaw.error) {
             toast('Error: ' + projectsRaw.error, {
                 position: 'bottom-center',
@@ -47,5 +52,5 @@ export const usePagination = (
         }
     }, [projectsRaw])
 
-    return { projectsRaw, dispatch, onBottom, search }
+    return { projectsRaw, dispatch, onBottom, search, pending }
 }

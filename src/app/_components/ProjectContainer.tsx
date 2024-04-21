@@ -1,34 +1,31 @@
 'use client'
 
-import {
-    ProjectType,
-    ProjectTypeWithId,
-} from '@/models/Project/types'
-import SearchBarComponent from './SearchBar'
-import { Suspense, useMemo, useRef, useState } from 'react'
 import ProjectGrid from '@/components/ProjectGrid'
-import { usePagination } from '@/hooks/useSearchPagination'
-import Filters from './Filters'
 import TagLabel from '@/components/TagItem'
+import { usePagination } from '@/hooks/useSearchPagination'
+import { ProjectTypeWithId } from '@/models/Project/types'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { toast } from 'react-toastify'
+import Filters from './Filters'
+import SearchBarComponent from './SearchBar'
 
 interface ProjectContainerProps {
     initialProjects: ProjectTypeWithId[]
     tagsFromParam: string[] | null
     initialNextCursor: string | null
+    initialError: boolean
 }
 
 export default function ProjectContainer({
     initialProjects,
     initialNextCursor,
     tagsFromParam,
+    initialError,
 }: ProjectContainerProps) {
     const formRef = useRef<HTMLFormElement | null>(null)
     const [tags, setTags] = useState<string[]>(tagsFromParam || [])
-    const { projectsRaw, dispatch, onBottom, search } = usePagination(
-        initialProjects,
-        initialNextCursor,
-        formRef
-    )
+    const { projectsRaw, dispatch, onBottom, search, pending } =
+        usePagination(initialProjects, initialNextCursor, formRef)
 
     const addTag = (tag: string) => {
         setTags((state) => {
@@ -43,6 +40,22 @@ export default function ProjectContainer({
         () => (!projectsRaw.error ? projectsRaw.data : []),
         [projectsRaw]
     )
+
+    // Initial Error Message
+
+    useEffect(() => {
+        if (initialError) {
+            toast('Error', {
+                position: 'bottom-center',
+                autoClose: 5000,
+                type: 'error',
+                hideProgressBar: true,
+                closeOnClick: true,
+                progress: undefined,
+                theme: 'colored',
+            })
+        }
+    }, [initialError])
 
     return (
         <>
@@ -93,7 +106,6 @@ export default function ProjectContainer({
                             stage={projectsRaw.stage}
                         />
                     </div>
-
                     <input
                         hidden
                         readOnly
@@ -108,12 +120,14 @@ export default function ProjectContainer({
                     />
                 </form>
             </div>
-            <Suspense fallback={<div>Loading...</div>}>
+            {!pending ? (
                 <ProjectGrid
                     onBottom={onBottom}
                     projects={projectsMemo}
                 />
-            </Suspense>
+            ) : (
+                <h1>Skeleton Component</h1>
+            )}
         </>
     )
 }

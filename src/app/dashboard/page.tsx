@@ -36,6 +36,7 @@ export default async function DashboardComponent() {
                 />
                 <ProjectDashboard
                     projects={userProjects.data}
+                    initialError={userProjects.initialError ?? false}
                     session={session!}
                     initialCursor={cursor.serialize(
                         userProjects.data.at(-1)

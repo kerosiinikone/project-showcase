@@ -138,8 +138,6 @@ export default {
                         message: 'Database: Error editing project.',
                     })
                 }
-
-                // EditTags logic
             }
         ),
     getProjectsById: protectedProcedure
@@ -162,13 +160,18 @@ export default {
                     error,
                     input,
                 })
-                return {
-                    data: [],
+                if (input) {
+                    // Existing data
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Database: Error fetching project.',
+                    })
                 }
-                // throw new TRPCError({
-                //     code: 'INTERNAL_SERVER_ERROR',
-                //     message: 'Database: Error fetching projects.',
-                // })
+
+                return {
+                    data: [], // Initial data load non-populated
+                    initialError: true,
+                }
             }
         }),
     getProjectsByQuery: procedure
@@ -211,13 +214,19 @@ export default {
                     error,
                     input,
                 })
-                return {
-                    data: [],
+
+                if (input?.cursor) {
+                    // Existing data
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Database: Error fetching project.',
+                    })
                 }
-                // throw new TRPCError({
-                //     code: 'INTERNAL_SERVER_ERROR',
-                //     message: 'Database: Error fetching project.',
-                // })
+
+                return {
+                    data: [], // Initial data load non-populated
+                    initialError: true,
+                }
             }
         }),
     getProjectById: procedure
@@ -340,10 +349,13 @@ export default {
                     error,
                     input: { pid },
                 })
-                throw new TRPCError({
-                    code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Database: Error.',
-                })
+
+                return false // To not block the execution
+
+                // throw new TRPCError({
+                //     code: 'INTERNAL_SERVER_ERROR',
+                //     message: 'Database: Error.',
+                // })
             }
         }),
     getReadmeFile: protectedProcedure
