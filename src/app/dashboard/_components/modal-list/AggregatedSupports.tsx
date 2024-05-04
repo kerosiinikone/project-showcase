@@ -6,6 +6,8 @@ import { useFormState } from 'react-dom'
 import CreateDashboardModal from '../CreateDashboardModal'
 import getAggreagtedSupportsList from '../../_actions/get-aggregated-supports-list'
 import { toast } from 'react-toastify'
+import { Dialog } from '@radix-ui/react-dialog'
+import { DialogTrigger } from '@/components/ui/dialog'
 
 export interface SupportedProjectProps {
     name: string
@@ -19,7 +21,6 @@ export default function AggregatedSupports({
     supports?: number
 }) {
     const formRef = useRef<HTMLFormElement | null>(null)
-    const [show, setShow] = useState<boolean>(false)
     const [aggregatedSupportsRaw, dispatch] = useFormState(
         getAggreagtedSupportsList,
         { data: [] }
@@ -62,12 +63,9 @@ export default function AggregatedSupports({
     }, [aggregatedSupportsRaw])
 
     return (
-        <>
-            <ModalLayout show={show}>
-                <CreateDashboardModal
-                    title="Supports"
-                    setShow={setShow}
-                >
+        <Dialog>
+            <>
+                <CreateDashboardModal title="Supports">
                     <ul
                         onScroll={onBottom}
                         className="h-full w-full font-medium overflow-y-auto "
@@ -99,19 +97,14 @@ export default function AggregatedSupports({
                         )}
                     </ul>
                 </CreateDashboardModal>
-            </ModalLayout>
+            </>
             <form action={dispatch} ref={formRef}>
-                <button
-                    type="submit"
-                    onClick={() => {
-                        setShow(true)
-                    }}
-                >
+                <DialogTrigger type="submit">
                     <div className="col-span-1 flex flex-col px-10 py-2 w-fit items-center justify-center cursor-pointer rounded-lg hover:bg-slate-100 transition">
                         <h1 className="font-medium">Supports</h1>
                         <h2>{supports}</h2>
                     </div>
-                </button>
+                </DialogTrigger>
                 <input
                     hidden
                     id="nextCursor"
@@ -122,7 +115,7 @@ export default function AggregatedSupports({
                     }
                 />
             </form>
-        </>
+        </Dialog>
     )
 }
 

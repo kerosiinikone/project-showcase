@@ -1,11 +1,16 @@
-import './globals.css'
+import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
+import { Inter as FontSans } from 'next/font/google'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import SideNavLayout from './Nav'
 import Provider from './_util/Provider'
-import { SessionProvider } from 'next-auth/react'
-import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
-import { ToastContainer } from 'react-toastify'
+import './globals.css'
+import { cn } from '@/lib/utils'
 
-import 'react-toastify/dist/ReactToastify.css'
+const fontSans = FontSans({
+    subsets: ['latin'],
+    variable: '--font-sans',
+})
 
 export default async function RootLayout({
     children,
@@ -16,7 +21,12 @@ export default async function RootLayout({
 
     return (
         <html lang="en">
-            <body>
+            <body
+                className={cn(
+                    'min-h-screen bg-background font-sans antialiased',
+                    fontSans.variable
+                )}
+            >
                 <Provider>
                     <div className="flex h-screen">
                         <div id="modal" />

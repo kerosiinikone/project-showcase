@@ -1,4 +1,4 @@
-import { UserType } from '@/models/User/types'
+import { cursor } from '@/operations/cursor'
 import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import {
     getAggregatedSupportCount,
@@ -8,8 +8,7 @@ import {
     getUserById,
 } from '@/services/trpc/server'
 import ProjectDashboard from './_components/ProjectDashboard'
-import UserSectionComponent from './_components/UserSection'
-import { cursor } from '@/operations/cursor'
+import UserSectionComponent from './_components/UserContainer'
 
 export default async function DashboardComponent() {
     const session = await useAsyncAuth()

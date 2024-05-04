@@ -120,14 +120,11 @@ export default function ProjectContainer({
                     />
                 </form>
             </div>
-            {!pending ? (
-                <ProjectGrid
-                    onBottom={onBottom}
-                    projects={projectsMemo}
-                />
-            ) : (
-                <h1>Skeleton Component</h1>
-            )}
+            <ProjectGrid
+                pending={pending}
+                onBottom={onBottom}
+                projects={projectsMemo}
+            />
         </>
     )
 }

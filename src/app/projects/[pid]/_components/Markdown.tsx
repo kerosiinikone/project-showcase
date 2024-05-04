@@ -3,7 +3,7 @@ import '../custom-styles/style.css'
 
 // Expreimental -> change in the future
 
-export const Markdown = ({ readme }: { readme: string }) => {
+const Markdown = ({ readme }: { readme: string }) => {
     return (
         <pre
             id="readme"
@@ -14,3 +14,5 @@ export const Markdown = ({ readme }: { readme: string }) => {
         ></pre>
     )
 }
+
+export default Markdown

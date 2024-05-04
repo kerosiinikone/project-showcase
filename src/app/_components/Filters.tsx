@@ -26,7 +26,7 @@ export default function Filters({ initSearch, stage }: FilterProps) {
         }
     }
 
-    const handelSetGithubTrue = () => {
+    const handleSetGithubTrue = () => {
         if (hasGithubFilter !== null && hasGithubFilter) {
             setHasGithubFilter(null)
         } else {
@@ -143,7 +143,7 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                 {hasGithubFilter !== null && hasGithubFilter ? (
                     <div
                         onClick={handleChangeWithSearch(
-                            handelSetGithubTrue
+                            handleSetGithubTrue
                         )}
                         className="flex justify-between items-center w-fit h-fit bg-emerald-300 rounded-md py-2 px-4 border-emerald-300 border-2
                                 hover:bg-emerald-400 transition cursor-pointer"
@@ -153,7 +153,7 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                 ) : (
                     <div
                         onClick={handleChangeWithSearch(
-                            handelSetGithubTrue
+                            handleSetGithubTrue
                         )}
                         className="flex justify-between items-center w-fit h-fit bg-emerald-200 rounded-md py-2 px-4 border-emerald-300 border-2
                                 hover:bg-emerald-300 transition cursor-pointer"

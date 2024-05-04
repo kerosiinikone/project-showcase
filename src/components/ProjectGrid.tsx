@@ -1,5 +1,6 @@
 import { ProjectTypeWithId } from '@/models/Project/types'
 import { lazy } from 'react'
+import { Skeleton } from './ui/skeleton'
 
 // Fix resizing the cards
 
@@ -8,11 +9,13 @@ const ProjectCard = lazy(() => import('./ProjectCard'))
 interface ProjectGridProps {
     projects: ProjectTypeWithId[]
     onBottom: (e: any) => void
+    pending: boolean
 }
 
 export default function ProjectGrid({
     projects,
     onBottom,
+    pending,
 }: ProjectGridProps) {
     return (
         <div
@@ -29,6 +32,10 @@ export default function ProjectGrid({
                     />
                 )
             })}
+            {pending &&
+                [...'x'.repeat(5).split('').keys()].map(() => (
+                    <Skeleton className="w-full h-full rounded-lg" />
+                ))}
         </div>
     )
 }

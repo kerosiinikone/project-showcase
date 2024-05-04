@@ -7,6 +7,8 @@ import CreateDashboardModal from '../CreateDashboardModal'
 import getSupportedList from '../../_actions/get-supported-projects-list'
 import { Github } from 'lucide-react'
 import { toast } from 'react-toastify'
+import { Dialog } from '@radix-ui/react-dialog'
+import { DialogTrigger } from '@/components/ui/dialog'
 
 export interface SupportedProjectProps {
     name: string
@@ -19,10 +21,9 @@ export interface SupportedProjectProps {
 export default function UserSupportCount({
     supports,
 }: {
-    supports?: number
+    supports: number
 }) {
     const formRef = useRef<HTMLFormElement | null>(null)
-    const [show, setShow] = useState<boolean>(false)
     const [supportedProjectsRaw, dispatch] = useFormState(
         getSupportedList,
         { data: [] }
@@ -65,12 +66,9 @@ export default function UserSupportCount({
     }, [supportedProjectsRaw])
 
     return (
-        <>
-            <ModalLayout show={show}>
-                <CreateDashboardModal
-                    title="Supported Projects"
-                    setShow={setShow}
-                >
+        <Dialog>
+            <>
+                <CreateDashboardModal title="Supported Projects">
                     <ul
                         onScroll={onBottom}
                         className="h-full w-full font-medium overflow-y-auto "
@@ -101,21 +99,16 @@ export default function UserSupportCount({
                         })}
                     </ul>
                 </CreateDashboardModal>
-            </ModalLayout>
+            </>
             <form action={dispatch} ref={formRef}>
-                <button
-                    type="submit"
-                    onClick={() => {
-                        setShow(true)
-                    }}
-                >
+                <DialogTrigger type="submit">
                     <div className="col-span-1 flex flex-col px-10 py-2 w-fit items-center justify-center cursor-pointer rounded-lg hover:bg-slate-100 transition">
                         <h1 className="font-medium">
                             Supported Projects
                         </h1>
                         <h2>{supports}</h2>
                     </div>
-                </button>
+                </DialogTrigger>
                 <input
                     hidden
                     id="nextCursor"
@@ -126,16 +119,6 @@ export default function UserSupportCount({
                     }
                 />
             </form>
-        </>
+        </Dialog>
     )
 }
-
-// Add later
-// export const ProjectListItem = memo(
-//     ({ id, name, image }: SupportedProjectProps) => {
-//         return <div></div>
-//     },
-//     (prev: SupportedProjectProps, next: SupportedProjectProps) => {
-//         return prev.id == next.id
-//     }
-// )

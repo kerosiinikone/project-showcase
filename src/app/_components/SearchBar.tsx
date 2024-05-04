@@ -1,8 +1,8 @@
 'use client'
 
-import { Search } from 'lucide-react'
-import { HTMLProps, useState } from 'react'
+import { useState } from 'react'
 import { DebounceInput } from 'react-debounce-input'
+import SearchButton from './ui/SearchButton'
 
 // Move hidden inputs to ProjectContainer
 
@@ -61,25 +61,5 @@ const SearchBarComponent = ({
         </>
     )
 }
-
-const SearchButton = (_: HTMLProps<HTMLButtonElement>) => (
-    <button
-        type="submit"
-        className="cursor-pointer inline-flex py-2.5 px-3 ms-2 text-sm font-medium justify-center items-center bg-white border-2 border-blue-500 rounded-lg 
-            group hover:bg-blue-100 text-blue-500 transition"
-    >
-        <Search
-            className="w-4 h-4 me-2"
-            aria-hidden="true"
-            fill="none"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 20 20"
-        />
-        Search
-    </button>
-)
 
 export default SearchBarComponent

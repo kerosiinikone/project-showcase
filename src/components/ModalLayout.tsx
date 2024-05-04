@@ -3,10 +3,6 @@
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
-export type BaseModalContentParams = {
-    setShow: Dispatch<SetStateAction<boolean>>
-}
-
 type ModalLayoutParams = {
     show: boolean
 }

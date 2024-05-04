@@ -1,16 +1,19 @@
 'use client'
 
-import { ProjectWithUser, Stage } from '@/models/Project/types'
-import { Delete, Github, Pencil, UserPlus, X } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { ProjectWithUser } from '@/models/Project/types'
+import { Github } from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
 import { useFormState } from 'react-dom'
 import deleteProjectAction from '../_actions/delete-project-action'
-import editProjectAction from '../_actions/edit-project-action'
 import supportProjectAction from '../_actions/follow-project-action'
 import unsupportProjectAction from '../_actions/unfollow-project-action'
-import { Markdown } from './Markdown'
-import Link from 'next/link'
+import Markdown from './Markdown'
+import DeleteButton from './ui/DeleteButton'
+import EditButton from './ui/EditButton'
+import SupportButton from './ui/SupportButton'
+
+// TODO: Divide the component into smaller chunks
 
 interface ProjectWrapperProps {
     session: any
@@ -18,15 +21,6 @@ interface ProjectWrapperProps {
     project: ProjectWithUser & { id: number }
     readme?: string | null
     supportCountFormatted: string | number | null
-}
-
-interface SupportButtonProps {
-    uid: string
-    pid: number
-    unsupportWithParams: (payload: FormData) => void
-    supportWithParams: (payload: FormData) => void
-    setIsFollowedState: Dispatch<SetStateAction<boolean>>
-    isFollowed: boolean
 }
 
 export default function ProjectWrapper({
@@ -208,131 +202,6 @@ export default function ProjectWrapper({
                     )}
                 </div>
             </div>
-        </div>
-    )
-}
-
-const EditButton = ({ pid }: { pid: number }) => {
-    return (
-        <div>
-            <div className="flex justify-center items-center">
-                <Link
-                    href={`/projects/${pid}/edit`}
-                    className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-white border-2 border-emerald-500 rounded-lg 
-            group hover:bg-emerald-100 text-emerald-500 transition"
-                >
-                    <Pencil
-                        className="w-5 h-5 me-2"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        aria-hidden="true"
-                        fill="none"
-                        viewBox="0 0 22 24"
-                    />
-                    Edit
-                </Link>
-            </div>
-        </div>
-    )
-}
-
-const SupportButton = ({
-    isFollowed,
-    setIsFollowedState,
-    unsupportWithParams,
-    supportWithParams,
-}: SupportButtonProps) => {
-    return (
-        <form
-            onSubmit={() => {
-                setIsFollowedState(!isFollowed)
-            }}
-            action={
-                isFollowed ? unsupportWithParams : supportWithParams
-            }
-        >
-            <div className="flex justiyf-center items-center">
-                <button
-                    type="submit"
-                    className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-white border-2 border-blue-500 rounded-lg 
-            group hover:bg-blue-100 text-blue-500 transition"
-                >
-                    <UserPlus
-                        className="w-5 h-5 me-2"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        aria-hidden="true"
-                        fill="none"
-                        viewBox="0 0 22 24"
-                    />
-                    {!isFollowed
-                        ? 'Support Project'
-                        : 'Unsupport Project'}
-                </button>
-            </div>
-        </form>
-    )
-}
-
-const DeleteButton = ({
-    setIsDelete,
-    isDelete,
-}: {
-    isDelete: boolean
-    setIsDelete: Dispatch<SetStateAction<boolean>>
-}) => {
-    // Opens a modal to edit the project -> redirects to the project page
-
-    return (
-        <div>
-            {!isDelete ? (
-                <div className="flex justify-center items-center">
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault()
-                            setIsDelete(true)
-                        }}
-                        className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-white border-2 border-red-500 rounded-lg 
-            group hover:bg-red-100 text-red-500 transition"
-                    >
-                        <Delete
-                            className="w-5 h-5 me-2"
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            aria-hidden="true"
-                            fill="none"
-                            viewBox="0 0 22 24"
-                        />
-                        Delete
-                    </button>
-                </div>
-            ) : (
-                <div className="flex justify-center items-center">
-                    <button
-                        type="submit"
-                        className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-red-500 border-2 border-red-500 rounded-lg 
-            hover:bg-red-600 text-white transition"
-                    >
-                        <Pencil
-                            className="w-5 h-5 me-2"
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            aria-hidden="true"
-                            fill="none"
-                            viewBox="0 0 22 24"
-                        />
-                        Confirm
-                    </button>
-                </div>
-            )}
         </div>
     )
 }

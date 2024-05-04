@@ -102,16 +102,11 @@ export default function ProjectDashboard({
                 </div>
                 <div className="flex flex-col justify-center items-center rounded-lg h-full w-full font-medium bg-gray-100 mr-5">
                     {projectsMemo.length ? (
-                        <>
-                            {pending ? (
-                                <h1>Skeleton Component</h1>
-                            ) : (
-                                <ProjectGrid
-                                    onBottom={onBottom}
-                                    projects={projectsMemo}
-                                />
-                            )}
-                        </>
+                        <ProjectGrid
+                            pending={pending}
+                            onBottom={onBottom}
+                            projects={projectsMemo}
+                        />
                     ) : (
                         <>
                             <h1>No Projects</h1>
@@ -120,11 +115,11 @@ export default function ProjectDashboard({
                     )}
                 </div>
             </form>
-            <div className="flex flex-col justify-center items-center rounded-lg h-full w-full font-medium ml-5 bg-gray-100 mr-5">
+            <div className="flex flex-col rounded-lg h-full w-full font-medium ml-5 bg-white mr-5">
                 {repos.length ? (
                     <RepoContainer repos={repos} />
                 ) : (
-                    <h1>No Github repos!</h1>
+                    <h1>No Github repos</h1>
                 )}
             </div>
         </div>
