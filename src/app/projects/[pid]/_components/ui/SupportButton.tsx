@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import { UserPlus } from 'lucide-react'
 import { Dispatch, SetStateAction } from 'react'
 
@@ -26,10 +27,9 @@ const SupportButton = ({
             }
         >
             <div className="flex justiyf-center items-center">
-                <button
+                <Button
                     type="submit"
-                    className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-white border-2 border-blue-500 rounded-lg 
-            group hover:bg-blue-100 text-blue-500 transition"
+                    className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center"
                 >
                     <UserPlus
                         className="w-5 h-5 me-2"
@@ -44,7 +44,7 @@ const SupportButton = ({
                     {!isFollowed
                         ? 'Support Project'
                         : 'Unsupport Project'}
-                </button>
+                </Button>
             </div>
         </form>
     )

@@ -31,6 +31,7 @@ export default async function createProjectAction(
         description: formData.get('description') as string,
         tags: formData.get('tags') as string,
     }
+
     try {
         await createProjectServer({
             ...projectParams,

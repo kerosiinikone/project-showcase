@@ -1,4 +1,4 @@
-import { LoginWithGithubButton } from '@/app/Nav'
+import LoginWithGithubButton from '@/app/_components/ui/LoginButton'
 import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import { redirect } from 'next/navigation'
 

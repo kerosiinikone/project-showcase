@@ -101,7 +101,6 @@ export default function SideNavLayout({
                                     {session && (
                                         <CreateProjectButton
                                             fetch={fetchReposAction}
-                                            open={() => setShow(true)}
                                         />
                                     )}
                                 </Dialog>

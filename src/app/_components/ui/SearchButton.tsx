@@ -5,8 +5,8 @@ import { HTMLProps } from 'react'
 const SearchButton = (_: HTMLProps<HTMLButtonElement>) => (
     <Button
         type="submit"
-        className="cursor-pointer inline-flex py-2.5 px-3 ms-2 justify-center items-center  
-            group "
+        variant="secondary"
+        className="cursor-pointer inline-flex py-2.5 px-3 ms-2 justify-center items-center"
     >
         <Search
             className="w-4 h-4 me-2"

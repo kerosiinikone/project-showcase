@@ -12,8 +12,14 @@ import Markdown from './Markdown'
 import DeleteButton from './ui/DeleteButton'
 import EditButton from './ui/EditButton'
 import SupportButton from './ui/SupportButton'
-
-// TODO: Divide the component into smaller chunks
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card'
 
 interface ProjectWrapperProps {
     session: any
@@ -53,6 +59,172 @@ export default function ProjectWrapper({
     const supportWithParams = supportProjectAction.bind(null, id)
 
     return (
+        <div className="flex flex-col space-y-4">
+            <Card>
+                <CardHeader className="flex flex-row w-full justify-between p-10">
+                    <div className="flex flex-col w-full items-start justify-start gap-2">
+                        <div className="flex flex-row w-fit justify-center items-center gap-5">
+                            <CardDescription className="flex flex-row gap-2">
+                                {stage}
+                            </CardDescription>
+                            <CardTitle className="flex flex-col text-2xl w-full">
+                                {name}
+                            </CardTitle>
+                        </div>
+                        {website && (
+                            <a
+                                className="group"
+                                href={website}
+                                target="__blank"
+                            >
+                                <h2 className="truncate text-xl text-slate-600 cursor-pointer group-hover:text-slate-900 transition">
+                                    {website}
+                                </h2>
+                            </a>
+                        )}
+                    </div>
+                    <div className="flex flex-row gap-2">
+                        {session && (
+                            <div className="flex flex-row gap-2 w-fit justify-center items-center">
+                                <form
+                                    action={
+                                        isDelete
+                                            ? deleteAction
+                                            : undefined
+                                    }
+                                    className="flex flex-row gap-2 w-fit justify-center items-center"
+                                >
+                                    {session.user?.id ==
+                                        author.id && (
+                                        <DeleteButton
+                                            setIsDelete={setIsDelete}
+                                            isDelete={isDelete}
+                                        />
+                                    )}
+                                </form>
+                            </div>
+                        )}
+                        {session && (
+                            <div className="flex flex-row gap-2 w-fit justify-center items-center">
+                                <div className="flex flex-row gap-2 w-fit justify-center items-center">
+                                    {session.user?.id ==
+                                        author.id && (
+                                        <EditButton pid={id} />
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </CardHeader>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Description</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-row gap-4 h-full w-full p-10">
+                        <div className="h-full w-1/2">
+                            <div className="flex flex-col h-3/4 w-1/2 items-start justify-center space-y-4 rounded-md border p-4">
+                                <p className="text-md font-medium leading-none">
+                                    Description
+                                </p>
+                                <p className="font-normal text-wrap truncate text-sm">
+                                    {description}
+                                </p>
+                            </div>
+                        </div>
+
+                        {readme && (
+                            <div className="h-full w-full">
+                                <h1 className="p-2 mb-2 text-xl">
+                                    README.md
+                                </h1>
+                                <div className="w-full h-3/4 border-2 p-5 border-stone-300 rounded-xl">
+                                    <Markdown readme={readme} />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    {tags && (
+                        <div className="flex flex-row gap-4 h-full w-full px-10 py-4">
+                            {tags.map((t) => {
+                                return (
+                                    <div className="mt-2" key={t}>
+                                        <Link href={`/?tag=${t}`}>
+                                            <div className="flex items-center justify-center gap-2 flex-row w-max py-2 px-3 bg-blue-600 rounded-xl cursor-pointer hover:bg-blue-800 tansition">
+                                                <h2 className="text-white font-medium text-sm">
+                                                    {t}
+                                                </h2>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Author</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-row justify-between space-x-4 w-full h-fit p-10">
+                    <div className="flex flex-col w-2/3">
+                        <span className="font-normal text-xl">
+                            {author.name}
+                        </span>
+                        <span className="font-light w-3/4">
+                            {author.id}
+                        </span>
+                    </div>
+                    <div className="flex flex-row items-center gap-6">
+                        {supportCountFormatted && (
+                            <div>
+                                <h2 className="mx-5 text-lg font-medium">
+                                    {supportCountFormatted == 1
+                                        ? `${supportCountFormatted} supporter`
+                                        : `${supportCountFormatted} supporters`}
+                                </h2>
+                            </div>
+                        )}
+                        {github_url && (
+                            <div
+                                id="github-icon"
+                                className="flex flex-col w-fit h-fit p-2 justify-center items-center cursor-pointer border-2 border-black rounded-md hover:bg-gray-300 transition"
+                            >
+                                <a href={github_url} target="_blank">
+                                    <Github size="30" />
+                                </a>
+                            </div>
+                        )}
+
+                        {session && (
+                            <div className="flex flex-row gap-2 w-fit justify-center items-center">
+                                <SupportButton
+                                    isFollowed={isFollowedState}
+                                    unsupportWithParams={
+                                        unsupportWithParams
+                                    }
+                                    supportWithParams={
+                                        supportWithParams
+                                    }
+                                    setIsFollowedState={
+                                        setIsFollowedState
+                                    }
+                                    pid={id}
+                                    uid={session.user!.id}
+                                />
+                            </div>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    )
+}
+
+/*
+return (
         <div className="flex flex-col justify-start h-full w-full rounded-xl bg-white border-stone-100 border-2 shadow-lg">
             <div className="flex flex-col justify-start h-full w-full">
                 <div className="flex flex-row w-full justify-between p-10">
@@ -61,17 +233,6 @@ export default function ProjectWrapper({
                             <h1 className="font-medium truncate text-3xl">
                                 {name}
                             </h1>
-                            {website && (
-                                <a
-                                    className="group"
-                                    href={website}
-                                    target="__blank"
-                                >
-                                    <h2 className="truncate text-xl text-slate-600 cursor-pointer group-hover:text-slate-900 transition">
-                                        {website}
-                                    </h2>
-                                </a>
-                            )}
                         </div>
 
                         <h2 id="status" className="text-xl mt-5">
@@ -204,4 +365,4 @@ export default function ProjectWrapper({
             </div>
         </div>
     )
-}
+*/

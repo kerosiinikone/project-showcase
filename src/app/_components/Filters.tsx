@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
 import { Stage } from '@/models/Project/types'
 import { X } from 'lucide-react'
 import { useState } from 'react'
@@ -64,10 +65,9 @@ export default function Filters({ initSearch, stage }: FilterProps) {
     return (
         <div className="flex flex-row w-full justify-start my-4 gap-6">
             <div className="flex flex-row gap-2" id="stage-filter">
-                <div
+                <Button
                     onClick={() => handleStageFilter(Stage.IDEA)}
-                    className="flex flex-row justify-between items-center w-fit h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
-                                hover:bg-slate-200 transition cursor-pointer"
+                    variant="secondary"
                 >
                     {stageFilter?.includes(Stage.IDEA) ? (
                         <span className="flex flex-row justify-center items-center gap-2">
@@ -77,11 +77,10 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                     ) : (
                         'Idea'
                     )}
-                </div>
-                <div
+                </Button>
+                <Button
                     onClick={() => handleStageFilter(Stage.PLAN)}
-                    className="flex flex-row justify-between items-center w-fit h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
-                                hover:bg-slate-200 transition cursor-pointer"
+                    variant="secondary"
                 >
                     {stageFilter?.includes(Stage.PLAN) ? (
                         <span className="flex flex-row justify-center items-center gap-2">
@@ -91,13 +90,12 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                     ) : (
                         'Plan'
                     )}
-                </div>
-                <div
+                </Button>
+                <Button
                     onClick={() =>
                         handleStageFilter(Stage.DEVELOPMENT)
                     }
-                    className="flex flex-row justify-between items-center w-fit h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
-                                hover:bg-slate-200 transition cursor-pointer"
+                    variant="secondary"
                 >
                     {stageFilter?.includes(Stage.DEVELOPMENT) ? (
                         <span className="flex flex-row justify-center items-center gap-2">
@@ -107,11 +105,10 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                     ) : (
                         'Development'
                     )}
-                </div>
-                <div
+                </Button>
+                <Button
                     onClick={() => handleStageFilter(Stage.FINISHED)}
-                    className="flex flex-row justify-between items-center w-fit h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
-                                hover:bg-slate-200 transition cursor-pointer"
+                    variant="secondary"
                 >
                     {stageFilter?.includes(Stage.FINISHED) ? (
                         <span className="flex flex-row justify-center items-center gap-2">
@@ -121,13 +118,12 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                     ) : (
                         'Finished'
                     )}
-                </div>
-                <div
+                </Button>
+                <Button
                     onClick={() =>
                         handleStageFilter(Stage.PRODUCTION)
                     }
-                    className="flex flex-row justify-between items-center w-fit h-fit bg-slate-100 rounded-md py-2 px-4 border-slate-200 border-2
-                                hover:bg-slate-200 transition cursor-pointer"
+                    variant="secondary"
                 >
                     {stageFilter?.includes(Stage.PRODUCTION) ? (
                         <span className="flex flex-row justify-center items-center gap-2">
@@ -137,50 +133,46 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                     ) : (
                         'Production'
                     )}
-                </div>
+                </Button>
             </div>
             <div className="flex flex-row gap-2" id="github-filter">
                 {hasGithubFilter !== null && hasGithubFilter ? (
-                    <div
+                    <Button
+                        variant="outline"
                         onClick={handleChangeWithSearch(
                             handleSetGithubTrue
                         )}
-                        className="flex justify-between items-center w-fit h-fit bg-emerald-300 rounded-md py-2 px-4 border-emerald-300 border-2
-                                hover:bg-emerald-400 transition cursor-pointer"
                     >
                         Github
-                    </div>
+                    </Button>
                 ) : (
-                    <div
+                    <Button
+                        variant="ghost"
                         onClick={handleChangeWithSearch(
                             handleSetGithubTrue
                         )}
-                        className="flex justify-between items-center w-fit h-fit bg-emerald-200 rounded-md py-2 px-4 border-emerald-300 border-2
-                                hover:bg-emerald-300 transition cursor-pointer"
                     >
                         Github
-                    </div>
+                    </Button>
                 )}
                 {hasGithubFilter !== null && !hasGithubFilter ? (
-                    <div
+                    <Button
                         onClick={handleChangeWithSearch(
                             handleSetGithubFalse
                         )}
-                        className="flex justify-between items-center w-fit h-fit bg-red-300 rounded-md py-2 px-4 border-red-300 border-2
-                                hover:bg-red-400 transition cursor-pointer"
+                        variant="outline"
                     >
                         No Github
-                    </div>
+                    </Button>
                 ) : (
-                    <div
+                    <Button
                         onClick={handleChangeWithSearch(
                             handleSetGithubFalse
                         )}
-                        className="flex justify-between items-center w-fit h-fit bg-red-200 rounded-md py-2 px-4 border-red-300 border-2
-                                hover:bg-red-300 transition cursor-pointer"
+                        variant="ghost"
                     >
                         No Github
-                    </div>
+                    </Button>
                 )}
             </div>
             <input

@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import { Delete, Pencil } from 'lucide-react'
 import { Dispatch, SetStateAction } from 'react'
 
@@ -14,13 +15,13 @@ const DeleteButton = ({
         <div>
             {!isDelete ? (
                 <div className="flex justify-center items-center">
-                    <button
+                    <Button
                         onClick={(e) => {
                             e.preventDefault()
                             setIsDelete(true)
                         }}
-                        className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-white border-2 border-red-500 rounded-lg 
-            group hover:bg-red-100 text-red-500 transition"
+                        className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-red-500 border-2 border-red-500 rounded-lg 
+            group hover:bg-red-600 hover:border-red-600 text-white"
                     >
                         <Delete
                             className="w-5 h-5 me-2"
@@ -33,14 +34,13 @@ const DeleteButton = ({
                             viewBox="0 0 22 24"
                         />
                         Delete
-                    </button>
+                    </Button>
                 </div>
             ) : (
                 <div className="flex justify-center items-center">
-                    <button
-                        type="submit"
+                    <Button
                         className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-red-500 border-2 border-red-500 rounded-lg 
-            hover:bg-red-600 text-white transition"
+            group hover:bg-red-600 hover:border-red-600 text-white"
                     >
                         <Pencil
                             className="w-5 h-5 me-2"
@@ -53,7 +53,7 @@ const DeleteButton = ({
                             viewBox="0 0 22 24"
                         />
                         Confirm
-                    </button>
+                    </Button>
                 </div>
             )}
         </div>

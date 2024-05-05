@@ -133,15 +133,12 @@ export default {
             // access_token must be treated like a password, so use bcrypt
 
             try {
-                const access_token = await getGithubAccessToken(
-                    session?.user?.id!
-                )
                 const data = await fetch(
                     `https://api.github.com/users/${session?.user?.name}/repos`,
                     {
                         headers: {
                             ...BASE_HEADERS,
-                            Authorization: `Bearer ${access_token}`,
+                            Authorization: `Bearer ${session?.user.gh_access_token}`,
                         },
                     }
                 )
@@ -168,15 +165,12 @@ export default {
             // access_token must be treated like a password, so use bcrypt
 
             try {
-                const access_token = await getGithubAccessToken(
-                    session?.user?.id!
-                )
                 const data = await fetch(
                     `https://api.github.com/users/${session?.user?.name}`,
                     {
                         headers: {
                             ...BASE_HEADERS,
-                            Authorization: `Bearer ${access_token}`,
+                            Authorization: `Bearer ${session?.user.gh_access_token}`,
                         },
                     }
                 )

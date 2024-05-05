@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { DebounceInput } from 'react-debounce-input'
 import SearchButton from './ui/SearchButton'
+import { Input } from '@/components/ui/input'
 
 // Move hidden inputs to ProjectContainer
 

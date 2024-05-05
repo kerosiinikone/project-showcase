@@ -1,14 +1,21 @@
+'use client'
+
+import { Button } from '@/components/ui/button'
 import { Pencil } from 'lucide-react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const EditButton = ({ pid }: { pid: number }) => {
+    const router = useRouter()
+
     return (
         <div>
             <div className="flex justify-center items-center">
-                <Link
-                    href={`/projects/${pid}/edit`}
-                    className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-white border-2 border-emerald-500 rounded-lg 
-            group hover:bg-emerald-100 text-emerald-500 transition"
+                <Button
+                    className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-green-500 border-2 border-green-500 rounded-lg 
+            group hover:bg-green-600 hover:border-green-600 text-white"
+                    onClick={() =>
+                        router.push(`/projects/${pid}/edit`)
+                    }
                 >
                     <Pencil
                         className="w-5 h-5 me-2"
@@ -21,7 +28,7 @@ const EditButton = ({ pid }: { pid: number }) => {
                         viewBox="0 0 22 24"
                     />
                     Edit
-                </Link>
+                </Button>
             </div>
         </div>
     )

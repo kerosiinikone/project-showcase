@@ -363,15 +363,12 @@ export default {
         .query(
             async ({ input: { repo, user }, ctx: { session } }) => {
                 try {
-                    const access_token = await getGithubAccessToken(
-                        session?.user?.id!
-                    )
                     const data = await fetch(
                         `https://api.github.com/repos/${user}/${repo}/readme`,
                         {
                             headers: {
                                 ...BASE_HEADERS,
-                                Authorization: `Bearer ${access_token}`,
+                                Authorization: `Bearer ${session?.user.gh_access_token}`,
                             },
                         }
                     )

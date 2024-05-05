@@ -1,16 +1,10 @@
-import {
-    ProjectType,
-    ProjectTypeWithId,
-} from '@/models/Project/types'
+import { ProjectTypeWithId } from '@/models/Project/types'
 import { Github } from 'lucide-react'
 import Link from 'next/link'
 import { memo } from 'react'
 
-// Improve !!!
-
 interface ProjectCardProps {
     project: ProjectTypeWithId
-    h: string
 }
 
 const STAGE_CLASS_BASE = 'font-normal truncate'
@@ -23,16 +17,14 @@ const STAGE_COLORS = {
     PRODUCTION: 'text-indigo-300',
 }
 
-function ProjectCard({ project, h }: ProjectCardProps) {
-    // JOIN on authorId to get the name
-
+function ProjectCard({ project }: ProjectCardProps) {
     const { id, name, description, stage, author_id, github_url } =
         project as ProjectTypeWithId
 
     return (
         <div
             id="project-card"
-            className={`cursor-pointer rounded-lg ${h} w-84 border-gray-200 border-2 bg-white shadow-md`}
+            className={`cursor-pointer rounded-lg h-84 w-84 border-gray-200 border-2 bg-white shadow-md`}
         >
             <Link href={`/projects/${id}`}>
                 <div className="flex flex-col h-full w-full p-5 justify-between">

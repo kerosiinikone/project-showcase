@@ -1,13 +1,13 @@
+import { Button } from '@/components/ui/button'
 import { Pencil } from 'lucide-react'
 
 const SubmitButton = () => {
     return (
         <div>
             <div className="flex justify-center items-center">
-                <button
-                    type="submit"
-                    className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-emerald-500 border-2 border-emerald-500 rounded-lg 
-            hover:bg-emerald-600 text-white transition"
+                <Button
+                    className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-green-500 border-2 border-green-500 rounded-lg 
+            group hover:bg-green-600 hover:border-green-600 text-white"
                 >
                     <Pencil
                         className="w-5 h-5 me-2"
@@ -20,7 +20,7 @@ const SubmitButton = () => {
                         viewBox="0 0 22 24"
                     />
                     Submit
-                </button>
+                </Button>
             </div>
         </div>
     )

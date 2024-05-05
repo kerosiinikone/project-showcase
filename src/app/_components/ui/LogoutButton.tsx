@@ -5,10 +5,7 @@ import { Button } from '@/components/ui/button'
 const LogoutButton = () => {
     return (
         <form action={signOutGithub}>
-            <Button
-                type="submit"
-                className="bg-red-500 text-white hover:bg-red-600 hover:text-white"
-            >
+            <Button type="submit" variant="destructive">
                 <Github color="white" className="mr-5" />
                 <span>Logout</span>
             </Button>
