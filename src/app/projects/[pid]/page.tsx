@@ -7,33 +7,10 @@ import {
 } from '@/services/trpc/server'
 import ProjectWrapper from './_components/ProjectWrapper'
 import sanitize from 'sanitize-html'
+import { b64DecodeUnicode, kFormatter } from './_utils'
 
 interface ProjectComponentProps {
     params: { pid: string }
-}
-
-// https://stackoverflow.com/a/9461657
-
-function kFormatter(num: number) {
-    return Math.abs(num) > 999
-        ? (Math.sign(num) * Math.round(Math.abs(num) / 100)) / 10 +
-              'k'
-        : Math.sign(num) * Math.abs(num)
-}
-
-// Promise.all() the two API calls
-
-const b64DecodeUnicode = (str: string) => {
-    return decodeURIComponent(
-        Array.prototype.map
-            .call(atob(str), function (c) {
-                return (
-                    '%' +
-                    ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-                )
-            })
-            .join('')
-    )
 }
 
 export default async function ProjectPage({

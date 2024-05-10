@@ -1,26 +1,24 @@
 'use client'
 
-import ModalLayout from '@/components/ModalLayout'
+import { Dialog } from '@/components/ui/dialog'
 import { LayoutDashboard, Target } from 'lucide-react'
 import { Session } from 'next-auth'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useFormState } from 'react-dom'
 import { toast } from 'react-toastify'
-import CreateProjectModal from '../components/CreateProjectModal'
 import createProjectAction from './_actions/create-project-action'
 import fetchUserRepos from './_actions/fetch-user-repos-action'
-import CreateProjectButton from './_components/ui/CreateProjectButton'
-import LogoutButton from './_components/ui/LogoutButton'
 import NavItemLayout from './_components/NavItemLayout'
+import CreateProjectButton from './_components/ui/CreateProjectButton'
 import LoginWithGithubButton from './_components/ui/LoginButton'
-import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+import LogoutButton from './_components/ui/LogoutButton'
+import CreateModalLayout from '@/components/CreateModal'
 
 export default function SideNavLayout({
     session,
 }: {
     session: Session | null
 }) {
-    const [show, setShow] = useState<boolean>(false)
     const [createState, dispatch] = useFormState(
         createProjectAction,
         {
@@ -94,7 +92,10 @@ export default function SideNavLayout({
                                     />
                                 </NavItemLayout>
                                 <Dialog>
-                                    <CreateProjectModal
+                                    <CreateModalLayout
+                                        action="Create"
+                                        title="Create Project"
+                                        subTitle="A new project"
                                         dispatch={dispatch}
                                         repos={repoState?.data ?? []}
                                     />

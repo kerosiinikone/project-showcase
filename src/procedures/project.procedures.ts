@@ -19,7 +19,6 @@ import {
 import {
     addProjectToUser,
     deleteProjectToUser,
-    getGithubAccessToken,
 } from '@/operations/user.operations'
 import { procedure } from '@/services/trpc'
 import { protectedProcedure } from '@/services/trpc/middleware'

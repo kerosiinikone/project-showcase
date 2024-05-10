@@ -4,15 +4,12 @@ import { Stage } from '@/models/Project/types'
 import { editProject } from '@/services/trpc/server'
 import { TRPCError } from '@trpc/server'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-
-const DEFAULT_DESCRIPTION = 'A Project'
 
 export interface EditProjectParams {
     name: string
     stage: Stage
     github_url?: string
-    description?: string
+    description: string
     tags: string[]
 }
 
@@ -32,9 +29,7 @@ export default async function editProjectAction(
         name: formData.get('name') as string,
         stage: formData.get('stage') as Stage,
         tags: JSON.parse(tags) as string[],
-        description: formData.get('description') as
-            | string
-            | undefined,
+        description: formData.get('description') as string,
         github_url: formData.get('github_url') as string | undefined, // For now
     }
 
@@ -47,8 +42,7 @@ export default async function editProjectAction(
                 github_url: !projectParams.github_url
                     ? null
                     : projectParams.github_url,
-                description:
-                    projectParams.description || DEFAULT_DESCRIPTION,
+                description: projectParams.description,
             },
         })
         success = true
@@ -83,7 +77,6 @@ export default async function editProjectAction(
     } finally {
         if (success) {
             revalidatePath('/projects/[pid]', 'page')
-            redirect(`/projects/${props.pid}`)
         }
     }
 }

@@ -1,8 +1,8 @@
 import { UserType } from '@/models/User/types'
 import { Github } from 'lucide-react'
-import UserSupportCount from './modal-list/UserSupportCount'
-import AggregatedSupports from './modal-list/AggregatedSupports'
-import OwnProjectCounter from './OwnProjectCounter'
+import UserSupportCount from '../modal-list/UserSupportCount'
+import AggregatedSupports from '../modal-list/AggregatedSupports'
+import OwnProjectCounter from '../OwnProjectCounter'
 import UserDetailField from './UserDetailField'
 import UserBio from './UserBio'
 

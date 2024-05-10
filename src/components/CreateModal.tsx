@@ -34,10 +34,11 @@ import {
 type ModalContentParams = {
     repos: UserRepo[] | null
     dispatch: any
+    title: string
+    subTitle: string
+    action: string
+    initialTags?: string[]
 }
-
-// Can be imported from models, but I don't want to import anything from the server
-// to the client
 
 const ProjectSchema = z.object({
     name: z
@@ -51,11 +52,15 @@ const ProjectSchema = z.object({
     tags: z.array(z.string().max(15)).max(3).optional(),
 })
 
-export default function CreateProjectModal({
-    repos,
+export default function CreateModalLayout({
     dispatch,
+    repos,
+    action,
+    title,
+    subTitle,
+    initialTags,
 }: ModalContentParams) {
-    const [tags, setTags] = useState<string[]>([])
+    const [tags, setTags] = useState<string[]>(initialTags ?? [])
     const form = useForm<z.infer<typeof ProjectSchema>>()
 
     return (
@@ -64,13 +69,12 @@ export default function CreateProjectModal({
                 rounded-lg shadow-xl"
         >
             <DialogHeader>
-                <DialogTitle>Create New Project</DialogTitle>
-                <DialogDescription>A new project</DialogDescription>
+                <DialogTitle>{title}</DialogTitle>
+                <DialogDescription>{subTitle}</DialogDescription>
             </DialogHeader>
             <Form {...form}>
                 <form
                     action={dispatch}
-                    id="create-project"
                     className="flex flex-col justify-between p-6 h-max"
                 >
                     <input
@@ -98,15 +102,6 @@ export default function CreateProjectModal({
                                     </FormItem>
                                 )}
                             />
-                            {/* <label className="block mb-2 text-sm font-medium text-gray-900">
-                                Name
-                            </label>
-                            <Input
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg py-2 px-3 w-full"
-                                placeholder="Type a project name"
-                                name="name"
-                            /> */}
                         </div>
                     </div>
                     <div className="grid gap-4 mb-4 grid-cols-2">
@@ -129,15 +124,6 @@ export default function CreateProjectModal({
                                     </FormItem>
                                 )}
                             />
-                            {/* <label className="block mb-2 text-sm font-medium text-gray-900 ">
-                                Description
-                            </label>
-                            <textarea
-                                className="h-32 max-h-40 min-h-20 bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg block w-full p-2.5 "
-                                placeholder="Type a project description"
-                                name="description"
-                            /> */}
                         </div>
                     </div>
                     <div className="grid gap-4 mb-4 grid-cols-2 grid-rows-1">
@@ -360,7 +346,7 @@ export default function CreateProjectModal({
                                             fill="none"
                                             viewBox="0 0 22 24"
                                         />
-                                        Create a Project
+                                        {action}
                                     </Button>
                                 </DialogClose>
                             </div>

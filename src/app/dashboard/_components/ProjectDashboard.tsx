@@ -106,6 +106,7 @@ export default function ProjectDashboard({
                             pending={pending}
                             onBottom={onBottom}
                             projects={projectsMemo}
+                            cols={2}
                         />
                     ) : (
                         <>
@@ -115,7 +116,7 @@ export default function ProjectDashboard({
                     )}
                 </div>
             </form>
-            <div className="flex flex-col rounded-lg h-full w-full font-medium ml-5 bg-white mr-5">
+            <div className="flex flex-col rounded-lg h-full w-3/4 font-medium ml-5 bg-white mr-5">
                 {repos.length ? (
                     <RepoContainer repos={repos} />
                 ) : (

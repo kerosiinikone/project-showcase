@@ -3,7 +3,7 @@
 import { Stage } from '@/models/Project/types'
 import { createProjectServer } from '@/services/trpc/server'
 import { TRPCError } from '@trpc/server'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 export interface ProjectParams {
@@ -15,7 +15,7 @@ export interface ProjectParams {
     tags: string
 }
 
-let success: boolean = false
+let success = false
 
 export default async function createProjectAction(
     _: any,
@@ -50,13 +50,12 @@ export default async function createProjectAction(
         } else {
             err = JSON.stringify(err)
         }
-        // Format first -> Next Error, tRPC Error, Zod Error ...
 
-        return { message: err } // Global Format
+        return { message: err }
     } finally {
         if (success) {
             revalidatePath('/')
-            redirect('/')
+            revalidateTag('projects')
         }
     }
 }

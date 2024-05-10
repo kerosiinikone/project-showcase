@@ -7,7 +7,7 @@ const Markdown = ({ readme }: { readme: string }) => {
     return (
         <pre
             id="readme"
-            className="w-full h-[250px] overflow-scroll"
+            className="h-[250px] overflow-scroll"
             dangerouslySetInnerHTML={{
                 __html: MarkdownIt().render(readme),
             }}

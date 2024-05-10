@@ -69,7 +69,6 @@ const searchProjects = async (
         data.lastQuery = data.lastQuery || ''
         prevProjects.nextCursor = data.nextCursor ?? null
 
-        // New Search
         if (
             query != lastQuery ||
             !stageComparison ||
@@ -79,7 +78,6 @@ const searchProjects = async (
             return data as SearchFnReturnType
         }
 
-        // Scroll down
         if (data.nextCursor) {
             prevProjects.data = [...prevProjects.data, ...data.data]
             prevProjects.stage = data.stage
@@ -87,6 +85,7 @@ const searchProjects = async (
             prevProjects.hasGithub = data.hasGithub!
             prevProjects.lastQuery = data.lastQuery!
         }
+
         return prevProjects
     } catch (error) {
         let err = error as any

@@ -2,6 +2,14 @@ import { ProjectTypeWithId } from '@/models/Project/types'
 import { Github } from 'lucide-react'
 import Link from 'next/link'
 import { memo } from 'react'
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from './ui/card'
 
 interface ProjectCardProps {
     project: ProjectTypeWithId
@@ -22,51 +30,44 @@ function ProjectCard({ project }: ProjectCardProps) {
         project as ProjectTypeWithId
 
     return (
-        <div
-            id="project-card"
-            className={`cursor-pointer rounded-lg h-84 w-84 border-gray-200 border-2 bg-white shadow-md`}
-        >
-            <Link href={`/projects/${id}`}>
-                <div className="flex flex-col h-full w-full p-5 justify-between">
-                    <div className="flex flex-col h-full w-full">
-                        <h1 className="font-medium text-2xl truncate">
-                            {name}
-                        </h1>
-                        <h2
-                            id="status"
-                            className={
-                                STAGE_COLORS[stage] +
-                                ' ' +
-                                STAGE_CLASS_BASE
-                            }
+        <Link href={`/projects/${id}`}>
+            <Card className="cursor-pointer rounded-lg flex flex-col h-full w-84 border-gray-200 border-2 bg-white shadow-md">
+                <CardHeader>
+                    <CardTitle>{name}</CardTitle>
+                    <CardDescription
+                        id="status"
+                        className={
+                            STAGE_COLORS[stage] +
+                            ' ' +
+                            STAGE_CLASS_BASE
+                        }
+                    >
+                        {stage}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p className="font-normal my-2 text-wrap h-20 truncate line-clamp-3">
+                        {description}
+                    </p>
+                </CardContent>
+                <CardFooter>
+                    <div className="flex flex-col w-2/3">
+                        <span className="font-medium">Author</span>
+                        <span className="font-normal truncate">
+                            {author_id}
+                        </span>
+                    </div>
+                    {github_url && (
+                        <div
+                            id="github-icon"
+                            className="flex flex-col w-fit justify-end"
                         >
-                            {stage}
-                        </h2>
-                        <h2 className="font-normal leading-7 my-2 text-wrap h-20 truncate line-clamp-3">
-                            {description}
-                        </h2>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                        <div className="flex flex-col w-2/3">
-                            <span className="font-medium">
-                                Author
-                            </span>
-                            <span className="font-normal truncate">
-                                {author_id}
-                            </span>
+                            <Github />
                         </div>
-                        {github_url && (
-                            <div
-                                id="github-icon"
-                                className="flex flex-col w-fit justify-end"
-                            >
-                                <Github />
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </Link>
-        </div>
+                    )}
+                </CardFooter>
+            </Card>
+        </Link>
     )
 }
 

@@ -8,7 +8,7 @@ import {
     getUserById,
 } from '@/services/trpc/server'
 import ProjectDashboard from './_components/ProjectDashboard'
-import UserSectionComponent from './_components/UserContainer'
+import UserSectionComponent from './_components/user/UserContainer'
 
 export default async function DashboardComponent() {
     const session = await useAsyncAuth()
@@ -23,7 +23,7 @@ export default async function DashboardComponent() {
         ])
 
     return (
-        <div className="container h-full w-full flex justify-center items-center p-10">
+        <div className="container h-full w-full flex justify-center items-center p-10 py-20">
             <div className="flex flex-col justify-center h-full w-full">
                 <UserSectionComponent
                     user={user}
