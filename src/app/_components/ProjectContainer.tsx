@@ -122,6 +122,7 @@ export default function ProjectContainer({
             </div>
             <ProjectGrid
                 pending={pending}
+                cols={4}
                 onBottom={onBottom}
                 projects={projectsMemo}
             />

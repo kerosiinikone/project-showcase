@@ -27,6 +27,9 @@ export default async function RootLayout({
                     fontSans.variable
                 )}
             >
+                {process.env.ENVIRONMENT === 'test' && (
+                    <pre>{JSON.stringify(session)}</pre>
+                )}
                 <Provider>
                     <div className="flex h-screen">
                         <div id="modal" />

@@ -8,7 +8,7 @@
 
 # testing (for now, until proper tests have been meade)
 /coverage
-/tests
+/tests-examples
 
 # next.js
 /.next/
@@ -47,3 +47,7 @@ drizzle/
 # tmp - drive
 .tmp.*
 /.tmp.*/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

@@ -1,6 +1,7 @@
 import NextAuth, { DefaultSession } from 'next-auth'
 import db from '../db.server'
 import { CustomDrizzleAdapter } from './adapter/drizzle'
+import Credentials from 'next-auth/providers/credentials'
 import authConfig from './auth.config'
 import { getGithubAccessToken } from '@/operations/user.operations'
 
@@ -13,6 +14,24 @@ declare module 'next-auth' {
     }
 }
 
+const testCredentials = Credentials({
+    id: 'password',
+    name: 'Password',
+    credentials: {
+        password: { label: 'Password', type: 'password' },
+    },
+    authorize: (credentials) => {
+        if (credentials.password === process.env.TEST_PASSWORD) {
+            return {
+                email: 'test@gmail.com',
+                name: 'Test Test',
+            }
+        } else {
+            return {}
+        }
+    },
+})
+
 export const GithubAccountDBAdapter = CustomDrizzleAdapter(db)
 
 export const {
@@ -22,11 +41,18 @@ export const {
     signOut,
 } = NextAuth({
     pages: {
-        signIn: '/auth/github',
+        signIn:
+            process.env.ENVIRONMENT !== 'test'
+                ? '/auth/github'
+                : undefined,
     },
     callbacks: {
         async session({ session, token }) {
-            if (session && session.user) {
+            if (
+                process.env.ENVIRONMENT !== 'test' &&
+                session &&
+                session.user
+            ) {
                 const access_token = await getGithubAccessToken(
                     token.sub!
                 )
@@ -37,8 +63,15 @@ export const {
             return session
         },
     },
-    adapter: GithubAccountDBAdapter,
+    adapter:
+        process.env.ENVIRONMENT !== 'test'
+            ? GithubAccountDBAdapter
+            : undefined,
     session: { strategy: 'jwt' },
     secret: process.env.SECRET!,
     ...authConfig,
+    providers:
+        process.env.ENVIRONMENT !== 'test'
+            ? authConfig.providers
+            : [testCredentials],
 })
