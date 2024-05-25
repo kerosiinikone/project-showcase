@@ -77,7 +77,7 @@ export default {
                     await addTagsToProject(input.tags, newProject.id)
                 }
 
-                return newProject as ProjectTypeWithId
+                return !!newProject
             } catch (error) {
                 logger.error('Database error in createProject', {
                     error,
@@ -256,7 +256,7 @@ export default {
         .input(
             z.object({
                 pid: z.number(),
-                author_id: z.string().length(36),
+                author_id: z.string().max(36),
             })
         )
         .mutation(

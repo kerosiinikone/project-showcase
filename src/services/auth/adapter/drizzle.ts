@@ -8,7 +8,6 @@ import { z } from 'zod'
 import * as schema from '../../db/schema'
 
 type Adapter = NextAuthConfig['adapter']
-type PartialAdapter = Partial<Adapter>
 
 /*
     Mostly copied from the actual "@auth/drizzle"
@@ -28,7 +27,7 @@ function createGithubLink(name: string) {
     return `${BASE_LINK}/${name}`
 }
 
-function validate_schema(schema: z.ZodSchema, data: unknown) {
+function validateSchema(schema: z.ZodSchema, data: unknown) {
     const result = schema.safeParse(data)
     if (!result.success) {
         throw new Error(
@@ -52,7 +51,7 @@ export function CustomDrizzleAdapter(
                 github_url: createGithubLink(data.name),
             }
 
-            validate_schema(UserSchema, data)
+            validateSchema(UserSchema, data)
 
             return await client
                 .insert(users)
@@ -87,26 +86,11 @@ export function CustomDrizzleAdapter(
                 .then((res) => res[0])
         },
         async linkAccount(rawAccount: any) {
-            const updatedAccount = await client
+            await client
                 .insert(accounts)
                 .values(rawAccount)
                 .returning()
                 .then((res) => res[0])
-
-            // Drizzle will return `null` for fields that are not defined.
-            // However, the return type is expecting `undefined`.
-            // const account = {
-            //     ...updatedAccount,
-            //     access_token: updatedAccount.access_token ?? undefined,
-            //     token_type: updatedAccount.token_type ?? undefined,
-            //     id_token: updatedAccount.id_token ?? undefined,
-            //     refresh_token: updatedAccount.refresh_token ?? undefined,
-            //     scope: updatedAccount.scope ?? undefined,
-            //     expires_at: updatedAccount.expires_at ?? undefined,
-            //     session_state: updatedAccount.session_state ?? undefined,
-            // }
-
-            // return account;
         },
         async getUserByAccount(account) {
             const dbAccount =

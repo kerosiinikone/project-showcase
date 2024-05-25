@@ -130,7 +130,9 @@ export default {
         }),
     getUserRepos: protectedProcedure.query(
         async ({ ctx: { session } }) => {
-            // access_token must be treated like a password, so use bcrypt
+            if (process.env.ENVIRONMENT === 'test') {
+                return []
+            }
 
             try {
                 const data = await fetch(

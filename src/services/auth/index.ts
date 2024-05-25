@@ -23,6 +23,7 @@ const testCredentials = Credentials({
     authorize: (credentials) => {
         if (credentials.password === process.env.TEST_PASSWORD) {
             return {
+                id: '1',
                 email: 'test@gmail.com',
                 name: 'Test Test',
             }
@@ -48,15 +49,11 @@ export const {
     },
     callbacks: {
         async session({ session, token }) {
-            if (
-                process.env.ENVIRONMENT !== 'test' &&
-                session &&
-                session.user
-            ) {
-                const access_token = await getGithubAccessToken(
-                    token.sub!
-                )
-                session.user.gh_access_token = access_token
+            if (session && session.user) {
+                if (process.env.ENVIRONMENT !== 'test') {
+                    session.user.gh_access_token =
+                        await getGithubAccessToken(token.sub!)
+                }
                 session.user.id = token.sub!
             }
 

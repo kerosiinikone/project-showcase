@@ -17,12 +17,13 @@ export default function ProjectGrid({
     cols = 4,
     pending,
 }: ProjectGridProps) {
-    const withGridSize = `grid grid-flow-row-dense grid-cols-${cols} grid-rows-[repeat(4,_1fr)] p-5 md:gap-4 sm:gap-2 grid-wrap bg-white overflow-y-auto rounded-lg h-full w-full font-medium border-gradient-to-r from-slate-150 to-slate-50 border-2`
-
     return (
         <div
             id="catalog"
-            className={withGridSize}
+            style={{
+                gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+            }}
+            className="grid grid-flow-row-dense grid-rows-[repeat(4,_1fr)] p-5 md:gap-4 sm:gap-2 grid-wrap bg-white overflow-y-auto rounded-lg h-full w-full font-medium border-gradient-to-r from-slate-150 to-slate-50 border-2"
             onScroll={onBottom}
         >
             {projects.map((p) => {

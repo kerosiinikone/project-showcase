@@ -3,9 +3,6 @@ import { test, expect } from '@playwright/test'
 require('dotenv').config({ path: './.env.local' })
 
 test('Basic auth', async ({ page }) => {
-    // Get the compiler to start in dev
-    await page.goto('http://localhost:3000/')
-
     if (!process.env.TEST_PASSWORD)
         throw new TypeError('Missing TEST_PASSWORD')
 
@@ -21,10 +18,12 @@ test('Basic auth', async ({ page }) => {
         await page.waitForURL(
             (process.env.CLIENT_URL as string) + '/'
         )
-        const session = await page.locator('pre').textContent()
-
+        const session = await page
+            .locator('pre.session')
+            .textContent()
         expect(JSON.parse(session ?? '{}')).toEqual({
             user: {
+                id: '1',
                 email: 'test@gmail.com',
                 name: 'Test Test',
             },
@@ -41,6 +40,8 @@ test('Basic auth', async ({ page }) => {
             .getByRole('heading', { name: 'Community Projects' })
             .waitFor()
 
-        expect(await page.locator('pre').textContent()).toBe('null')
+        expect(await page.locator('pre.session').textContent()).toBe(
+            'null'
+        )
     })
 })

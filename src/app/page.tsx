@@ -1,12 +1,17 @@
 import { getProjects } from '@/services/trpc/server'
 import ProjectContainer from './_components/ProjectContainer'
 import { ProjectTypeWithId } from '@/models/Project/types'
+import { unstable_noStore as noStore } from 'next/cache'
+
+// export const dynamic = 'force-dynamic'
 
 export default async function MainPage({
     searchParams,
 }: {
     searchParams: { [key: string]: string | string[] | undefined }
 }) {
+    noStore()
+
     const tagsFromParams =
         'tag' in searchParams ? [searchParams['tag'] as string] : []
 

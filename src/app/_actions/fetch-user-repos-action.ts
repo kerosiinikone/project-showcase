@@ -11,10 +11,17 @@ const fetchUserRepos = async (_: any, __: FormData) => {
         let err = error as any
 
         if (err instanceof TRPCError) {
-            err = JSON.parse(err.message)[0].message
+            const msgs = JSON.parse(err.message)
+
+            if (Array.isArray(msgs)) {
+                err = msgs.map((e) => e.message).join(', ')
+            } else {
+                err = msgs
+            }
         } else {
             err = JSON.stringify(err)
         }
+
         // Format first -> Next Error, tRPC Error, Zod Error ...
 
         return { data: [], message: err as string } // Global Format

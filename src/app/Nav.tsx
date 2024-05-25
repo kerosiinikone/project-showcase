@@ -13,16 +13,20 @@ import CreateProjectButton from './_components/ui/CreateProjectButton'
 import LoginWithGithubButton from './_components/ui/LoginButton'
 import LogoutButton from './_components/ui/LogoutButton'
 import CreateModalLayout from '@/components/CreateModal'
+import { useRouter } from 'next/navigation'
 
 export default function SideNavLayout({
     session,
 }: {
     session: Session | null
 }) {
+    const router = useRouter()
+
     const [createState, dispatch] = useFormState(
         createProjectAction,
         {
-            message: '',
+            error: '',
+            success: false,
         }
     )
     const [repoState, fetchReposAction] = useFormState(
@@ -31,8 +35,10 @@ export default function SideNavLayout({
     )
 
     useEffect(() => {
-        if (createState && createState.message) {
-            toast('Error: ' + createState.message, {
+        if (createState?.success) {
+            router.refresh()
+        } else if (createState?.error) {
+            toast('Error: ' + createState.error, {
                 position: 'bottom-center',
                 autoClose: 5000,
                 type: 'error',
@@ -46,6 +52,9 @@ export default function SideNavLayout({
 
     return (
         <>
+            {process.env.NEXT_PUBLIC_ENVIRONMENT == 'test' && (
+                <pre className="error">{createState?.error}</pre>
+            )}
             <div
                 id="default-sidebar"
                 className="top-0 left-0 z-40 h-screen bg-slate-50 font-medium border-r-2 
@@ -94,7 +103,7 @@ export default function SideNavLayout({
                                 <Dialog>
                                     <CreateModalLayout
                                         action="Create"
-                                        title="Create Project"
+                                        title="Create A Project"
                                         subTitle="A new project"
                                         dispatch={dispatch}
                                         repos={repoState?.data ?? []}

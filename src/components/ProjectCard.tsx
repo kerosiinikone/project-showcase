@@ -50,7 +50,7 @@ function ProjectCard({ project }: ProjectCardProps) {
                         {description}
                     </p>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="flex flex-row justify-between">
                     <div className="flex flex-col w-2/3">
                         <span className="font-medium">Author</span>
                         <span className="font-normal truncate">

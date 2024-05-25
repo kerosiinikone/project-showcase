@@ -28,7 +28,9 @@ export default async function RootLayout({
                 )}
             >
                 {process.env.ENVIRONMENT === 'test' && (
-                    <pre>{JSON.stringify(session)}</pre>
+                    <pre className="session">
+                        {JSON.stringify(session)}
+                    </pre>
                 )}
                 <Provider>
                     <div className="flex h-screen">

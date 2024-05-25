@@ -70,7 +70,9 @@ export default function CreateModalLayout({
         >
             <DialogHeader>
                 <DialogTitle>{title}</DialogTitle>
-                <DialogDescription>{subTitle}</DialogDescription>
+                <DialogDescription id="modal-description">
+                    {subTitle}
+                </DialogDescription>
             </DialogHeader>
             <Form {...form}>
                 <form
@@ -95,6 +97,7 @@ export default function CreateModalLayout({
                                         <FormLabel>Name</FormLabel>
                                         <FormControl>
                                             <Input
+                                                data-testid="name-input"
                                                 placeholder="Name"
                                                 {...field}
                                             />
@@ -116,6 +119,7 @@ export default function CreateModalLayout({
                                         </FormLabel>
                                         <FormControl>
                                             <Input
+                                                data-testid="description-input"
                                                 placeholder="Description"
                                                 {...field}
                                                 defaultValue=""
@@ -130,6 +134,7 @@ export default function CreateModalLayout({
                         <div className="row-span-2">
                             <Controller
                                 control={form.control}
+                                data-testid="stage"
                                 name="stage"
                                 render={({ field }) => (
                                     <FormItem>
@@ -335,7 +340,10 @@ export default function CreateModalLayout({
                                     className="w-64 cursor-pointer inline-flex py-5 px-7 text-sm font-medium 
                                         justify-center items-center"
                                 >
-                                    <Button>
+                                    <Button
+                                        id="submit-project"
+                                        data-testid="submit-project-button"
+                                    >
                                         <PlusIcon
                                             className="w-5 h-5 me-2"
                                             stroke="white"

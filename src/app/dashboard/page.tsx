@@ -10,6 +10,8 @@ import {
 import ProjectDashboard from './_components/ProjectDashboard'
 import UserSectionComponent from './_components/user/UserContainer'
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardComponent() {
     const session = await useAsyncAuth()
 

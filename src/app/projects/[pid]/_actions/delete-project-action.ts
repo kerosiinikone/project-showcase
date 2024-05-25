@@ -31,10 +31,12 @@ export default async function deleteProjectAction(
         // TODO: Make this error logic run globally on all requests
 
         if (err instanceof TRPCError) {
-            if (Array.isArray(err)) {
-                err = JSON.parse(err.message)[0].message
+            const msgs = JSON.parse(err.message)
+
+            if (Array.isArray(msgs)) {
+                err = msgs.map((e) => e.message).join(', ')
             } else {
-                err = err.message
+                err = msgs
             }
         } else {
             err = JSON.stringify(err)

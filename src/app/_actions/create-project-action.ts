@@ -3,8 +3,7 @@
 import { Stage } from '@/models/Project/types'
 import { createProjectServer } from '@/services/trpc/server'
 import { TRPCError } from '@trpc/server'
-import { revalidatePath, revalidateTag } from 'next/cache'
-import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 
 export interface ProjectParams {
     name: string
@@ -46,16 +45,22 @@ export default async function createProjectAction(
         success = false
 
         if (err instanceof TRPCError) {
-            err = JSON.parse(err.message)[0].message
+            const msgs = JSON.parse(err.message)
+
+            if (Array.isArray(msgs)) {
+                err = msgs.map((e) => e.message).join(', ')
+            } else {
+                err = msgs
+            }
         } else {
             err = JSON.stringify(err)
         }
 
-        return { message: err }
+        return { error: err, success }
     } finally {
         if (success) {
-            revalidatePath('/')
-            revalidateTag('projects')
+            revalidatePath('')
+            return { success }
         }
     }
 }

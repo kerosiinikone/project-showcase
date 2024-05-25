@@ -16,7 +16,12 @@ const CreateProjectButton = ({
                 className="flex justify-center items-center"
             >
                 <DialogTrigger asChild type="submit">
-                    <Button type="submit">Create Project</Button>
+                    <Button
+                        data-testid="create-project-button"
+                        type="submit"
+                    >
+                        Create Project
+                    </Button>
                 </DialogTrigger>
             </form>
         </div>

@@ -86,7 +86,11 @@ export default function ProjectDashboard({
             id="projects-repos"
             className="flex flex-row h-3/4 w-full mt-5"
         >
-            <form ref={formRef} action={dispatch}>
+            <form
+                ref={formRef}
+                action={dispatch}
+                className="min-w-[300px]"
+            >
                 <div hidden>
                     <input
                         hidden

@@ -3,9 +3,9 @@ import { Config, defineConfig } from 'drizzle-kit'
 export default defineConfig({
     schema: './src/services/db/schema/index.ts',
     out: './drizzle/migrations',
-    driver: 'pg',
+    dialect: 'postgresql',
     dbCredentials: {
-        connectionString:
+        url:
             process.env.DB_URL ||
             'postgresql://postgres:admin@localhost:5435/postgres',
     },
