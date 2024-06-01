@@ -3,6 +3,7 @@ version: '3.9'
 services:
     next-instance:
         build: .
+        restart: always
         volumes:
             - .:/app
             - /app/node_modules
@@ -13,7 +14,6 @@ services:
             DB_URL: 'postgresql://postgres:admin@localhost:5435/postgres'
     pg-instance:
         image: postgres
-        command: ['postgres', '-c', 'log_statement=all']
         restart: always
         container_name: pg-test
         ports:
