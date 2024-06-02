@@ -15,13 +15,21 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+ENV NODE_ENV test
+ENV DB_URL "postgresql://postgres:admin@localhost:5435/postgres"
+ENV PORT 3000
+ENV NEXTAUTH_URL_INTERNAL "http://localhost:3000"
+ENV NEXTAUTH_URL="http://localhost:3000"
+ENV AUTH_SECRET "test"
+ENV AUTH_URL "http://localhost:3000"
+ENV CLIENT_URL "http://localhost:3000"
+ENV TEST_PASSWORD "test"
+
 RUN npm run build
 
 FROM base AS runner
 WORKDIR /app
 
-# Unnecessary right now
-ENV NODE_ENV test
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -39,12 +47,5 @@ USER nextjs
 EXPOSE 3000
 
 # Move these to docker-compose.yml
-
-ENV PORT 3000
-ENV PORT 3000
-ENV NEXTAUTH_URL_INTERNAL "http://localhost:3000"
-ENV AUTH_URL "http://localhost:3000"
-ENV CLIENT_URL "http://localhost:3000"
-ENV TEST_PASSWORD "test"
 
 CMD [ "npm", "run", "db:push" ]

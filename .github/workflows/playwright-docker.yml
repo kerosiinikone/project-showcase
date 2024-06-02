@@ -10,16 +10,21 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - uses: adambirds/docker-compose-action@v1.3.0
+            - uses: hoverkraft-tech/compose-action@v1.5.1              
               with:
-                  compose-file: 'ci-compose.yml'
-            - name: Build and start containers
-              run: docker-compose -f ci-compose.yml up
+                compose-file: './ci-compose.yml'
+
+            # - name: Build and start containers
+            #   run: docker-compose -f "ci-compose.yml" up
+
             - name: Install Playwright Browsers
-              run: npx playwright install --with-deps
+              run: docker-compose exec next-instance npx playwright install --with-deps
+
             - name: Run NextJS (preinstalled)
-              run: docker-compose exec nextjs npm run start
+              run: docker-compose exec next-instance npm run start
+
             - name: Run tests
-              run: docker-compose exec nextjs npm run e2e:test
+              run: docker-compose exec next-instance npm run e2e:test
+
             - name: Stop containers
               run: docker-compose down

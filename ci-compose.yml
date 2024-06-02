@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3.7'
 
 services:
     next-instance:
@@ -12,6 +12,8 @@ services:
             - 3000:3000
         environment:
             DB_URL: 'postgresql://postgres:admin@localhost:5435/postgres'
+        depends_on:
+            - pg-instance
     pg-instance:
         image: postgres
         restart: always
