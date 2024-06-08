@@ -4,19 +4,15 @@ on:
         branches: [main, master]
     pull_request:
         branches: [main, master]
+    workflow_run:
+        workflows: [Build and Run Next App]
+        types: [completed]
+
+concurrency:
+    group: next-app-test
+
 jobs:
     test:
-        env:
-            ENVIRONMENT: 'development'
-            NEXT_PUBLIC_ENVIRONMENT: 'development'
-            AUTH_GITHUB_SECRET: '674001faae0551addbe656dfad3de5ad79996c1c'
-            NEXTAUTH_SECRET: 'secret'
-            SECRET: 'secret'
-            AUTH_SECRET: 'secret'
-            NEXTAUTH_URL_INTERNAL: 'http://localhost:3000'
-            AUTH_URL: 'http://localhost:3000'
-            CLIENT_URL: 'http://localhost:3000'
-            TEST_PASSWORD: 'test'
         timeout-minutes: 60
         runs-on: ubuntu-latest
         steps:

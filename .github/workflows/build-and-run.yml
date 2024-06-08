@@ -1,0 +1,47 @@
+name: Build and Run Next App
+
+on:
+    push:
+        branches:
+            - main
+
+concurrency:
+    group: next-app-build
+    cancel-in-progress: true
+
+jobs:
+    build-and-run:
+        env:
+            ENVIRONMENT: 'development'
+            NEXT_PUBLIC_ENVIRONMENT: 'development'
+            NEXTAUTH_SECRET: 'secret'
+            SECRET: 'secret'
+            AUTH_SECRET: 'secret'
+            NEXTAUTH_URL_INTERNAL: 'http://localhost:3000'
+            AUTH_URL: 'http://localhost:3000'
+            CLIENT_URL: 'http://localhost:3000'
+            TEST_PASSWORD: 'test'
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build Next App
+              run: npm run build
+
+            - name: Run Next App (in background)
+              run: npm run start & # Run in background
+
+            - name: Wait for Next App to start
+              run: |
+                  while ! curl -s localhost:3000 >/dev/null; do # Replace 3000 if your port is different
+                    sleep 1
+                  done
