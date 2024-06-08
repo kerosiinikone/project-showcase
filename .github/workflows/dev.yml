@@ -7,6 +7,9 @@ jobs:
         env:
             TEST_PASSWORD: 'test'
             ENVIRONMENT: 'test'
+            NEXTAUTH_SECRET: 'EkYqkBxhFjdqkHJheMmREG62twgLQb16H6ZRgdjyzDM='
+            SECRET: 'EkYqkBxhFjdqkHJheMmREG62twgLQb16H6ZRgdjyzDM='
+            AUTH_SECRET: 'EkYqkBxhFjdqkHJheMmREG62twgLQb16H6ZRgdjyzDM='
             NEXTAUTH_URL_INTERNAL: 'http://localhost:3000'
             AUTH_URL: 'http://localhost:3000'
             CLIENT_URL: 'http://localhost:3000'
