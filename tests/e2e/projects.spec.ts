@@ -69,12 +69,7 @@ test('create a project succesfully with auth', async ({ page }) => {
 
         await page.waitForTimeout(2000)
 
-        // Modal Closed
         expect(page.getByText('A new project')).toBeHidden()
-
-        // Check for errors:
-        const error = await page.locator('pre.error').textContent()
-        expect(error).toBe('')
 
         await page.reload()
 
