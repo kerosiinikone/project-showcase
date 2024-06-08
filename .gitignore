@@ -51,7 +51,3 @@ drizzle/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-
-
-# test db
-sqlite.db

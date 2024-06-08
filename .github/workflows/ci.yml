@@ -8,6 +8,7 @@ jobs:
     playwright-test:
         env:
             TEST_PASSWORD: 'test'
+            CLIENT_URL: 'https://project-showcase-staging.vercel.app/'
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
