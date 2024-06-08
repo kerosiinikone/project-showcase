@@ -5,7 +5,7 @@ on:
             - main
 
 jobs:
-    test:
+    playwright-test:
         env:
             TEST_PASSWORD: 'test'
         runs-on: ubuntu-latest
