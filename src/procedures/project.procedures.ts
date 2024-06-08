@@ -17,6 +17,11 @@ import {
     hasProjectUserSupport,
 } from '@/operations/project.operations'
 import {
+    testCreateNewProject,
+    testGetExistingProjectById,
+    testGetExistingProjects,
+} from '@/operations/test.operations'
+import {
     addProjectToUser,
     deleteProjectToUser,
 } from '@/operations/user.operations'
@@ -62,6 +67,17 @@ export default {
             }
 
             try {
+                if (process.env.ENVIRONMENT === 'test') {
+                    const newProject = await testCreateNewProject({
+                        ...input,
+                        author_id: session?.user?.id!,
+                        description:
+                            input.description || DEFAULT_DESCRIPTION,
+                        image: null,
+                        alt_id: v4(),
+                    })
+                    return !!newProject
+                }
                 const newProject = await createNewProject({
                     ...input,
                     author_id: session?.user?.id!,
@@ -79,6 +95,8 @@ export default {
 
                 return !!newProject
             } catch (error) {
+                console.log(error)
+
                 logger.error('Database error in createProject', {
                     error,
                     input,
@@ -188,6 +206,13 @@ export default {
         )
         .query(async ({ input }) => {
             try {
+                if (process.env.ENVIRONMENT === 'test') {
+                    const test = await testGetExistingProjects()
+                    return {
+                        data: test as ProjectTypeWithId[],
+                        nextCursor: null,
+                    }
+                }
                 const [projects, lastQuery, stage] =
                     await getExistingProjectsByQuery(
                         input?.cursor,
@@ -209,6 +234,8 @@ export default {
                     lastQuery,
                 }
             } catch (error) {
+                console.log(error)
+
                 logger.error('Database error in getProjectsByQuery', {
                     error,
                     input,
@@ -237,6 +264,11 @@ export default {
         )
         .query(async ({ input }) => {
             try {
+                if (process.env.ENVIRONMENT === 'test') {
+                    return (await testGetExistingProjectById(
+                        input
+                    )) as SingleProjectType
+                }
                 return (await getExistingProjectById(
                     input
                 )) as SingleProjectType
@@ -246,6 +278,7 @@ export default {
                     input,
                 })
                 return []
+
                 // throw new TRPCError({
                 //     code: 'INTERNAL_SERVER_ERROR',
                 //     message: 'Database: Error fetching project.',

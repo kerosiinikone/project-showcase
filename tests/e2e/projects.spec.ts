@@ -75,6 +75,7 @@ test('create a project succesfully with auth', async ({ page }) => {
         expect(error).toBe('')
 
         await page.reload()
+
         const headingForProject = page.getByText(projectName)
         expect(headingForProject).toHaveText(projectName)
 

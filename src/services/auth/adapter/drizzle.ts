@@ -118,23 +118,23 @@ export function CustomDrizzleAdapter(
                 .returning()
                 .then((res) => res[0] ?? null)
         },
-        async unlinkAccount(account) {
-            const { type, provider, providerAccountId, userId } =
-                await client
-                    .delete(accounts)
-                    .where(
-                        and(
-                            eq(
-                                accounts.providerAccountId,
-                                account.providerAccountId
-                            ),
-                            eq(accounts.provider, account.provider)
-                        )
-                    )
-                    .returning()
-                    .then((res) => res[0] ?? null)
+        // async unlinkAccount(account) {
+        //     const { type, provider, providerAccountId, userId } =
+        //         await client
+        //             .delete(accounts)
+        //             .where(
+        //                 and(
+        //                     eq(
+        //                         accounts.providerAccountId,
+        //                         account.providerAccountId
+        //                     ),
+        //                     eq(accounts.provider, account.provider)
+        //                 )
+        //             )
+        //             .returning()
+        //             .then((res) => res[0] ?? null)
 
-            return { provider, type, providerAccountId, userId }
-        },
+        //     return { provider, type, providerAccountId, userId }
+        // },
     }
 }

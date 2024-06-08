@@ -8,9 +8,11 @@ import {
     usersToProjects,
 } from '@/services/db/schema'
 import { and, count, eq, gt } from 'drizzle-orm'
-import db from '../services/db.server'
+import * as database from '../services/db.server'
 import { withCursorPagination } from 'drizzle-pagination'
 import { ProjectTypeWithId } from '@/models/Project/types'
+
+const db = database?.default.db
 
 export const LIMIT = 9
 

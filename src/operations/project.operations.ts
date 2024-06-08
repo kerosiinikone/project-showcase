@@ -17,7 +17,7 @@ import {
     isNull,
     or,
 } from 'drizzle-orm'
-import db from '../services/db.server'
+import * as database from '../services/db.server'
 import { cursor } from './cursor'
 
 type SingleProjecParams = {
@@ -25,9 +25,9 @@ type SingleProjecParams = {
     joinUser: boolean
 }
 
-export const LIMIT = 9 // Limit search results
+const db = database?.default.db
 
-// Separate data access logic
+export const LIMIT = 9
 
 export async function hasProjectUserSupport(
     pid: number,
