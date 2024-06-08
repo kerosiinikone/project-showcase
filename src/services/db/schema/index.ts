@@ -10,7 +10,7 @@ import {
     primaryKey,
     serial,
 } from 'drizzle-orm/pg-core'
-import type { AdapterAccount } from '@auth/core/adapters'
+import type { AdapterAccount } from "next-auth/adapters"
 import { Stage } from '@/models/Project/types'
 import { InferSelectModel, relations } from 'drizzle-orm'
 
@@ -43,6 +43,30 @@ export const users = pgTable(
         emailIndex: uniqueIndex('users__email__idx').on(user.email),
     })
 )
+
+export const accounts = pgTable(
+    "account",
+    {
+      userId: text("userId")
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+      type: text("type").$type<AdapterAccount>().notNull(),
+      provider: text("provider").notNull(),
+      providerAccountId: text("providerAccountId").notNull(),
+      refresh_token: text("refresh_token"),
+      access_token: text("access_token"),
+      expires_at: integer("expires_at"),
+      token_type: text("token_type"),
+      scope: text("scope"),
+      id_token: text("id_token"),
+      session_state: text("session_state"),
+    },
+    (account) => ({
+      compoundKey: primaryKey({
+        columns: [account.provider, account.providerAccountId],
+      }),
+    })
+  )
 
 export type SchemaUser = InferSelectModel<typeof users>
 
@@ -176,39 +200,5 @@ export const projectsToTagsRelations = relations(
             fields: [projectsToTags.tag_id],
             references: [tags.id],
         }),
-    })
-)
-
-export const accounts = pgTable(
-    'account',
-    {
-        userId: text('userId')
-            .notNull()
-            .references(() => users.id, { onDelete: 'cascade' })
-            .primaryKey(),
-        type: text('type').$type<AdapterAccount['type']>().notNull(),
-        provider: text('provider').notNull(),
-        providerAccountId: text('providerAccountId').notNull(),
-        refresh_token: text('refresh_token'),
-        access_token: text('access_token'),
-        expires_at: integer('expires_at'),
-        token_type: text('token_type'),
-        scope: text('scope'),
-        id_token: text('id_token'),
-        session_state: text('session_state'),
-        createdAt: timestamp('createdAt', { mode: 'date' })
-            .defaultNow()
-            .notNull(),
-        updatedAt: timestamp('updatedAt', { mode: 'date' })
-            .defaultNow()
-            .notNull(),
-    },
-    (account) => ({
-        providerProviderAccountIdIndex: uniqueIndex(
-            'accounts__provider__providerAccountId__idx'
-        ).on(account.provider, account.providerAccountId),
-        userIdIndex: index('accounts__userId__idx').on(
-            account.userId
-        ),
     })
 )

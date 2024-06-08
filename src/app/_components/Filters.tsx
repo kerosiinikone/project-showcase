@@ -8,24 +8,20 @@ import { useState } from 'react'
 interface FilterProps {
     stage: Stage[]
     initSearch: () => void
+    resetCursor: () => void
 }
 
-export default function Filters({ initSearch, stage }: FilterProps) {
+export default function Filters({
+    initSearch,
+    stage,
+    resetCursor,
+}: FilterProps) {
     const [stageFilter, setStateFilter] = useState<Stage[]>(
         stage ?? []
     )
     const [hasGithubFilter, setHasGithubFilter] = useState<
         null | boolean
     >(null)
-
-    const handleChangeWithSearch = (f: () => void) => {
-        return () => {
-            f()
-            setTimeout(() => {
-                initSearch()
-            }, 500)
-        }
-    }
 
     const handleSetGithubTrue = () => {
         if (hasGithubFilter !== null && hasGithubFilter) {
@@ -54,12 +50,7 @@ export default function Filters({ initSearch, stage }: FilterProps) {
             })
         }
 
-        // A simple solution to changing state
-        // and skipping some ticks
-
-        setTimeout(() => {
-            initSearch()
-        }, 500)
+        resetCursor()
     }
 
     return (
@@ -140,7 +131,8 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                     <Button
                         variant="outline"
                         onClick={handleChangeWithSearch(
-                            handleSetGithubTrue
+                            handleSetGithubTrue,
+                            initSearch
                         )}
                     >
                         Github
@@ -149,7 +141,8 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                     <Button
                         variant="ghost"
                         onClick={handleChangeWithSearch(
-                            handleSetGithubTrue
+                            handleSetGithubTrue,
+                            initSearch
                         )}
                     >
                         Github
@@ -158,7 +151,8 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                 {hasGithubFilter !== null && !hasGithubFilter ? (
                     <Button
                         onClick={handleChangeWithSearch(
-                            handleSetGithubFalse
+                            handleSetGithubFalse,
+                            initSearch
                         )}
                         variant="outline"
                     >
@@ -167,7 +161,8 @@ export default function Filters({ initSearch, stage }: FilterProps) {
                 ) : (
                     <Button
                         onClick={handleChangeWithSearch(
-                            handleSetGithubFalse
+                            handleSetGithubFalse,
+                            initSearch
                         )}
                         variant="ghost"
                     >
@@ -193,4 +188,16 @@ export default function Filters({ initSearch, stage }: FilterProps) {
             />
         </div>
     )
+}
+
+const handleChangeWithSearch = (
+    f: () => void,
+    callback: () => void
+) => {
+    return () => {
+        f()
+        setTimeout(() => {
+            callback()
+        }, 500)
+    }
 }

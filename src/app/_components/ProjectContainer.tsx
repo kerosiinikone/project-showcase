@@ -24,6 +24,9 @@ export default function ProjectContainer({
 }: ProjectContainerProps) {
     const formRef = useRef<HTMLFormElement | null>(null)
     const [tags, setTags] = useState<string[]>(tagsFromParam || [])
+    const [cursor, setCursor] = useState<string | null>(
+        initialNextCursor
+    )
     const { projectsRaw, dispatch, onBottom, search, pending } =
         usePagination(initialProjects, initialNextCursor, formRef)
 
@@ -57,6 +60,10 @@ export default function ProjectContainer({
         }
     }, [initialError])
 
+    useEffect(() => {
+        setCursor(projectsRaw.nextCursor)
+    }, [projectsRaw.nextCursor])
+
     return (
         <>
             <div className="h-fit">
@@ -86,14 +93,13 @@ export default function ProjectContainer({
                                     <TagLabel
                                         name={t}
                                         remove={() => {
+                                            // Reset cursor
+                                            setCursor(null)
                                             setTags((state) => {
                                                 return state.filter(
                                                     (tag) => tag !== t
                                                 )
                                             })
-                                            setTimeout(() => {
-                                                search()
-                                            }, 100)
                                         }}
                                     />
                                 </div>
@@ -102,6 +108,9 @@ export default function ProjectContainer({
                     </div>
                     <div className="flex w-full flex-row justify-start items-center">
                         <Filters
+                            resetCursor={() => {
+                                setCursor(null)
+                            }}
                             initSearch={search}
                             stage={projectsRaw.stage}
                         />
@@ -110,7 +119,7 @@ export default function ProjectContainer({
                         hidden
                         readOnly
                         name="nextCursor"
-                        value={projectsRaw?.nextCursor ?? undefined}
+                        value={cursor ?? undefined}
                     />
                     <input
                         hidden

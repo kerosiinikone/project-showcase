@@ -1,4 +1,5 @@
 import { Config, defineConfig } from 'drizzle-kit'
+import "drizzle-orm"
 
 // export default defineConfig({
 //     schema: './src/services/db/schema/index.ts',
@@ -21,5 +22,5 @@ export default defineConfig({
             'postgresql://postgres:admin@localhost:5435/postgres',
     },
     verbose: true,
-    strict: true,
+    strict: false,
 }) satisfies Config

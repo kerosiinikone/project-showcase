@@ -1,10 +1,6 @@
 'use server'
 
-import {
-    ProjectType,
-    ProjectTypeWithId,
-    Stage,
-} from '@/models/Project/types'
+import { ProjectTypeWithId, Stage } from '@/models/Project/types'
 import { getProjects } from '@/services/trpc/server'
 import { TRPCError } from '@trpc/server'
 
@@ -40,51 +36,45 @@ const searchProjects = async (
     const lastQuery = formData.get('lastQuery') as string
     const tags = formData.get('tags') as string
 
-    try {
-        const stageComparison =
-            JSON.stringify(prevProjects.stage) == stageFilter
-        const tagsComparison =
-            JSON.stringify(prevProjects.tags) == tags
-        const hasGithubComparison =
+    const parsedStage = JSON.parse(stageFilter) as Stage[]
+    const parsedTags = JSON.parse(tags) as string[]
+
+    // Just removed a filter or changed something in the query
+    const isNewQuery =
+        query != lastQuery ||
+        !(JSON.stringify(prevProjects.stage) == stageFilter) ||
+        !(JSON.stringify(prevProjects.tags) == tags) ||
+        !(
             (hasGithub == '' ? 'null' : hasGithub) ==
             JSON.stringify(prevProjects.hasGithub)
+        )
 
-        const hasCursor =
-            cursor &&
-            stageComparison &&
-            tagsComparison &&
-            hasGithubComparison
-                ? cursor
-                : undefined
+    const cursorToUse = isNewQuery ? undefined : cursor
 
+    try {
         const data = await getProjects({
-            stage: JSON.parse(stageFilter) as Stage[],
+            stage: parsedStage,
             query: query ? query : null,
-            cursor: hasCursor,
+            cursor: cursorToUse,
             lastQuery: lastQuery ? lastQuery : null,
-            tags: JSON.parse(tags) as string[],
+            tags: parsedTags,
             hasGithub: hasGithub === '' ? null : hasGithub === 'true',
         })
 
-        data.lastQuery = data.lastQuery || ''
+        if (isNewQuery) {
+            prevProjects.data = data.data
+        }
+
+        if (cursorToUse) {
+            prevProjects.data.push(...data.data)
+        }
+
         prevProjects.nextCursor = data.nextCursor ?? null
-
-        if (
-            query != lastQuery ||
-            !stageComparison ||
-            !tagsComparison ||
-            !hasGithubComparison
-        ) {
-            return data as SearchFnReturnType
-        }
-
-        if (data.nextCursor) {
-            prevProjects.data = [...prevProjects.data, ...data.data]
-            prevProjects.stage = data.stage
-            prevProjects.tags = data.tags!
-            prevProjects.hasGithub = data.hasGithub!
-            prevProjects.lastQuery = data.lastQuery!
-        }
+        prevProjects.stage = parsedStage
+        prevProjects.tags = parsedTags
+        prevProjects.hasGithub =
+            hasGithub === '' ? null : hasGithub === 'true'
+        prevProjects.lastQuery = query
 
         return prevProjects
     } catch (error) {
