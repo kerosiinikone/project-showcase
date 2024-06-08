@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test'
 
+require('dotenv').config({ path: './.env.local' })
+
 test.beforeEach(async ({ page }) => {
     if (!process.env.TEST_PASSWORD)
         throw new TypeError('Missing TEST_PASSWORD')
