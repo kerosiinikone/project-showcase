@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import { initTRPC } from '@trpc/server'
 import { CreateNextContextOptions } from '@trpc/server/adapters/next'

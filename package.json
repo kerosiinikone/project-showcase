@@ -6,18 +6,19 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "unit:test": "vitest",
-        "e2e:test": "npx playwright test --trace on",
+        "serve": "node .next/standalone/server.js",
+        "test": "npx playwright test --config playwright.config.ts --trace on",
         "lint": "next lint",
-        "generate": "npx drizzle-kit generate:pg",
+        "generate": "npx drizzle-kit generate",
+        "test:push": "npx drizzle-kit push --config=drizzle-test.config.ts",
         "db:push": "npx drizzle-kit push",
         "studio": "npx drizzle-kit studio --verbose",
-        "typecheck": "tsc",
-        "cypress:open": "cypress open",
-        "cypress:run": "cypress run"
+        "test:studio": "npx drizzle-kit studio --verbose --config=drizzle-test.config.ts",
+        "typecheck": "tsc"
     },
     "dependencies": {
         "@auth/drizzle-adapter": "^0.3.17",
+        "@electric-sql/pglite": "^0.1.5",
         "@hookform/resolvers": "^3.3.4",
         "@mantine/hooks": "^7.4.1",
         "@octokit/types": "^12.4.0",
@@ -59,7 +60,7 @@
         "zod": "^3.23.6"
     },
     "devDependencies": {
-        "@playwright/test": "^1.44.0",
+        "@playwright/test": "^1.44.1",
         "@testing-library/react": "^14.1.2",
         "@types/better-sqlite3": "^7.6.10",
         "@types/jest": "^29.5.11",

@@ -29,6 +29,9 @@ const testCredentials = Credentials({
                 .from(users)
                 .where(eq(users.id, '1'))
                 .then((res) => res[0] ?? null)
+
+            console.log(user)
+
             if (!user) {
                 await database.default.testDb?.insert(users).values({
                     id: '1',
@@ -36,7 +39,6 @@ const testCredentials = Credentials({
                     name: 'Test Test',
                 })
             }
-
             return {
                 id: '1',
                 email: 'test@gmail.com',

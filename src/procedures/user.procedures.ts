@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { UserType } from '@/models/User/types'
 import { UserSchema } from '@/models/User/validation'
 import {
