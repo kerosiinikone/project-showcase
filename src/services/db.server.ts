@@ -49,14 +49,6 @@ if (
         global.testDb = liteDb
     }
     testDb = global.testDb
-}
-if (process.env.ENVIRONMENT === 'staging') {
-    db = drizzle(postgres(process.env.DB_URL!), { schema })
-
-    if (!global.db) {
-        global.db = drizzle(postgres(process.env.DB_URL!), { schema })
-    }
-    db = global.db
 } else {
     if (!global.db) {
         global.db = drizzle(postgres(process.env.DB_URL!), { schema })

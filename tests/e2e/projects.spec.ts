@@ -10,6 +10,7 @@ test.beforeEach(async ({ page }) => {
         (process.env.CLIENT_URL as string) + '/auth/signin'
     )
     await page.getByText('Sign In').click()
+    await page.waitForTimeout(1000)
     await page
         .getByLabel('Password')
         .fill(process.env.TEST_PASSWORD as string)
