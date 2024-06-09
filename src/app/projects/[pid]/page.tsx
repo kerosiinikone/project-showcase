@@ -39,7 +39,7 @@ export default async function ProjectPage({
                 user: project.author.name!,
             })
 
-            if (contents !== '') {
+            if (contents.trim() !== '') {
                 readme = b64DecodeUnicode(contents)
             }
         } catch (error) {

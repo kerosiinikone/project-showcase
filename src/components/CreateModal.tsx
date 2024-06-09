@@ -214,10 +214,7 @@ export default function CreateModalLayout({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Repo</FormLabel>
-                                        <Select
-                                            {...field}
-                                            defaultValue=""
-                                        >
+                                        <Select {...field}>
                                             <FormControl>
                                                 <SelectTrigger
                                                     id="github_url"
@@ -225,6 +222,11 @@ export default function CreateModalLayout({
                                                 >
                                                     <SelectValue placeholder="None" />
                                                     <SelectContent>
+                                                        <SelectItem
+                                                            defaultChecked
+                                                            disabled
+                                                            value="null"
+                                                        />
                                                         {repos?.map(
                                                             (
                                                                 repo

@@ -30,8 +30,6 @@ const testCredentials = Credentials({
                 .where(eq(users.id, '1'))
                 .then((res) => res[0] ?? null)
 
-            console.log(user)
-
             if (!user) {
                 await database.default.testDb?.insert(users).values({
                     id: '1',
@@ -62,14 +60,18 @@ export const {
 } = NextAuth({
     pages: {
         signIn:
-            process.env.ENVIRONMENT !== 'test'
+            process.env.ENVIRONMENT !== 'test' &&
+            process.env.ENVIRONMENT !== 'staging'
                 ? '/auth/github'
                 : undefined,
     },
     callbacks: {
         async session({ session, token }) {
             if (session && session.user) {
-                if (process.env.ENVIRONMENT !== 'test') {
+                if (
+                    process.env.ENVIRONMENT !== 'test' &&
+                    process.env.ENVIRONMENT !== 'staging'
+                ) {
                     session.user.gh_access_token =
                         await getGithubAccessToken(token.sub!)
                 }
@@ -80,14 +82,16 @@ export const {
         },
     },
     adapter:
-        process.env.ENVIRONMENT !== 'test'
+        process.env.ENVIRONMENT !== 'test' &&
+        process.env.ENVIRONMENT !== 'staging'
             ? GithubAccountDBAdapter
             : undefined,
     session: { strategy: 'jwt' },
     secret: process.env.SECRET!,
     ...authConfig,
     providers:
-        process.env.ENVIRONMENT !== 'test'
+        process.env.ENVIRONMENT !== 'test' &&
+        process.env.ENVIRONMENT !== 'staging'
             ? authConfig.providers
             : [testCredentials],
 })

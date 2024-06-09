@@ -8,7 +8,7 @@ import Database from 'better-sqlite3'
 import * as testSchema from './db/schema/test'
 import { migrate } from './db/test_migration'
 
-// For the sake of Next 14
+// For the sake of Next 14 -> refactor env logic
 
 declare global {
     var db: PostgresJsDatabase<typeof schema> | undefined
@@ -49,6 +49,14 @@ if (
         global.testDb = liteDb
     }
     testDb = global.testDb
+}
+if (process.env.ENVIRONMENT === 'staging') {
+    db = drizzle(postgres(process.env.DB_URL!), { schema })
+
+    if (!global.db) {
+        global.db = drizzle(postgres(process.env.DB_URL!), { schema })
+    }
+    db = global.db
 } else {
     if (!global.db) {
         global.db = drizzle(postgres(process.env.DB_URL!), { schema })

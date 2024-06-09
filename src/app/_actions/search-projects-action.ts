@@ -4,8 +4,6 @@ import { ProjectTypeWithId, Stage } from '@/models/Project/types'
 import { getProjects } from '@/services/trpc/server'
 import { TRPCError } from '@trpc/server'
 
-// TODO: Refactor the logic
-
 type SearchFnReturnType = {
     data: ProjectTypeWithId[]
     nextCursor: string | null
@@ -63,9 +61,7 @@ const searchProjects = async (
 
         if (isNewQuery) {
             prevProjects.data = data.data
-        }
-
-        if (cursorToUse) {
+        } else if (cursorToUse) {
             prevProjects.data.push(...data.data)
         }
 

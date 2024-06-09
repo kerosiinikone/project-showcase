@@ -27,7 +27,8 @@ export default async function RootLayout({
                     fontSans.variable
                 )}
             >
-                {process.env.ENVIRONMENT === 'test' && (
+                {(process.env.ENVIRONMENT === 'test' ||
+                    process.env.ENVIRONMENT === 'staging') && (
                     <pre className="session">
                         {JSON.stringify(session)}
                     </pre>
