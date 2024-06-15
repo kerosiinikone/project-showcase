@@ -13,6 +13,7 @@ jobs:
             NEXTAUTH_URL_INTERNAL: ${{ vars.NEXTAUTH_URL_INTERNAL }}
             AUTH_URL: ${{ vars.AUTH_URL }}
             CLIENT_URL: ${{ vars.CLIENT_URL }}
+            NEXT_PUBLIC_CLIENT_URL: ${{ vars.NEXT_PUBLIC_CLIENT_URL }}
         timeout-minutes: 60
         runs-on: ubuntu-latest
         steps:

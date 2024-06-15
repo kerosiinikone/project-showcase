@@ -10,7 +10,7 @@ import {
 
 function getBaseUrl() {
     if (typeof window !== 'undefined') return ''
-    return `http://localhost:${process.env.PORT ?? 3000}`
+    return process.env.NEXT_PUBLIC_CLIENT_URL
 }
 
 export default function Provider({
