@@ -1,0 +1,44 @@
+name: Playwright Stage and Test Build
+on:
+    workflow_run:
+        workflows: ['Playwright Dev Test']
+        types:
+            - completed
+        branches:
+            - main
+
+jobs:
+    deploy-staging:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v3
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: lts/*
+            - name: Install Railway
+              run: npm i -g @railway/cli
+            - name: Deploy Staging
+              run: railway up
+              env:
+                  RAILWAY_TOKEN: ${{ secrets.RAILWAY }}
+    test-staging:
+        needs: [deploy-staging]
+        env:
+            TEST_PASSWORD: ${{ vars.TEST_PASSWORD }}
+            ENVIRONMENT: ${{ vars.ENVIRONMENT }}
+            NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+            SECRET: ${{ secrets.SECRET }}
+            AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+            NEXTAUTH_URL_INTERNAL: ${{ vars.RAILWAY_NEXTAUTH_URL_INTERNAL }}
+            AUTH_URL: ${{ vars.RAILWAY_AUTH_URL }}
+            CLIENT_URL: ${{ vars.RAILWAY_CLIENT_URL }}
+        timeout-minutes: 60
+        runs-on: ubuntu-latest
+        steps:
+            - name: Install dependencies
+              run: npm ci
+            - name: Install Playwright Browsers
+              run: npx playwright install --with-deps
+            - name: Run Playwright stage tests
+              run: npm run stage:test

@@ -1,18 +1,18 @@
-name: Playwright Dev Test CI
+name: Playwright Dev Test
 on:
     push:
         branches: main
 jobs:
     test:
         env:
-            TEST_PASSWORD: 'test'
-            ENVIRONMENT: 'test'
-            NEXTAUTH_SECRET: 'EkYqkBxhFjdqkHJheMmREG62twgLQb16H6ZRgdjyzDM='
-            SECRET: 'EkYqkBxhFjdqkHJheMmREG62twgLQb16H6ZRgdjyzDM='
-            AUTH_SECRET: 'EkYqkBxhFjdqkHJheMmREG62twgLQb16H6ZRgdjyzDM='
-            NEXTAUTH_URL_INTERNAL: 'http://localhost:3000'
-            AUTH_URL: 'http://localhost:3000'
-            CLIENT_URL: 'http://localhost:3000'
+            TEST_PASSWORD: ${{ vars.TEST_PASSWORD }}
+            ENVIRONMENT: ${{ vars.ENVIRONMENT }}
+            NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+            SECRET: ${{ secrets.SECRET }}
+            AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+            NEXTAUTH_URL_INTERNAL: ${{ vars.NEXTAUTH_URL_INTERNAL }}
+            AUTH_URL: ${{ vars.AUTH_URL }}
+            CLIENT_URL: ${{ vars.CLIENT_URL }}
         timeout-minutes: 60
         runs-on: ubuntu-latest
         steps:
