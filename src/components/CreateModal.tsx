@@ -3,9 +3,10 @@
 import { Stage } from '@/models/Project/types'
 import { UserRepo } from '@/services/github'
 import { PlusIcon, X } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import TagLabel from './TagItem'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
     DialogClose,
     DialogContent,
@@ -38,6 +39,8 @@ type ModalContentParams = {
     subTitle: string
     action: string
     initialTags?: string[]
+    actionLoading: boolean
+    setActionLoading: Dispatch<SetStateAction<boolean>>
 }
 
 const ProjectSchema = z.object({
@@ -58,10 +61,14 @@ export default function CreateModalLayout({
     action,
     title,
     subTitle,
+    setActionLoading,
+    actionLoading,
     initialTags,
 }: ModalContentParams) {
     const [tags, setTags] = useState<string[]>(initialTags ?? [])
-    const form = useForm<z.infer<typeof ProjectSchema>>()
+    const form = useForm<z.infer<typeof ProjectSchema>>({
+        resolver: zodResolver(ProjectSchema),
+    })
 
     return (
         <DialogContent
@@ -77,6 +84,9 @@ export default function CreateModalLayout({
             <Form {...form}>
                 <form
                     action={dispatch}
+                    onSubmit={() => {
+                        setActionLoading(true)
+                    }}
                     className="flex flex-col justify-between p-6 h-max"
                 >
                     <input
@@ -343,6 +353,8 @@ export default function CreateModalLayout({
                                         justify-center items-center"
                                 >
                                     <Button
+                                        type="submit"
+                                        disabled={actionLoading}
                                         id="submit-project"
                                         data-testid="submit-project-button"
                                     >
@@ -356,7 +368,9 @@ export default function CreateModalLayout({
                                             fill="none"
                                             viewBox="0 0 22 24"
                                         />
-                                        {action}
+                                        {!actionLoading // Spinner maybe?
+                                            ? action
+                                            : 'Loading'}
                                     </Button>
                                 </DialogClose>
                             </div>

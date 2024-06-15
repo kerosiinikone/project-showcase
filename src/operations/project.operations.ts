@@ -18,7 +18,7 @@ import {
     or,
 } from 'drizzle-orm'
 import * as database from '../services/db.server'
-import { cursor } from './cursor'
+import { projectsCursor } from './cursor'
 
 type SingleProjecParams = {
     id: number
@@ -71,10 +71,12 @@ export async function getExistingProjectsByUid(
     return await db
         .select()
         .from(projects)
-        .orderBy(...cursor.orderBy)
+        .orderBy(...projectsCursor.orderBy)
         .where(
             and(
-                cursor.where(cur ? cursor.parse(cur) : null),
+                projectsCursor.where(
+                    cur ? projectsCursor.parse(cur) : null
+                ),
                 uid ? eq(projects.author_id, uid) : undefined
             )
         )
@@ -98,11 +100,13 @@ export async function getExistingProjectsByQuery(
                 eq(projectsToTags.project_id, projects.id)
             )
             .leftJoin(tags, eq(tags.id, projectsToTags.tag_id)) // ERROR
-            .orderBy(...cursor.orderBy)
+            .orderBy(...projectsCursor.orderBy)
             .where(
                 and(
-                    cursor.where(
-                        query == lastQuery ? cursor.parse(cur!) : null
+                    projectsCursor.where(
+                        query == lastQuery
+                            ? projectsCursor.parse(cur!)
+                            : null
                     ),
                     query
                         ? or(

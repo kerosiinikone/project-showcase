@@ -71,7 +71,7 @@ export default function UserSupportCount({
                 <CreateDashboardModal title="Supported Projects">
                     <ul
                         onScroll={onBottom}
-                        className="h-full w-full font-medium overflow-y-auto "
+                        className="h-full w-full font-medium overflow-y-auto"
                     >
                         {supportedProjectsData.map((project) => {
                             return (
@@ -79,19 +79,17 @@ export default function UserSupportCount({
                                     key={project.id}
                                     className="pb-4 rounded-lg my-2"
                                 >
-                                    <div className="flex flex-row justify-start items-center space-x-4">
+                                    <div className="flex flex-row justify-start items-center gap-2">
                                         {project.github_url && (
                                             <Github />
                                         )}
-                                        <div className="flex flex-col justify-start items-center">
-                                            <div className="flex flex-row justify-start items-center gap-2 w-full">
-                                                <h1 className="text-xl font-medium text-gray-900 truncate">
-                                                    {project.name}
-                                                </h1>
-                                                <h3 className="text-md text-gray-300 truncate">
+                                        <div className="flex flex-row justify-start items-center gap-2 truncate">
+                                            <h1 className="flex gap-2 truncate text-xl font-medium text-gray-900 truncate w-full">
+                                                {project.name.trim()}
+                                                <span className="text-md text-gray-300 truncate text-clip">
                                                     {project.alt_id}
-                                                </h3>
-                                            </div>
+                                                </span>
+                                            </h1>
                                         </div>
                                     </div>
                                 </li>

@@ -29,7 +29,7 @@ export default function CreateDashboardModal({
             </DialogHeader>
             <div
                 id="modal-content"
-                className="flex justify-center w-full items-center h-[300px] px-6 pb-6"
+                className="flex justify-center w-full items-center h-[300px] px-4 pb-4"
             >
                 {children}
             </div>

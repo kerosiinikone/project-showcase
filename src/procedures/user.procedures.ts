@@ -7,7 +7,6 @@ import {
     getAggregatedSupportCount,
     getAggregatedSupports,
     getExistingUserById,
-    getGithubAccessToken,
     getSupportedProjectsById,
 } from '@/operations/user.operations'
 import { UserRepo } from '@/services/github'
@@ -15,6 +14,7 @@ import { protectedProcedure } from '@/services/trpc/middleware'
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import * as winston from 'winston'
+import { usersToProjectsCursor } from '@/operations/cursor'
 
 const BASE_HEADERS = {
     'X-GitHub-Api-Version': '2022-11-28',
@@ -105,18 +105,21 @@ export default {
             }
         }),
     getSupportedProjects: protectedProcedure
-        .input(z.number().optional())
+        .input(z.string().optional())
         .query(async ({ ctx: { session }, input }) => {
             try {
                 const projects = await getSupportedProjectsById(
                     session?.user?.id!,
                     input
                 )
+
+                const lastToken = usersToProjectsCursor.serialize(
+                    projects.at(-1)
+                )
+
                 return {
                     data: projects,
-                    nextCursor: projects.length
-                        ? projects[projects.length - 1]?.id
-                        : null,
+                    nextCursor: lastToken,
                 }
             } catch (error) {
                 logger.error(

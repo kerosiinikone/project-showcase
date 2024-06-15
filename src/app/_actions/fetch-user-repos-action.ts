@@ -11,12 +11,12 @@ const fetchUserRepos = async (_: any, __: FormData) => {
         let err = error as any
 
         if (err instanceof TRPCError) {
-            const msgs = JSON.parse(err.message)
+            const msg = err.message
 
-            if (Array.isArray(msgs)) {
-                err = msgs.map((e) => e.message).join(', ')
+            if (Array.isArray(msg)) {
+                err = msg.map((e) => e.message).join(', ')
             } else {
-                err = msgs
+                err = msg
             }
         } else {
             err = JSON.stringify(err)

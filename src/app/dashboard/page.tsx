@@ -1,4 +1,4 @@
-import { cursor } from '@/operations/cursor'
+import { projectsCursor } from '@/operations/cursor'
 import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import {
     getAggregatedSupportCount,
@@ -39,7 +39,7 @@ export default async function DashboardComponent() {
                     projects={userProjects.data}
                     initialError={userProjects.initialError ?? false}
                     session={session!}
-                    initialCursor={cursor.serialize(
+                    initialCursor={projectsCursor.serialize(
                         userProjects.data.at(-1)
                     )}
                     repos={repos}

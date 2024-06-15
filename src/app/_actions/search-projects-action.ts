@@ -79,17 +79,16 @@ const searchProjects = async (
         // TODO: Make this error logic run globally on all requests
 
         if (err instanceof TRPCError) {
-            const msgs = JSON.parse(err.message)
+            const msg = err.message
 
-            if (Array.isArray(msgs)) {
-                err = msgs.map((e) => e.message).join(', ')
+            if (Array.isArray(msg)) {
+                err = msg.map((e) => e.message).join(', ')
             } else {
-                err = msgs
+                err = msg
             }
         } else {
             err = JSON.stringify(err)
         }
-
         return {
             ...DEFAULT_RETURN,
             error: err,

@@ -1,7 +1,7 @@
-import { projects } from '@/services/db/schema'
+import { projects, usersToProjects } from '@/services/db/schema'
 import { CursorConfig, generateCursor } from 'drizzle-cursor'
 
-const cursorConfig: CursorConfig = {
+const pCursorConfig: CursorConfig = {
     primaryCursor: {
         order: 'DESC',
         key: 'id',
@@ -9,4 +9,13 @@ const cursorConfig: CursorConfig = {
     },
 }
 
-export const cursor = generateCursor(cursorConfig)
+const pTUCursorConfig: CursorConfig = {
+    primaryCursor: {
+        order: 'DESC',
+        key: 'id',
+        schema: usersToProjects.project_id,
+    },
+}
+
+export const projectsCursor = generateCursor(pCursorConfig)
+export const usersToProjectsCursor = generateCursor(pTUCursorConfig)

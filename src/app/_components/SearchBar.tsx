@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { DebounceInput } from 'react-debounce-input'
 import SearchButton from './ui/SearchButton'
-import { Input } from '@/components/ui/input'
 
 // Move hidden inputs to ProjectContainer
 
@@ -18,14 +17,14 @@ const SearchBarComponent = ({
     handleSearch,
     addTag,
 }: SearchBarProps) => {
-    const [dInput, setDInput] = useState<string>('')
+    const inputRef = useRef<any>(null) // For now
 
     return (
         <>
             <div className="relative w-full bg-white">
                 <DebounceInput
                     minLength={4}
-                    value={dInput}
+                    ref={inputRef}
                     onKeyDown={(
                         e: React.KeyboardEvent<HTMLInputElement> & {
                             target: {
@@ -36,17 +35,16 @@ const SearchBarComponent = ({
                         if (e.code === 'Enter') {
                             const query = e.target.value
                             e.preventDefault()
-                            if (REG.test(query)) {
+                            if (REG.test(query) && query.length > 0) {
                                 addTag(query)
                                 setTimeout(() => {
                                     handleSearch()
-                                    setDInput('')
+                                    inputRef.current.value = ''
                                 }, 100)
                             }
                         }
                     }}
                     onChange={(e) => {
-                        setDInput(e.target.value)
                         setTimeout(() => {
                             handleSearch()
                         }, 100)
@@ -58,7 +56,10 @@ const SearchBarComponent = ({
                     placeholder="Discover new projects and ideas..."
                 />
             </div>
-            <SearchButton />
+            <SearchButton
+                handleSearch={handleSearch}
+                inputRef={inputRef}
+            />
         </>
     )
 }

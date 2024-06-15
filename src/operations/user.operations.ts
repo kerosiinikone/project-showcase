@@ -9,8 +9,8 @@ import {
 } from '@/services/db/schema'
 import { and, count, eq, gt } from 'drizzle-orm'
 import * as database from '../services/db.server'
-import { withCursorPagination } from 'drizzle-pagination'
 import { ProjectTypeWithId } from '@/models/Project/types'
+import { usersToProjectsCursor } from './cursor'
 
 const db = database?.default.db
 
@@ -53,25 +53,27 @@ export async function getExistingUserById(id: string) {
 
 export async function getSupportedProjectsById(
     uid?: string,
-    cursor?: number
+    cur?: string
 ) {
     return await Promise.all(
         (
-            await db.query.usersToProjects.findMany(
-                withCursorPagination({
-                    where: uid
-                        ? eq(usersToProjects.user_id, uid)
-                        : undefined,
-                    limit: LIMIT,
-                    cursors: [
-                        [
-                            usersToProjects.project_id, // Fix this
-                            'desc',
-                            cursor ? cursor : undefined,
-                        ],
-                    ],
-                })
-            )
+            await db
+                .select()
+                .from(usersToProjects)
+                .orderBy(...usersToProjectsCursor.orderBy)
+                .where(
+                    and(
+                        usersToProjectsCursor.where(
+                            cur
+                                ? usersToProjectsCursor.parse(cur)
+                                : null
+                        ),
+                        uid
+                            ? eq(usersToProjects.user_id, uid)
+                            : undefined
+                    )
+                )
+                .limit(LIMIT)
         ).map(async (project) => {
             return await db.query.projects.findFirst({
                 where: eq(projects.id, project.project_id),

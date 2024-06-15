@@ -3,7 +3,7 @@
 import { Dialog } from '@/components/ui/dialog'
 import { LayoutDashboard, Target } from 'lucide-react'
 import { Session } from 'next-auth'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useFormState } from 'react-dom'
 import { toast } from 'react-toastify'
 import createProjectAction from './_actions/create-project-action'
@@ -21,6 +21,7 @@ export default function SideNavLayout({
     session: Session | null
 }) {
     const router = useRouter()
+    const [actionLoading, setActionLoading] = useState<boolean>(false)
 
     const [createState, dispatch] = useFormState(
         createProjectAction,
@@ -35,6 +36,8 @@ export default function SideNavLayout({
     )
 
     useEffect(() => {
+        setActionLoading(false)
+
         if (createState?.success) {
             router.refresh()
         } else if (createState?.error) {
@@ -107,6 +110,10 @@ export default function SideNavLayout({
                                         subTitle="A new project"
                                         dispatch={dispatch}
                                         repos={repoState?.data ?? []}
+                                        actionLoading={actionLoading}
+                                        setActionLoading={
+                                            setActionLoading
+                                        }
                                     />
                                     {session && (
                                         <CreateProjectButton

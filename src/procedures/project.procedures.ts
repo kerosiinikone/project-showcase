@@ -7,7 +7,7 @@ import {
     Stage,
 } from '@/models/Project/types'
 import { ProjectSchema } from '@/models/Project/validation'
-import { cursor } from '@/operations/cursor'
+import { projectsCursor } from '@/operations/cursor'
 import {
     addTagsToProject,
     createNewProject,
@@ -168,7 +168,9 @@ export default {
                     input
                 )) as ProjectTypeWithId[] // Database Abstraction
 
-                const lastToken = cursor.serialize(projects.at(-1))
+                const lastToken = projectsCursor.serialize(
+                    projects.at(-1)
+                )
 
                 return {
                     data: projects,
@@ -225,7 +227,9 @@ export default {
                         input?.hasGithub
                     )
 
-                const lastToken = cursor.serialize(projects.at(-1))
+                const lastToken = projectsCursor.serialize(
+                    projects.at(-1)
+                )
 
                 return {
                     data: projects as ProjectTypeWithId[],

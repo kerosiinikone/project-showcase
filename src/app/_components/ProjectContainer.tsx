@@ -100,6 +100,9 @@ export default function ProjectContainer({
                                                     (tag) => tag !== t
                                                 )
                                             })
+                                            setTimeout(() => {
+                                                search()
+                                            }, 100)
                                         }}
                                     />
                                 </div>
