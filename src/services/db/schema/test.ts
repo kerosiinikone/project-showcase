@@ -7,7 +7,6 @@ import {
     text,
     uniqueIndex,
 } from 'drizzle-orm/sqlite-core'
-import type { AdapterAccount } from 'next-auth/adapters'
 
 export const stageEnum = [
     'IDEA',
@@ -35,35 +34,10 @@ export const users = sqliteTable(
     })
 )
 
-export const accounts = sqliteTable(
-    'account',
-    {
-        userId: text('userId')
-            .notNull()
-            .references(() => users.id, { onDelete: 'cascade' }),
-        type: text('type').$type<AdapterAccount>().notNull(),
-        provider: text('provider').notNull(),
-        providerAccountId: text('providerAccountId').notNull(),
-        refresh_token: text('refresh_token'),
-        access_token: text('access_token'),
-        expires_at: integer('expires_at'),
-        token_type: text('token_type'),
-        scope: text('scope'),
-        id_token: text('id_token'),
-        session_state: text('session_state'),
-    },
-    (account) => ({
-        compoundKey: primaryKey({
-            columns: [account.provider, account.providerAccountId],
-        }),
-    })
-)
-
 export type SchemaUser = InferSelectModel<typeof users>
 
 export const userProjectRelations = relations(users, ({ many }) => ({
     own_projects: many(projects),
-    supported_projects: many(usersToProjects),
 }))
 
 export const tags = sqliteTable(
@@ -119,39 +93,7 @@ export const projectUserRelations = relations(
             fields: [projects.author_id],
             references: [users.id],
         }),
-        supporters: many(usersToProjects),
         tags: many(projectsToTags),
-    })
-)
-
-export const usersToProjects = sqliteTable(
-    'users_to_projects',
-    {
-        user_id: text('user_id')
-            .notNull()
-            .references(() => users.id, { onDelete: 'cascade' }), // ???
-        project_id: integer('project_id')
-            .notNull()
-            .references(() => projects.id, { onDelete: 'cascade' }), // ???
-    },
-    (t) => ({
-        userIdx: index('user_idx').on(t.user_id),
-        projectIdx: index('project_idx').on(t.project_id),
-        pk: primaryKey(t.user_id, t.project_id),
-    })
-)
-
-export const usersToProjectsRelations = relations(
-    usersToProjects,
-    ({ one }) => ({
-        project: one(projects, {
-            fields: [usersToProjects.project_id],
-            references: [projects.id],
-        }),
-        user: one(users, {
-            fields: [usersToProjects.user_id],
-            references: [users.id],
-        }),
     })
 )
 

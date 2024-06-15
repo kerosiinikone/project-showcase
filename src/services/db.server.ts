@@ -10,6 +10,8 @@ import { migrate } from './db/test_migration'
 
 /* eslint-disable */
 
+// Messy and hacky, fix
+
 declare global {
     var db: PostgresJsDatabase<typeof schema> | undefined
     var testDb:
@@ -26,7 +28,7 @@ if (
     process.env.NODE_ENV === 'production' ||
     process.env.ENVIRONMENT === 'production'
 ) {
-    db = drizzle(postgres(process.env.DB_URL!), { schema })
+    db = drizzle(postgres(process.env.DB_URL || ''), { schema })
     global.testDb = undefined
     testDb = global.testDb
 }
@@ -41,7 +43,9 @@ if (
         schema: testSchema,
     })
     if (!global.db) {
-        global.db = drizzle(postgres(process.env.DB_URL!), { schema })
+        global.db = drizzle(postgres(process.env.DB_URL || ''), {
+            schema,
+        })
     }
     db = global.db
 
@@ -51,7 +55,9 @@ if (
     testDb = global.testDb
 } else {
     if (!global.db) {
-        global.db = drizzle(postgres(process.env.DB_URL!), { schema })
+        global.db = drizzle(postgres(process.env.DB_URL || ''), {
+            schema,
+        })
     }
     db = global.db
     global.testDb = undefined

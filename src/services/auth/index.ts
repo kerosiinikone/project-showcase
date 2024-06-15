@@ -31,11 +31,20 @@ const testCredentials = Credentials({
                 .then((res) => res[0] ?? null)
 
             if (!user) {
-                await database.default.testDb?.insert(users).values({
-                    id: '1',
-                    email: 'test@gmail.com',
-                    name: 'Test Test',
-                })
+                const newUser = await database.default.testDb
+                    ?.insert(users)
+                    .values({
+                        id: '1',
+                        email: 'test@gmail.com',
+                        name: 'Test Test',
+                    })
+                    .returning()
+
+                if (!newUser) {
+                    throw new Error(
+                        'Error creating new user, problem lies in SQLite DB'
+                    )
+                }
             }
             return {
                 id: '1',
@@ -60,18 +69,14 @@ export const {
 } = NextAuth({
     pages: {
         signIn:
-            process.env.ENVIRONMENT !== 'test' &&
-            process.env.ENVIRONMENT !== 'staging'
+            process.env.ENVIRONMENT !== 'test'
                 ? '/auth/github'
                 : undefined,
     },
     callbacks: {
         async session({ session, token }) {
             if (session && session.user) {
-                if (
-                    process.env.ENVIRONMENT !== 'test' &&
-                    process.env.ENVIRONMENT !== 'staging'
-                ) {
+                if (process.env.ENVIRONMENT !== 'test') {
                     session.user.gh_access_token =
                         await getGithubAccessToken(token.sub!)
                 }
@@ -82,16 +87,14 @@ export const {
         },
     },
     adapter:
-        process.env.ENVIRONMENT !== 'test' &&
-        process.env.ENVIRONMENT !== 'staging'
+        process.env.ENVIRONMENT !== 'test'
             ? GithubAccountDBAdapter
             : undefined,
     session: { strategy: 'jwt' },
     secret: process.env.SECRET!,
     ...authConfig,
     providers:
-        process.env.ENVIRONMENT !== 'test' &&
-        process.env.ENVIRONMENT !== 'staging'
+        process.env.ENVIRONMENT !== 'test'
             ? authConfig.providers
             : [testCredentials],
 })
