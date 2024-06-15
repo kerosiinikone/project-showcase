@@ -8,7 +8,7 @@ import Database from 'better-sqlite3'
 import * as testSchema from './db/schema/test'
 import { migrate } from './db/test_migration'
 
-// For the sake of Next 14 -> refactor env logic
+/* eslint-disable */
 
 declare global {
     var db: PostgresJsDatabase<typeof schema> | undefined

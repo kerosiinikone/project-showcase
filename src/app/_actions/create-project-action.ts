@@ -60,7 +60,6 @@ export default async function createProjectAction(
     } finally {
         if (success) {
             revalidatePath('')
-            return { success }
         }
     }
 }

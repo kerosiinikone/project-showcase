@@ -51,6 +51,8 @@ export default function ProjectWrapper({
     isFollowed,
 }: ProjectWrapperProps) {
     const [isDelete, setIsDelete] = useState<boolean>(false)
+    const [actionLoading, setActionLoading] = useState<boolean>(false)
+
     const [repoState, fetchReposAction] = useFormState(
         fetchUserRepos,
         null
@@ -72,6 +74,8 @@ export default function ProjectWrapper({
     const supportWithParams = supportProjectAction.bind(null, id)
 
     useEffect(() => {
+        setActionLoading(false)
+
         if (editState?.error) {
             toast('Error', {
                 position: 'bottom-center',
@@ -137,6 +141,12 @@ export default function ProjectWrapper({
                                     <Dialog>
                                         <CreateModalLayout
                                             dispatch={editAction}
+                                            actionLoading={
+                                                actionLoading
+                                            }
+                                            setActionLoading={
+                                                setActionLoading
+                                            }
                                             action="Create"
                                             title="Create Project"
                                             subTitle="A new project"
@@ -236,7 +246,11 @@ export default function ProjectWrapper({
                                 id="github-icon"
                                 className="flex flex-col w-fit h-fit p-2 justify-center items-center cursor-pointer border-2 border-black rounded-md hover:bg-gray-300 transition"
                             >
-                                <a href={github_url} target="_blank">
+                                <a
+                                    href={github_url}
+                                    rel="noreferrer"
+                                    target="_blank"
+                                >
                                     <Github size="30" />
                                 </a>
                             </div>

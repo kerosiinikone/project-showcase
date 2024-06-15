@@ -8,7 +8,7 @@ export default function TagLabel({
     remove?: () => void
 }) {
     return (
-        <div
+        <button
             className="flex items-center justify-center gap-2 flex-row w-max py-2 px-3 bg-blue-600 rounded-xl group cursor-pointer"
             onClick={remove}
         >
@@ -16,6 +16,6 @@ export default function TagLabel({
                 <X size={15} color="white" />
             </span>
             <h2 className="text-white font-medium text-sm">{name}</h2>
-        </div>
+        </button>
     )
 }

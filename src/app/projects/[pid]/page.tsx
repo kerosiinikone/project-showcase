@@ -1,13 +1,13 @@
-import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import { ProjectWithUser, SupportCount } from '@/models/Project/types'
+import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import {
     getProjectServer,
-    getReadmeFile,
     isFollowProject,
 } from '@/services/trpc/server'
-import ProjectWrapper from './_components/ProjectWrapper'
+import { unstable_noStore as noStore } from 'next/cache'
 import sanitize from 'sanitize-html'
-import { b64DecodeUnicode, kFormatter } from './_utils'
+import ProjectWrapper from './_components/ProjectWrapper'
+import { getReadmeContents, kFormatter } from './_utils'
 
 interface ProjectComponentProps {
     params: { pid: string }
@@ -16,36 +16,21 @@ interface ProjectComponentProps {
 export default async function ProjectPage({
     params,
 }: ProjectComponentProps) {
-    let readme
-
-    const session = await useAsyncAuth()
+    noStore()
 
     const opts = {
         id: parseInt(params.pid),
         joinUser: true,
     }
-
+    const session = await useAsyncAuth()
     const project = (await getProjectServer(
         opts
     )) as ProjectWithUser & SupportCount
 
-    const isFollowed = await isFollowProject(project.id)
-
-    if (project.github_url) {
-        const splitUrl = project.github_url.split('/')
-        try {
-            const contents = await getReadmeFile({
-                repo: splitUrl[splitUrl.length - 1],
-                user: project.author.name!,
-            })
-
-            if (contents.trim() !== '') {
-                readme = b64DecodeUnicode(contents)
-            }
-        } catch (error) {
-            readme = null
-        }
-    }
+    const [isFollowed, readme] = await Promise.all([
+        isFollowProject(project.id),
+        getReadmeContents(project),
+    ])
 
     if (!project) {
         return <div>Not found</div>

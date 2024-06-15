@@ -22,7 +22,7 @@ const getAggreagtedSupportsList = async (
     const cursor = formData.get('nextCursor') as string
 
     try {
-        let parsedCursor = cursor ? parseInt(cursor) : 0
+        const parsedCursor = cursor ? parseInt(cursor) : 0
 
         const data = await getAggregatedSupports(parsedCursor)
 

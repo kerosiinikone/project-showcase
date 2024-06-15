@@ -1,4 +1,5 @@
 import { Github } from 'lucide-react'
+import Image from 'next/image'
 
 const UserDetailField = ({
     image,
@@ -12,8 +13,11 @@ const UserDetailField = ({
     return (
         <>
             <div id="profile-picture h-36 w-36">
-                <img
-                    className="rounded-xl h-36 w-36 object-contain"
+                <Image
+                    alt="Profile pricture"
+                    width={116}
+                    height={116}
+                    className="rounded-xl"
                     src={image!}
                 />
             </div>

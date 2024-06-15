@@ -1,10 +1,13 @@
 import { defineConfig, devices } from '@playwright/test'
+import dotenv from 'dotenv'
 
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-require('dotenv').config()
+
+dotenv.config({ path: './.env.test', override: true })
+const testEnv = { ...process.env } as { [key: string]: string }
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -42,6 +45,7 @@ export default defineConfig({
     webServer: {
         command: 'npm run dev',
         port: 3000,
+        env: testEnv,
         reuseExistingServer: !process.env.CI,
     },
 })

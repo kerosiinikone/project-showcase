@@ -13,7 +13,7 @@ export interface EditProjectParams {
     tags: string[]
 }
 
-let success: boolean = false
+let success = false
 
 export default async function editProjectAction(
     props: {

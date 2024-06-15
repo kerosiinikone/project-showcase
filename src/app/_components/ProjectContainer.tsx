@@ -87,9 +87,12 @@ export default function ProjectContainer({
                         />
                     </div>
                     <div className="flex w-full flex-row justify-start items-center">
-                        {tags.map((t) => {
+                        {tags.map((t, i) => {
                             return (
-                                <div className="mt-2">
+                                <div
+                                    key={`${t}-${i}`}
+                                    className="mt-2"
+                                >
                                     <TagLabel
                                         name={t}
                                         remove={() => {

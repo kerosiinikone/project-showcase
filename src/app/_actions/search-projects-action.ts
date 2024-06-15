@@ -37,7 +37,6 @@ const searchProjects = async (
     const parsedStage = JSON.parse(stageFilter) as Stage[]
     const parsedTags = JSON.parse(tags) as string[]
 
-    // Just removed a filter or changed something in the query
     const isNewQuery =
         query != lastQuery ||
         !(JSON.stringify(prevProjects.stage) == stageFilter) ||
@@ -59,7 +58,10 @@ const searchProjects = async (
             hasGithub: hasGithub === '' ? null : hasGithub === 'true',
         })
 
-        if (isNewQuery) {
+        if (
+            isNewQuery ||
+            (cursor === '' && parsedTags.length === 0)
+        ) {
             prevProjects.data = data.data
         } else if (cursorToUse) {
             prevProjects.data.push(...data.data)

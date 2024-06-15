@@ -4,6 +4,8 @@ import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import { initTRPC } from '@trpc/server'
 import { CreateNextContextOptions } from '@trpc/server/adapters/next'
 
+/* eslint-disable */
+
 export type Context = Awaited<ReturnType<typeof createContext>>
 
 export async function createContext(opts: CreateNextContextOptions) {

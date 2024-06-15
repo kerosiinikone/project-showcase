@@ -9,10 +9,11 @@ import {
 } from '@/services/trpc/server'
 import ProjectDashboard from './_components/ProjectDashboard'
 import UserSectionComponent from './_components/user/UserContainer'
-
-export const dynamic = 'force-dynamic'
+import { unstable_noStore as noStore } from 'next/cache'
 
 export default async function DashboardComponent() {
+    noStore()
+
     const session = await useAsyncAuth()
 
     const [bio, repos, user, userProjects, aggregatedSupports] =

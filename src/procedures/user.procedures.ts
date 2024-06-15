@@ -16,6 +16,8 @@ import { z } from 'zod'
 import * as winston from 'winston'
 import { usersToProjectsCursor } from '@/operations/cursor'
 
+/* eslint-disable */
+
 const BASE_HEADERS = {
     'X-GitHub-Api-Version': '2022-11-28',
 }

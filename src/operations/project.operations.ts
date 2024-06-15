@@ -150,14 +150,16 @@ export async function addTagsToProject(tag: string[], pid: number) {
         .then((res) => res.map((t) => t.tags) ?? null)
 
     // Clear tags when editing
-    for (let t of projectTags) {
-        await db
-            .delete(projectsToTags)
-            .where(eq(projectsToTags.tag_id, t?.id!))
+    for (const t of projectTags) {
+        if (t?.id) {
+            await db
+                .delete(projectsToTags)
+                .where(eq(projectsToTags.tag_id, t.id))
+        }
     }
 
     // Promise.all([])
-    for (let t of tag) {
+    for (const t of tag) {
         const existingTag = await db
             .select()
             .from(tags)

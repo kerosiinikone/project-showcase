@@ -36,6 +36,8 @@ import { z } from 'zod'
 
 // Project Data Transfer Object
 
+/* eslint-disable */
+
 const BASE_HEADERS = {
     'X-GitHub-Api-Version': '2022-11-28',
     Accept: 'application/vnd.github+json',

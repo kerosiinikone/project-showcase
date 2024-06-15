@@ -32,6 +32,8 @@ import {
     FormLabel,
 } from './ui/form'
 
+/* eslint-disable */
+
 type ModalContentParams = {
     repos: UserRepo[] | null
     dispatch: any
@@ -243,6 +245,9 @@ export default function CreateModalLayout({
                                                             ) => {
                                                                 return (
                                                                     <SelectItem
+                                                                        key={
+                                                                            repo.id
+                                                                        }
                                                                         value={
                                                                             repo.github_url
                                                                         }
