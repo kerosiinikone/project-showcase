@@ -6,7 +6,6 @@ on:
             - completed
         branches:
             - main
-
 jobs:
     deploy-staging:
         runs-on: ubuntu-latest
