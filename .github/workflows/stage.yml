@@ -34,6 +34,7 @@ jobs:
             AUTH_URL: ${{ vars.RAILWAY_AUTH_URL }}
             CLIENT_URL: ${{ vars.RAILWAY_CLIENT_URL }}
             NEXT_PUBLIC_CLIENT_URL: ${{ vars.NEXT_PUBLIC_RAILWAY_URL }}
+            DB_URL: ${{ secrets.PROD_DB_URL }}
         timeout-minutes: 60
         runs-on: ubuntu-latest
         steps:
@@ -65,4 +66,4 @@ jobs:
             - name: Install Railway
               run: npm i -g @railway/cli
             - name: Delete db volume
-              run: railway run rm test.db
+              run: railway run rm test.db --service project-showcase

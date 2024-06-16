@@ -8,7 +8,7 @@
         "start": "next start",
         "serve": "node .next/standalone/server.js",
         "test": "npx playwright test --config playwright.config.ts --trace on",
-        "stage:test": "npx playwright test --config playwright-stage.config.ts",
+        "stage:test": "npx playwright test --config playwright-stage.config.ts --trace on",
         "lint": "next lint",
         "generate": "npx drizzle-kit generate",
         "test:push": "npx drizzle-kit push --config=drizzle-test.config.ts",

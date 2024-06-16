@@ -47,5 +47,13 @@ const sql = `
 
 // For dependency sake
 export async function migrate(sqlite: Database) {
-    sqlite.exec(sql)
+    const isTable: any = sqlite
+        .prepare(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='user';"
+        )
+        .get()
+    if (!isTable) {
+        sqlite.exec(sql)
+    }
+    console.log(isTable)
 }
