@@ -66,4 +66,4 @@ jobs:
             - name: Install Railway
               run: npm i -g @railway/cli
             - name: Delete db volume
-              run: railway run rm test.db --service project-showcase
+              run: railway run --service project-showcase rm test.db
