@@ -74,7 +74,7 @@ export default {
                 if (process.env.ENVIRONMENT === 'test') {
                     const newProject = await testCreateNewProject({
                         ...input,
-                        author_id: session?.user?.id!,
+                        author_id: session?.user.id!,
                         description:
                             input.description || DEFAULT_DESCRIPTION,
                         image: null,

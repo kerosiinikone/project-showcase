@@ -36,7 +36,7 @@ if (
     process.env.ENVIRONMENT === 'test' ||
     process.env.NODE_ENV === 'test'
 ) {
-    const sqlite = new Database(':memory:')
+    const sqlite = new Database('test.db')
     migrate(sqlite)
 
     const liteDb = betterSqlite.drizzle(sqlite, {

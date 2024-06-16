@@ -38,7 +38,6 @@ const testCredentials = Credentials({
                         email: 'test@gmail.com',
                         name: 'Test Test',
                     })
-                    .returning()
 
                 if (!newUser) {
                     throw new Error(

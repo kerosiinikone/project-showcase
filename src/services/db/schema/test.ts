@@ -21,7 +21,7 @@ export const users = sqliteTable(
     'user',
     {
         id: text('id').primaryKey().notNull(),
-        name: text('name'),
+        name: text('name').notNull(),
         email: text('email', { length: 191 }).notNull(),
         emailVerified: integer('emailVerified', {
             mode: 'timestamp',
