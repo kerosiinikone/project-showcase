@@ -52,18 +52,3 @@ jobs:
               run: npx playwright install --with-deps
             - name: Run Playwright stage tests
               run: npm run stage:test
-    # cleanup-disk-db:
-    #     needs: [test-staging]
-    #     runs-on: ubuntu-latest
-    #     env:
-    #         RAILWAY_TOKEN: ${{ secrets.RAILWAY }}
-    #     steps:
-    #         - name: Checkout Code
-    #           uses: actions/checkout@v3
-    #         - uses: actions/setup-node@v4
-    #           with:
-    #               node-version: lts/*
-    #         - name: Install Railway
-    #           run: npm i -g @railway/cli
-    #         - name: Delete db volume
-    #           run: railway run --service project-showcase ls
