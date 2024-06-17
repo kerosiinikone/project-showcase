@@ -14,8 +14,8 @@ interface RepoContainerProps {
 
 export default function RepoContainer({ repos }: RepoContainerProps) {
     return (
-        <>
-            <Table className="p-5 bg-white rounded-lg h-full w-full font-medium border-2">
+        <div className="overflow-x-auto border-2 p-2 rounded-lg overflow-y-auto">
+            <Table className="bg-white h-full font-medium">
                 <TableHeader>
                     <TableRow>
                         <TableHead>Name</TableHead>
@@ -32,8 +32,11 @@ export default function RepoContainer({ repos }: RepoContainerProps) {
                                         {repo.name}
                                     </h1>
                                 </TableCell>
-                                <TableCell key={repo.id}>
-                                    <h3 className="text-md text-gray-500 truncate">
+                                <TableCell
+                                    className="w-[100px]"
+                                    key={repo.id}
+                                >
+                                    <h3 className="text-md text-gray-500 truncate w-3/4">
                                         {repo.github_url}
                                     </h3>
                                 </TableCell>
@@ -47,6 +50,6 @@ export default function RepoContainer({ repos }: RepoContainerProps) {
                     })}
                 </TableBody>
             </Table>
-        </>
+        </div>
     )
 }

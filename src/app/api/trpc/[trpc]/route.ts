@@ -1,14 +1,13 @@
 import { appRouter } from '@/services/trpc/router'
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
+import { createContext } from '@/services/trpc'
 
-const handler = (req: Request) =>
-    fetchRequestHandler({
+const handler = (req: Request) => {
+    return fetchRequestHandler({
         endpoint: '/api/trpc',
         req,
         router: appRouter,
-        createContext: () => ({
-            session: null,
-        }),
+        createContext,
         onError(opts) {
             const { error } = opts
             if (error.code === 'INTERNAL_SERVER_ERROR') {
@@ -16,4 +15,5 @@ const handler = (req: Request) =>
             }
         },
     })
+}
 export { handler as GET, handler as POST }

@@ -2,13 +2,13 @@ import 'server-only'
 
 import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import { initTRPC } from '@trpc/server'
-import { CreateNextContextOptions } from '@trpc/server/adapters/next'
+import { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
 
 /* eslint-disable */
 
 export type Context = Awaited<ReturnType<typeof createContext>>
 
-export async function createContext(opts: CreateNextContextOptions) {
+export async function createContext(_: FetchCreateContextFnOptions) {
     const session = await useAsyncAuth()
     return {
         session,

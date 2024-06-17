@@ -61,7 +61,7 @@ export default function SideNavLayout({
             <div
                 id="default-sidebar"
                 className="top-0 left-0 z-40 h-screen bg-slate-50 font-medium border-r-2 
-            border-slate-100 w-96"
+            border-slate-100 w-0 xl:w-96"
                 aria-label="Sidebar"
             >
                 <div className="h-full overflow-y-auto">

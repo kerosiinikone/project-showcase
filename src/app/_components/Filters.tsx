@@ -54,8 +54,11 @@ export default function Filters({
     }
 
     return (
-        <div className="flex flex-row w-full justify-start my-4 gap-6">
-            <div className="flex flex-row gap-2" id="stage-filter">
+        <div className="flex flex-row w-full flex-wrap justify-start my-4 gap-6">
+            <div
+                className="flex flex-row flex-wrap gap-2"
+                id="stage-filter"
+            >
                 <Button
                     onClick={() => handleStageFilter(Stage.IDEA)}
                     variant="secondary"

@@ -22,6 +22,9 @@ export default async function RootLayout({
     return (
         <html lang="en">
             <body
+                style={{
+                    overflowX: 'hidden',
+                }}
                 className={cn(
                     'min-h-screen bg-background font-sans antialiased',
                     fontSans.variable
@@ -33,10 +36,10 @@ export default async function RootLayout({
                     </pre>
                 )}
                 <Provider>
-                    <div className="flex h-screen">
+                    <div className="md:h-screen h-full w-screen flex flex-row items-center justify-center">
                         <div id="modal" />
                         <SideNavLayout session={session} />
-                        <div className="w-full h-full flex justify-center items-center bg-gradient-to-r from-slate-50 to-white">
+                        <div className="md:h-full w-full flex justify-center shrink items-center bg-gradient-to-r from-slate-50 to-white">
                             {children}
                         </div>
                     </div>

@@ -71,13 +71,13 @@ export default function UserSupportCount({
                 <CreateDashboardModal title="Supported Projects">
                     <ul
                         onScroll={onBottom}
-                        className="h-full w-full font-medium overflow-y-auto"
+                        className="h-full md:w-full font-medium overflow-y-auto"
                     >
                         {supportedProjectsData.map((project) => {
                             return (
                                 <li
                                     key={project.id}
-                                    className="pb-4 rounded-lg my-2"
+                                    className="pb-4 rounded-lg my-2 w-full truncate"
                                 >
                                     <div className="flex flex-row justify-start items-center gap-2">
                                         {project.github_url && (
@@ -86,7 +86,7 @@ export default function UserSupportCount({
                                         <div className="flex flex-row justify-start items-center gap-2 truncate">
                                             <h1 className="flex gap-2 truncate text-xl font-medium text-gray-900 truncate w-full">
                                                 {project.name.trim()}
-                                                <span className="text-md text-gray-300 truncate text-clip">
+                                                <span className="text-md text-gray-300 truncate text-clip hidden md:inline-block">
                                                     {project.alt_id}
                                                 </span>
                                             </h1>
@@ -100,8 +100,8 @@ export default function UserSupportCount({
             </>
             <form action={dispatch} ref={formRef}>
                 <DialogTrigger type="submit">
-                    <div className="col-span-1 flex flex-col px-10 py-2 w-fit items-center justify-center cursor-pointer rounded-lg hover:bg-slate-100 transition">
-                        <h1 className="font-medium">
+                    <div className="col-span-1 flex flex-col px-2 md:px-10 py-2 w-fit items-center justify-center cursor-pointer rounded-lg hover:bg-slate-100 transition">
+                        <h1 className="font-medium hidden md:block">
                             Supported Projects
                         </h1>
                         <h2>{supports}</h2>

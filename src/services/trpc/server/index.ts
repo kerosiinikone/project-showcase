@@ -26,5 +26,5 @@ export const {
         getExistingUserAction: getUserById,
     },
 } = appRouter.createCaller({
-    session: null, // Can't be set Async
+    session: null,
 })

@@ -68,7 +68,7 @@ export default function AggregatedSupports({
                 <CreateDashboardModal title="Supports">
                     <ul
                         onScroll={onBottom}
-                        className="h-full w-full font-medium overflow-y-auto "
+                        className="h-full md:w-full font-medium overflow-y-auto"
                     >
                         {aggregatedSupports.map(
                             ({ project, count }) => {
@@ -100,8 +100,10 @@ export default function AggregatedSupports({
             </>
             <form action={dispatch} ref={formRef}>
                 <DialogTrigger type="submit">
-                    <div className="col-span-1 flex flex-col px-10 py-2 w-fit items-center justify-center cursor-pointer rounded-lg hover:bg-slate-100 transition">
-                        <h1 className="font-medium">Supports</h1>
+                    <div className="col-span-1 flex flex-col px-2 md:px-10 py-2 w-fit items-center justify-center cursor-pointer rounded-lg hover:bg-slate-100 transition">
+                        <h1 className="font-medium hidden md:block">
+                            Supports
+                        </h1>
                         <h2>{supports}</h2>
                     </div>
                 </DialogTrigger>
@@ -118,13 +120,3 @@ export default function AggregatedSupports({
         </Dialog>
     )
 }
-
-// Add later
-// export const ProjectListItem = memo(
-//     ({ id, name, image }: SupportedProjectProps) => {
-//         return <div></div>
-//     },
-//     (prev: SupportedProjectProps, next: SupportedProjectProps) => {
-//         return prev.id == next.id
-//     }
-// )

@@ -82,50 +82,60 @@ export default function ProjectDashboard({
     }, [initialError])
 
     return (
-        <div
-            id="projects-repos"
-            className="flex flex-row h-3/4 w-full mt-5"
-        >
-            <form
-                ref={formRef}
-                action={dispatch}
-                className="min-w-[300px]"
-            >
-                <div hidden>
-                    <input
-                        hidden
-                        id="nextCursor"
-                        readOnly
-                        name="nextCursor"
-                        value={
-                            projectsRaw?.nextCursor ??
-                            initialCursor ??
-                            undefined
-                        }
-                    />
-                </div>
-                <div className="flex flex-col justify-center items-center rounded-lg h-full w-full font-medium bg-gray-100 mr-5">
-                    {projectsMemo.length ? (
-                        <ProjectGrid
-                            pending={pending}
-                            onBottom={onBottom}
-                            projects={projectsMemo}
-                            cols={2}
-                        />
+        <div className="md:container w-full h-3/4">
+            <div className="h-full flex flex-col items-center">
+                <div className="flex flex-col rounded-lg font-medium bg-white p-5 mt-5 shadow-lg xl:w-full w-3/4">
+                    <div className="flex flex-col justify-center items-start w-full mb-5">
+                        <h1 className="ml-5 text-xl">
+                            My Github Repos
+                        </h1>
+                    </div>
+                    {repos.length ? (
+                        <RepoContainer repos={repos} />
                     ) : (
-                        <>
-                            <h1>No Projects</h1>
-                            <h2>Add a new project</h2>
-                        </>
+                        <h1>No Github repos</h1>
                     )}
                 </div>
-            </form>
-            <div className="flex flex-col rounded-lg h-full w-3/4 font-medium ml-5 bg-white mr-5">
-                {repos.length ? (
-                    <RepoContainer repos={repos} />
-                ) : (
-                    <h1>No Github repos</h1>
-                )}
+                <div className="h-[400px] xl:w-full w-3/4 mb-10">
+                    <form
+                        ref={formRef}
+                        action={dispatch}
+                        className="h-[400px] max-h-[400px]"
+                    >
+                        <div hidden>
+                            <input
+                                hidden
+                                id="nextCursor"
+                                readOnly
+                                name="nextCursor"
+                                value={
+                                    projectsRaw?.nextCursor ??
+                                    initialCursor ??
+                                    undefined
+                                }
+                            />
+                        </div>
+                        <div className="flex flex-col flex-grow overflow-y-auto justify-center items-center rounded-lg w-full h-full font-medium bg-white p-5 mt-8 shadow-lg">
+                            <div className="flex flex-col justify-center items-start w-full mb-5">
+                                <h1 className="ml-5 text-xl">
+                                    Own Projects
+                                </h1>
+                            </div>
+                            {projectsMemo.length ? (
+                                <ProjectGrid
+                                    pending={pending}
+                                    onBottom={onBottom}
+                                    projects={projectsMemo}
+                                />
+                            ) : (
+                                <div>
+                                    <h1>No Projects</h1>
+                                    <h2>Add a new project</h2>
+                                </div>
+                            )}
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     )

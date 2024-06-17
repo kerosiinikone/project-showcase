@@ -12,7 +12,7 @@ const SearchButton = ({
     return (
         <Button
             variant="secondary"
-            className="cursor-pointer inline-flex py-2.5 px-3 ms-2 justify-center items-center"
+            className="cursor-pointer lg:inline-flex hidden py-2.5 px-3 ms-2 justify-center items-center"
             onClick={(e) => {
                 e.preventDefault()
 

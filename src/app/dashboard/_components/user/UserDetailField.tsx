@@ -1,5 +1,4 @@
 import { Github } from 'lucide-react'
-import Image from 'next/image'
 
 const UserDetailField = ({
     image,
@@ -11,13 +10,14 @@ const UserDetailField = ({
     id: string
 }) => {
     return (
-        <>
-            <div id="profile-picture h-36 w-36">
-                <Image
+        <div className="flex flex-row">
+            <div
+                id="profile-picture"
+                className="flex justify-center items-center shrink-0"
+            >
+                <img
                     alt="Profile pricture"
-                    width={116}
-                    height={116}
-                    className="rounded-xl"
+                    className="rounded-xl md:h-36 md:w-36 w-24 h-24"
                     src={image!}
                 />
             </div>
@@ -25,13 +25,13 @@ const UserDetailField = ({
                 id="profile-info"
                 className="flex flex-col m-6 mt-10"
             >
-                <div className="flex flex-row items-center">
+                <div className="flex flex-row items-center text-wrap truncate">
                     <Github size="22px" className="mr-2" />
                     <h1 className="text-2xl font-medium">{name}</h1>
                 </div>
                 <h2 className="text-sm text-slate-500">{id}</h2>
             </div>
-        </>
+        </div>
     )
 }
 

@@ -112,7 +112,7 @@ export default function ProjectContainer({
                             )
                         })}
                     </div>
-                    <div className="flex w-full flex-row justify-start items-center">
+                    <div className="flex w-full flex-wrap flex-row justify-start items-center">
                         <Filters
                             resetCursor={() => {
                                 setCursor(null)
@@ -137,7 +137,6 @@ export default function ProjectContainer({
             </div>
             <ProjectGrid
                 pending={pending}
-                cols={4}
                 onBottom={onBottom}
                 projects={projectsMemo}
             />

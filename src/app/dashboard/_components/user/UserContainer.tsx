@@ -26,18 +26,18 @@ export default function UserSectionComponent({
     return (
         <div
             id="user"
-            className="rounded-lg bg-white w-full font-medium border-gradient-to-r from-slate-150 to-slate-50 border-2"
+            className="rounded-lg bg-white xl:w-full w-3/4 font-medium border-gradient-to-r from-slate-150 to-slate-50 border-2"
         >
             <div
                 id="profile-data"
-                className="flex flex-row p-4 border-b-2 rounded-lg bg-gradient-to-r from-slate-150 to-slate-50"
+                className="flex md:flex-row flex-col p-4 border-b-2 rounded-lg bg-gradient-to-r from-slate-150 to-slate-50"
             >
                 <UserDetailField id={id} name={name} image={image} />
                 <UserBio content={userBio} />
             </div>
             <div
                 id="follower-projects-info"
-                className="grid grid-flow-col gap-10 grid-cols-3 w-full mx-4 my-2 justify-center justify-items-center items-center"
+                className="flex flex-row mx-4 my-2 justify-around items-center"
             >
                 <AggregatedSupports supports={aggregatedSupports} />
                 <OwnProjectCounter
