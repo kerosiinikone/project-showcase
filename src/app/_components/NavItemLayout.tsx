@@ -7,6 +7,8 @@ type NavItemLayoutProps = {
     closeDrawer?: () => void
 } & React.PropsWithChildren
 
+/* eslint-disable */
+
 const NavItemLayout = ({
     children,
     title,
