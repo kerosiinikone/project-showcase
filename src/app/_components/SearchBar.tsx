@@ -21,7 +21,7 @@ const SearchBarComponent = ({
 
     return (
         <>
-            <div className="relative w-full bg-white">
+            <div className="w-full bg-white">
                 <DebounceInput
                     minLength={4}
                     ref={inputRef}

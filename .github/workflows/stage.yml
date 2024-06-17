@@ -19,12 +19,8 @@ jobs:
                   node-version: lts/*
             - name: Install Railway
               run: npm i -g @railway/cli
-            - name: Change service to project-showcase
-              run: railway service project-showcase
-            - name: Change env to STAGING
-              run: railway environment staging
             - name: Deploy Staging
-              run: railway up --service project-showcase
+              run: railway up --service project-showcase --environment staging
               if: success()
     test-staging:
         needs: [deploy-staging]

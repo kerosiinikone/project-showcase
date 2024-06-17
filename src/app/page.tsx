@@ -23,8 +23,8 @@ export default async function MainPage({
     })
 
     return (
-        <div className="container h-full w-full flex justify-center items-center p-10">
-            <div className="flex flex-col gap-4 h-full w-full">
+        <div className="container h-full w-full flex justify-center items-center p-10 pt-10">
+            <div className="flex flex-col gap-4 h-full w-full pt-20 2xl:p-0">
                 <div
                     id="info"
                     className="rounded-lg font-medium md:h-32 h-20"

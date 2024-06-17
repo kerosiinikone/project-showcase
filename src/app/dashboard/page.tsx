@@ -27,7 +27,7 @@ export default async function DashboardComponent() {
 
     return (
         <div className="container h-full w-full flex justify-center items-center px-2 py-4 md:p-10">
-            <div className="flex flex-col gap-4 items-center h-full w-full">
+            <div className="flex flex-col gap-4 items-center h-full w-full pt-20 2xl:p-0">
                 <UserSectionComponent
                     user={user}
                     aggregatedSupports={aggregatedSupports.value}

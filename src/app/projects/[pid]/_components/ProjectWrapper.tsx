@@ -90,10 +90,10 @@ export default function ProjectWrapper({
     }, [editState])
 
     return (
-        <div className="flex flex-col space-y-2 w-full h-full">
-            <Card>
-                <CardHeader className="flex flex-row w-full justify-between p-10">
-                    <div className="flex flex-col w-full items-start justify-center gap-2">
+        <div className="flex flex-col justify-center w-3/4 space-y-6 w-full h-full pt-20 md:pt-15 2xl:pt-10">
+            <Card className="flex flex-col xl:w-1/2 w-full shadow-lg border-2 flex-shrink">
+                <CardHeader className="flex md:flex-row flex-col w-full gap-4 md:justify-between justify-center md:items-start items-center p-10">
+                    <div className="flex flex-col w-full md:items-start items-center justify-center gap-2">
                         <div className="flex flex-row w-fit justify-center items-center gap-5">
                             <CardDescription className="flex flex-row gap-2">
                                 {stage}
@@ -114,7 +114,7 @@ export default function ProjectWrapper({
                             </a>
                         )}
                     </div>
-                    <div className="flex flex-row gap-2">
+                    <div className="flex flex-row gap-2 items-center justify-center">
                         {session && (
                             <div className="flex flex-row gap-2 w-fit justify-center items-center">
                                 <form
@@ -165,18 +165,18 @@ export default function ProjectWrapper({
                     </div>
                 </CardHeader>
             </Card>
-            <Card className="h-fit">
+            <Card className="h-fit shadow-lg border-2 flex-shrink">
                 <CardHeader>
-                    <CardTitle>Description</CardTitle>
+                    <CardTitle>Details</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col h-fit">
-                    <div className="flex flex-row gap-4 h-fit w-full">
-                        <div className="flex flex-col items-center h-full w-1/2">
-                            <div className="flex flex-col h-full w-full items-start justify-center space-y-4 rounded-md border p-4">
-                                <p className="text-md font-medium leading-none">
+                    <div className="flex lg:flex-row items-start flex-col gap-4 h-fit w-full">
+                        <div className="flex flex-col items-start h-full lg:w-1/2 w-full">
+                            <div className="flex flex-col h-full items-start justify-center space-y-4 rounded-md border px-4 py-8">
+                                <p className="text-sm font-medium leading-none">
                                     Description
                                 </p>
-                                <p className="font-normal text-wrap truncate text-sm">
+                                <p className="font-normal text-wrap truncate text-md">
                                     {description}
                                 </p>
                             </div>
@@ -205,7 +205,7 @@ export default function ProjectWrapper({
                         </div>
 
                         {readme && (
-                            <div className="flex flex-col h-3/4 w-[calc(40%+150px)] items-start justify-center space-y-4 rounded-md border p-4">
+                            <div className="flex flex-col h-3/4 lg:w-[calc(40%+150px)] w-full items-start justify-center space-y-4 rounded-md border p-4">
                                 <p className="text-md font-medium leading-none">
                                     README
                                 </p>
@@ -217,7 +217,7 @@ export default function ProjectWrapper({
                     </div>
                 </CardContent>
             </Card>
-            <Card>
+            <Card className="shadow-lg border-2 flex-shrink">
                 <CardHeader>
                     <CardTitle>Author</CardTitle>
                 </CardHeader>
@@ -226,11 +226,11 @@ export default function ProjectWrapper({
                         <span className="font-normal text-xl">
                             {author.name}
                         </span>
-                        <span className="font-light w-3/4">
+                        <span className="font-light md:text-md text-sm w-3/4">
                             {author.id}
                         </span>
                     </div>
-                    <div className="flex flex-row items-center justify-center gap-6">
+                    <div className="flex md:flex-row flex-col md:items-center md:justify-center gap-4">
                         {supportCountFormatted && (
                             <div className="flex flex-row gap-2 mx-5 justify-center items-center">
                                 <h2 className="text-lg font-medium">
@@ -251,7 +251,7 @@ export default function ProjectWrapper({
                                     rel="noreferrer"
                                     target="_blank"
                                 >
-                                    <Github size="30" />
+                                    <Github size="20" />
                                 </a>
                             </div>
                         )}

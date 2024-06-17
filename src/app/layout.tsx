@@ -2,7 +2,7 @@ import { useAsyncAuth } from '@/services/auth/util/useAsyncAuth'
 import { Inter as FontSans } from 'next/font/google'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import SideNavLayout from './Nav'
+import SideNavLayout, { HiddenSideNavDrawer } from './Nav'
 import Provider from './_util/Provider'
 import './globals.css'
 import { cn } from '@/lib/utils'
@@ -36,6 +36,7 @@ export default async function RootLayout({
                     </pre>
                 )}
                 <Provider>
+                    <HiddenSideNavDrawer session={session} />
                     <div className="md:h-screen h-full w-screen flex flex-row items-center justify-center">
                         <div id="modal" />
                         <SideNavLayout session={session} />

@@ -16,12 +16,12 @@ const DeleteButton = ({
             {!isDelete ? (
                 <div className="flex justify-center items-center">
                     <Button
+                        variant="destructive"
                         onClick={(e) => {
                             e.preventDefault()
                             setIsDelete(true)
                         }}
-                        className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center bg-red-500 border-2 border-red-500 rounded-lg 
-            group hover:bg-red-600 hover:border-red-600 text-white"
+                        className="cursor-pointer inline-flex py-4 px-6 text-sm font-medium justify-center items-center rounded-lg text-white"
                     >
                         <Delete
                             className="w-5 h-5 me-2"

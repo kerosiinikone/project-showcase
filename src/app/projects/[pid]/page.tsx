@@ -37,24 +37,26 @@ export default async function ProjectPage({
     }
 
     return (
-        <div className="container h-full w-full flex justify-center items-center p-10">
-            <ProjectWrapper
-                session={session}
-                project={project}
-                supportCountFormatted={
-                    project.supportCount
-                        ? kFormatter(project.supportCount) // 1100 -> 1.1k & 600 -> 600
-                        : null
-                }
-                readme={
-                    readme
-                        ? sanitize(readme, {
-                              allowedTags: ['blockquote'],
-                          })
-                        : ''
-                }
-                isFollowed={isFollowed}
-            />
+        <div className="container h-full w-full flex justify-center items-center px-2 py-4 md:p-10">
+            <div className="flex flex-col gap-4 items-center h-full w-full">
+                <ProjectWrapper
+                    session={session}
+                    project={project}
+                    supportCountFormatted={
+                        project.supportCount
+                            ? kFormatter(project.supportCount) // 1100 -> 1.1k & 600 -> 600
+                            : null
+                    }
+                    readme={
+                        readme
+                            ? sanitize(readme, {
+                                  allowedTags: ['blockquote'],
+                              })
+                            : ''
+                    }
+                    isFollowed={isFollowed}
+                />
+            </div>
         </div>
     )
 }

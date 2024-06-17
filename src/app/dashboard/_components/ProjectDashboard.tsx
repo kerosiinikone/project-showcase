@@ -84,7 +84,7 @@ export default function ProjectDashboard({
     return (
         <div className="md:container w-full h-3/4">
             <div className="h-full flex flex-col items-center">
-                <div className="flex flex-col rounded-lg font-medium bg-white p-5 mt-5 shadow-lg xl:w-full w-3/4">
+                <div className="flex flex-col rounded-lg font-medium bg-white p-5 mt-5 shadow-lg xl:w-full w-3/4 border-2">
                     <div className="flex flex-col justify-center items-start w-full mb-5">
                         <h1 className="ml-5 text-xl">
                             My Github Repos
@@ -115,7 +115,7 @@ export default function ProjectDashboard({
                                 }
                             />
                         </div>
-                        <div className="flex flex-col flex-grow overflow-y-auto justify-center items-center rounded-lg w-full h-full font-medium bg-white p-5 mt-8 shadow-lg">
+                        <div className="flex flex-col flex-grow overflow-y-auto justify-center items-center rounded-lg w-full h-full font-medium bg-white p-5 mt-8 shadow-lg border-2">
                             <div className="flex flex-col justify-center items-start w-full mb-5">
                                 <h1 className="ml-5 text-xl">
                                     Own Projects
