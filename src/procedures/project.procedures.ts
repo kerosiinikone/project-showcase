@@ -138,17 +138,15 @@ export default {
                 }
 
                 try {
-                    const result = (
-                        await Promise.all([
-                            addTagsToProject(tags ?? [], pid),
-                            editExistingProject(
-                                pid,
-                                restData as ProjectType
-                            ),
-                        ])
-                    )[1]
+                    const result = await Promise.all([
+                        addTagsToProject(tags ?? [], pid),
+                        editExistingProject(
+                            pid,
+                            restData as ProjectType
+                        ),
+                    ])
 
-                    return !!result
+                    return { ...result[1], tags: result[0] }
                 } catch (error) {
                     logger.error('Database error in editProject', {
                         error,

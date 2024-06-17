@@ -185,6 +185,7 @@ export async function addTagsToProject(tag: string[], pid: number) {
             })
         }
     }
+    return tag
 }
 
 export async function getExistingProjectById({

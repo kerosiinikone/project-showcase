@@ -67,7 +67,7 @@ export default function SideNavLayout({
             <div
                 id="default-sidebar"
                 className="top-0 left-0 z-40 h-screen bg-slate-50 font-medium border-r-2 
-            border-slate-100 w-0 2xl:w-96 shrink-0"
+            border-slate-100 w-0 xl:w-96 shrink-0"
                 aria-label="Sidebar"
             >
                 <div className="h-full overflow-y-auto">
@@ -186,7 +186,7 @@ export const HiddenSideNavDrawer = ({
         }
     }, [createState])
     return (
-        <div className="bg-white h-20 w-full flex justify-start items-center fixed top-0 left-0 border-b-2 2xl:hidden ">
+        <div className="bg-white h-20 w-full flex justify-start items-center fixed top-0 left-0 border-b-2 xl:hidden ">
             <Drawer.Root
                 open={open}
                 onOpenChange={setOpen}

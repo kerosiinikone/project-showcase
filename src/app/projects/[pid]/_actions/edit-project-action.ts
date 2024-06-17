@@ -50,7 +50,7 @@ export default async function editProjectAction(
         return {
             pid: props.pid,
             author_id: props.author_id,
-            done: done,
+            done: !!done,
         }
     } catch (error) {
         let err = error as any
