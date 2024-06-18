@@ -36,20 +36,22 @@ interface ProjectWrapperProps {
 export default function ProjectWrapper({
     session,
     supportCountFormatted,
-    project: {
-        name,
-        stage,
-        author,
-        tags,
-        id,
-        website,
-        description,
-        github_url,
-        author_id,
-    },
+    project,
     readme,
     isFollowed,
 }: ProjectWrapperProps) {
+    const {
+        name,
+        stage,
+        website,
+        description,
+        author_id,
+        id,
+        author,
+        tags,
+        github_url,
+    } = project
+
     const [isDelete, setIsDelete] = useState<boolean>(false)
     const [actionLoading, setActionLoading] = useState<boolean>(false)
 
@@ -91,8 +93,8 @@ export default function ProjectWrapper({
 
     return (
         <div className="flex flex-col justify-center shrink space-y-6 w-full h-full p-6 pt-20 md:pt-15 2xl:pt-10">
-            <div className="flex flex-col xl:w-1/2 w-full shadow-lg border-2 flex-shrink rounded-xl p-6">
-                <div className="flex 2xl:flex-row flex-col w-full gap-4 md:justify-between justify-center md:items-start 2xl:items-center items-center p-10">
+            <div className="flex flex-col xl:w-fit w-full shadow-lg border-2 flex-shrink rounded-xl p-6">
+                <div className="flex 2xl:flex-row flex-col w-full gap-8 md:justify-between justify-center md:items-start 2xl:items-center items-center p-10">
                     <div className="flex flex-col w-full md:items-start items-center justify-center gap-2">
                         <div className="flex flex-row w-fit justify-center items-center gap-5">
                             <div className="flex flex-row gap-2">
@@ -140,6 +142,14 @@ export default function ProjectWrapper({
                                 <div className="flex flex-row gap-2 w-fit justify-center items-center">
                                     <Dialog>
                                         <CreateModalLayout
+                                            prefill={{
+                                                name,
+                                                description,
+                                                github_url,
+                                                stage,
+                                                website,
+                                                tags,
+                                            }}
                                             dispatch={editAction}
                                             actionLoading={
                                                 actionLoading
@@ -147,9 +157,9 @@ export default function ProjectWrapper({
                                             setActionLoading={
                                                 setActionLoading
                                             }
-                                            action="Create"
-                                            title="Create Project"
-                                            subTitle="A new project"
+                                            action="Edit"
+                                            title="Edit Project"
+                                            subTitle="An existing project"
                                             repos={
                                                 repoState?.data ?? []
                                             }

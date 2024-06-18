@@ -1,6 +1,6 @@
 'use client'
 
-import { Stage } from '@/models/Project/types'
+import { ProjectType, Stage } from '@/models/Project/types'
 import { UserRepo } from '@/services/github'
 import { PlusIcon, X } from 'lucide-react'
 import React, { Dispatch, SetStateAction, useState } from 'react'
@@ -43,6 +43,7 @@ type ModalContentParams = {
     initialTags?: string[]
     actionLoading: boolean
     setActionLoading: Dispatch<SetStateAction<boolean>>
+    prefill?: Partial<ProjectType>
 }
 
 const ProjectSchema = z.object({
@@ -66,6 +67,7 @@ export default function CreateModalLayout({
     setActionLoading,
     actionLoading,
     initialTags,
+    prefill,
 }: ModalContentParams) {
     const [tags, setTags] = useState<string[]>(initialTags ?? [])
     const form = useForm<z.infer<typeof ProjectSchema>>({
@@ -104,6 +106,7 @@ export default function CreateModalLayout({
                             <FormField
                                 control={form.control}
                                 name="name"
+                                defaultValue={prefill?.name ?? ''}
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Name</FormLabel>
@@ -123,6 +126,9 @@ export default function CreateModalLayout({
                         <div className="col-span-2">
                             <FormField
                                 control={form.control}
+                                defaultValue={
+                                    prefill?.description ?? ''
+                                }
                                 name="description"
                                 render={({ field }) => (
                                     <FormItem>
@@ -151,7 +157,12 @@ export default function CreateModalLayout({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Stage</FormLabel>
-                                        <Select {...field}>
+                                        <Select
+                                            {...field}
+                                            defaultValue={
+                                                prefill?.stage
+                                            }
+                                        >
                                             <FormControl>
                                                 <SelectTrigger
                                                     id="stage"
@@ -311,6 +322,7 @@ export default function CreateModalLayout({
                             <FormField
                                 control={form.control}
                                 name="website"
+                                defaultValue={prefill?.website ?? ''}
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Website</FormLabel>

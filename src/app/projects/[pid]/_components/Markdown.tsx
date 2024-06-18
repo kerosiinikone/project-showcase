@@ -5,13 +5,13 @@ import '../custom-styles/style.css'
 
 const Markdown = ({ readme }: { readme: string }) => {
     return (
-        <pre
+        <div
             id="readme"
             className="h-[250px] overflow-scroll"
             dangerouslySetInnerHTML={{
                 __html: MarkdownIt().render(readme),
             }}
-        ></pre>
+        ></div>
     )
 }
 

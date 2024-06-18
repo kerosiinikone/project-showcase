@@ -12,3 +12,5 @@ export const ProjectSchema = z.object({
     description: z.string().nullable(),
     tags: z.array(z.string().max(15)).max(3).optional(), // Change max according to need
 })
+
+export const PartialProjectSchema = ProjectSchema.partial()

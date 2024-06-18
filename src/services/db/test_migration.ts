@@ -55,5 +55,4 @@ export async function migrate(sqlite: Database) {
     if (!isTable) {
         sqlite.exec(sql)
     }
-    console.log(isTable)
 }

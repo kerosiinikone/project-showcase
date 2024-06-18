@@ -6,11 +6,12 @@ import { TRPCError } from '@trpc/server'
 import { revalidatePath } from 'next/cache'
 
 export interface EditProjectParams {
-    name: string
-    stage: Stage
+    name?: string
+    stage?: Stage
     github_url?: string
-    description: string
-    tags: string[]
+    description?: string
+    tags?: string[]
+    website?: string
 }
 
 let success = false
@@ -26,24 +27,21 @@ export default async function editProjectAction(
 ) {
     const tags = formData.get('tags') as string
     const projectParams: EditProjectParams = {
-        name: formData.get('name') as string,
-        stage: formData.get('stage') as Stage,
-        tags: JSON.parse(tags) as string[],
-        description: formData.get('description') as string,
-        github_url: formData.get('github_url') as string | undefined, // For now
+        name: (formData.get('name') as string) || undefined,
+        stage: (formData.get('stage') as Stage) || undefined,
+        tags: (JSON.parse(tags) as string[]) || undefined,
+        website: (formData.get('website') as string) || undefined,
+        description:
+            (formData.get('description') as string) || undefined,
+        github_url:
+            (formData.get('github_url') as string) || undefined,
     }
 
     try {
         const done = await editProject({
             pid: props.pid,
             author_id: props.author_id,
-            data: {
-                ...projectParams,
-                github_url: !projectParams.github_url
-                    ? null
-                    : projectParams.github_url,
-                description: projectParams.description,
-            },
+            data: projectParams,
         })
         success = true
 

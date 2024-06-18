@@ -49,9 +49,20 @@ export default async function ProjectPage({
                     }
                     readme={
                         readme
-                            ? sanitize(readme, {
-                                  allowedTags: ['blockquote'],
-                              })
+                            ? sanitize(
+                                  readme.replace(
+                                      /!\[.*?\]\(.+?\)/g,
+                                      ''
+                                  ),
+                                  {
+                                      allowedTags: [
+                                          'p',
+                                          'em',
+                                          'strong',
+                                          'blockquote',
+                                      ],
+                                  }
+                              )
                             : ''
                     }
                     isFollowed={isFollowed}

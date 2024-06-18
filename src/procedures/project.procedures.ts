@@ -6,7 +6,10 @@ import {
     SingleProjectType,
     Stage,
 } from '@/models/Project/types'
-import { ProjectSchema } from '@/models/Project/validation'
+import {
+    PartialProjectSchema,
+    ProjectSchema,
+} from '@/models/Project/validation'
 import { projectsCursor } from '@/operations/cursor'
 import {
     addTagsToProject,
@@ -116,7 +119,7 @@ export default {
             z.object({
                 pid: z.number(),
                 author_id: z.string().length(36),
-                data: ProjectSchema,
+                data: PartialProjectSchema,
             })
         )
         .mutation(

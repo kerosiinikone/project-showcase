@@ -46,7 +46,7 @@ function ProjectCard({ project }: ProjectCardProps) {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p className="font-normal my-2 text-wrap h-20 truncate line-clamp-3">
+                    <p className="font-normal py-2 text-wrap h-20 overflow-hidden line-clamp-3">
                         {description}
                     </p>
                 </CardContent>
