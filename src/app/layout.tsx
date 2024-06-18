@@ -40,7 +40,7 @@ export default async function RootLayout({
                     <div className="md:h-screen h-full w-screen flex flex-row items-center justify-center">
                         <div id="modal" />
                         <SideNavLayout session={session} />
-                        <div className="md:h-full w-full flex justify-center shrink items-center bg-gradient-to-r from-slate-50 to-white">
+                        <div className="md:h-full w-full flex justify-center items-center bg-gradient-to-r from-slate-50 to-white">
                             {children}
                         </div>
                     </div>

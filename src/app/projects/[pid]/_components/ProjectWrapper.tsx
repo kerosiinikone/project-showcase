@@ -90,17 +90,17 @@ export default function ProjectWrapper({
     }, [editState])
 
     return (
-        <div className="flex flex-col justify-center w-3/4 space-y-6 w-full h-full pt-20 md:pt-15 2xl:pt-10">
-            <Card className="flex flex-col xl:w-1/2 w-full shadow-lg border-2 flex-shrink">
-                <CardHeader className="flex md:flex-row flex-col w-full gap-4 md:justify-between justify-center md:items-start items-center p-10">
+        <div className="flex flex-col justify-center shrink space-y-6 w-full h-full p-6 pt-20 md:pt-15 2xl:pt-10">
+            <div className="flex flex-col xl:w-1/2 w-full shadow-lg border-2 flex-shrink rounded-xl p-6">
+                <div className="flex 2xl:flex-row flex-col w-full gap-4 md:justify-between justify-center md:items-start 2xl:items-center items-center p-10">
                     <div className="flex flex-col w-full md:items-start items-center justify-center gap-2">
                         <div className="flex flex-row w-fit justify-center items-center gap-5">
-                            <CardDescription className="flex flex-row gap-2">
+                            <div className="flex flex-row gap-2">
                                 {stage}
-                            </CardDescription>
-                            <CardTitle className="flex flex-col text-2xl w-full">
+                            </div>
+                            <div className="flex flex-col text-2xl w-full">
                                 {name}
-                            </CardTitle>
+                            </div>
                         </div>
                         {website && (
                             <a
@@ -163,20 +163,20 @@ export default function ProjectWrapper({
                             </div>
                         )}
                     </div>
-                </CardHeader>
-            </Card>
-            <Card className="h-fit shadow-lg border-2 flex-shrink">
-                <CardHeader>
-                    <CardTitle>Details</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-col h-fit">
-                    <div className="flex lg:flex-row items-start flex-col gap-4 h-fit w-full">
-                        <div className="flex flex-col items-start h-full lg:w-1/2 w-full">
-                            <div className="flex flex-col h-full items-start justify-center space-y-4 rounded-md border px-4 py-8">
-                                <p className="text-sm font-medium leading-none">
+                </div>
+            </div>
+            <div className="shadow-lg border-2 flex-shrink rounded-xl p-6">
+                <div className="mb-5">
+                    <div className="font-medium text-xl">Details</div>
+                </div>
+                <div className="flex flex-col">
+                    <div className="flex lg:flex-row items-start flex-col gap-4">
+                        <div className="flex flex-col items-start h-full xl:w-1/2 w-full rounded-md border p-4">
+                            <div className="h-full">
+                                <p className="text-sm font-medium leading-none mb-4">
                                     Description
                                 </p>
-                                <p className="font-normal text-wrap truncate text-md">
+                                <p className="font-normal w-full text-wrap truncate text-md overflow-hidden truncate break-words">
                                     {description}
                                 </p>
                             </div>
@@ -205,8 +205,8 @@ export default function ProjectWrapper({
                         </div>
 
                         {readme && (
-                            <div className="flex flex-col h-3/4 lg:w-[calc(40%+150px)] w-full items-start justify-center space-y-4 rounded-md border p-4">
-                                <p className="text-md font-medium leading-none">
+                            <div className="flex flex-col h-3/4 xl:w-1/2 w-full w-full items-start justify-center space-y-4 rounded-md border p-4">
+                                <p className="text-sm font-medium leading-none">
                                     README
                                 </p>
                                 <div className="w-full h-3/4">
@@ -215,13 +215,13 @@ export default function ProjectWrapper({
                             </div>
                         )}
                     </div>
-                </CardContent>
-            </Card>
-            <Card className="shadow-lg border-2 flex-shrink">
-                <CardHeader>
-                    <CardTitle>Author</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-row justify-between space-x-4 w-full h-fit">
+                </div>
+            </div>
+            <div className="shadow-lg border-2 flex-shrink rounded-xl p-6">
+                <div className="mb-5">
+                    <div className="font-medium text-xl">Author</div>
+                </div>
+                <div className="flex flex-row justify-between space-x-4 w-full h-fit">
                     <div className="flex flex-col w-2/3">
                         <span className="font-normal text-xl">
                             {author.name}
@@ -275,8 +275,8 @@ export default function ProjectWrapper({
                             </div>
                         )}
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     )
 }

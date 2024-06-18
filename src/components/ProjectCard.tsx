@@ -31,7 +31,7 @@ function ProjectCard({ project }: ProjectCardProps) {
 
     return (
         <Link href={`/projects/${id}`}>
-            <Card className="cursor-pointer rounded-lg flex flex-col h-full w-84 border-gray-200 border-2 bg-white shadow-md">
+            <Card className="cursor-pointer rounded-lg flex flex-col h-84 w-84 border-gray-200 border-2 bg-white shadow-md">
                 <CardHeader>
                     <CardTitle>{name}</CardTitle>
                     <CardDescription

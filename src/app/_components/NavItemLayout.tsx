@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { Dispatch, SetStateAction } from 'react'
 
 type NavItemLayoutProps = {
     title: string
@@ -16,6 +15,7 @@ const NavItemLayout = ({
     closeDrawer,
 }: NavItemLayoutProps) => {
     const close = closeDrawer || function () {}
+
     return (
         <li>
             <Link
