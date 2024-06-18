@@ -3,5 +3,5 @@
 ### TODO
 
 -   More tests
--   Ratelimiting
+-   Reliable ratelimiting w/ Redis / Vercel KV
 -   Create a project from "my repos"
