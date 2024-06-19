@@ -9,11 +9,13 @@ export default auth(async (req) => {
     const { nextUrl } = req
     const isAuthenticated = !!req.auth
 
-    if (req.method === 'POST') {
+    if (
+        req.method === 'POST' &&
+        process.env.ENVIRONMENT === 'production'
+    ) {
         const ip = req.ip ?? '127.0.0.1'
-        const { success, pending, limit, reset, remaining } =
-            await ratelimit.limit(ip)
-        if (!success)
+        const rl = await ratelimit?.limit(ip)
+        if (!rl?.success)
             return NextResponse.json(
                 { error: 'rate limited' },
                 { status: 429 }
