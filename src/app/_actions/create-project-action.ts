@@ -59,7 +59,7 @@ export default async function createProjectAction(
         return { error: err, success }
     } finally {
         if (success) {
-            revalidatePath('')
+            revalidatePath('/')
         }
     }
 }

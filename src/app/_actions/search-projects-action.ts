@@ -74,11 +74,11 @@ const searchProjects = async (
             hasGithub === '' ? null : hasGithub === 'true'
         prevProjects.lastQuery = query
 
+        prevProjects.error = undefined
+
         return prevProjects
     } catch (error) {
         let err = error as any
-
-        // TODO: Make this error logic run globally on all requests
 
         if (err instanceof TRPCError) {
             const msg = err.message

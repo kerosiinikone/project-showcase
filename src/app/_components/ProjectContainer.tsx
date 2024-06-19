@@ -44,7 +44,10 @@ export default function ProjectContainer({
 
     const projectsMemo = useMemo(
         () =>
-            projectsRaw && !projectsRaw.error ? projectsRaw.data : [],
+            projectsRaw &&
+            (!projectsRaw.error || projectsRaw.error === '{}')
+                ? projectsRaw.data
+                : [],
         [projectsRaw]
     )
 

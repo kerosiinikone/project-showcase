@@ -245,9 +245,9 @@ export default function ProjectWrapper({
                             {author.id}
                         </span>
                     </div>
-                    <div className="flex md:flex-row flex-col md:items-center md:justify-center gap-4">
+                    <div className="flex md:flex-row flex-col items-center justify-start md:justify-center gap-4">
                         {supportCountFormatted && (
-                            <div className="flex flex-row gap-2 mx-5 justify-center items-center">
+                            <div className="flex flex-row gap-2 md:mx-5 justify-center items-center">
                                 <h2 className="text-lg font-medium">
                                     {supportCountFormatted == 1
                                         ? `${supportCountFormatted}`
