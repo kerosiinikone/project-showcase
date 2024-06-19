@@ -165,9 +165,14 @@ export default function ProjectWrapper({
                                             }
                                             initialTags={tags}
                                         />
-                                        <EditButton
-                                            fetch={fetchReposAction}
-                                        />
+                                        {session.user?.id ==
+                                            author.id && (
+                                            <EditButton
+                                                fetch={
+                                                    fetchReposAction
+                                                }
+                                            />
+                                        )}
                                     </Dialog>
                                 </div>
                             </div>

@@ -14,7 +14,6 @@ export default function ModalLayout({
     const ref = useRef<Element | null>(null)
 
     useEffect(() => {
-        // "document" undefined before rendering
         ref.current = document.getElementById('modal')
     }, [])
 

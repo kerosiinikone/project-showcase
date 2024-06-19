@@ -5,19 +5,21 @@ import { limit } from './middleware/ratelimit'
 
 const { auth } = NextAuth(authConfig)
 
-export default auth(async (req) => {
+export default auth((req) => {
     const { nextUrl } = req
     const isAuthenticated = !!req.auth
+
+    // For Server Actions Ratelimiting -> removed for testing
 
     if (req.method === 'POST') {
         const ip =
             req.ip ?? req.headers.get('X-Forwarded-For') ?? 'unknown'
-        const isRateLimited = await limit(ip)
-        if (isRateLimited)
-            return NextResponse.json(
-                { error: 'rate limited' },
-                { status: 429 }
-            )
+        const isRateLimited = limit(ip)
+        // if (isRateLimited)
+        //     return NextResponse.json(
+        //         { error: 'rate limited' },
+        //         { status: 429 }
+        //     )
     }
 
     if (!isAuthenticated && nextUrl.pathname === '/dashboard')

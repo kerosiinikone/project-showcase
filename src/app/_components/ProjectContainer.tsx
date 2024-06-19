@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'react-toastify'
 import Filters from './Filters'
 import SearchBarComponent from './SearchBar'
+import { unstable_noStore as noStore } from 'next/cache'
 
 interface ProjectContainerProps {
     initialProjects: ProjectTypeWithId[]
@@ -22,6 +23,8 @@ export default function ProjectContainer({
     tagsFromParam,
     initialError,
 }: ProjectContainerProps) {
+    noStore()
+
     const formRef = useRef<HTMLFormElement | null>(null)
     const [tags, setTags] = useState<string[]>(tagsFromParam || [])
     const [cursor, setCursor] = useState<string | null>(
@@ -40,7 +43,8 @@ export default function ProjectContainer({
     }
 
     const projectsMemo = useMemo(
-        () => (!projectsRaw.error ? projectsRaw.data : []),
+        () =>
+            projectsRaw && !projectsRaw.error ? projectsRaw.data : [],
         [projectsRaw]
     )
 
@@ -61,11 +65,12 @@ export default function ProjectContainer({
     }, [initialError])
 
     useEffect(() => {
-        setCursor(projectsRaw.nextCursor)
-    }, [projectsRaw.nextCursor])
+        if (projectsRaw && projectsRaw.nextCursor)
+            setCursor(projectsRaw.nextCursor)
+    }, [projectsRaw])
 
     return (
-        <>
+        <div className="flex flex-col">
             <div className="h-fit">
                 <form
                     ref={formRef}
@@ -118,7 +123,7 @@ export default function ProjectContainer({
                                 setCursor(null)
                             }}
                             initSearch={search}
-                            stage={projectsRaw.stage}
+                            stage={projectsRaw?.stage ?? []}
                         />
                     </div>
                     <input
@@ -135,11 +140,13 @@ export default function ProjectContainer({
                     />
                 </form>
             </div>
-            <ProjectGrid
-                pending={pending}
-                onBottom={onBottom}
-                projects={projectsMemo}
-            />
-        </>
+            <div className="flex flex-col flex-grow overflow-y-auto justify-center items-center w-full h-[calc(100vh-20rem)]">
+                <ProjectGrid
+                    pending={pending}
+                    onBottom={onBottom}
+                    projects={projectsMemo}
+                />
+            </div>
+        </div>
     )
 }

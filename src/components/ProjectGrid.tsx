@@ -19,7 +19,7 @@ export default function ProjectGrid({
         <div
             id="catalog"
             className={
-                'container mx-auto auto-rows-min grid gap-4 p-5 bg-white overflow-y-auto rounded-lg h-full max-h-full w-full font-medium border-gradient-to-r from-slate-150 to-slate-50 border-2  grid-cols-1 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 w-full'
+                'container mx-auto pb-20 auto-rows-min grid gap-4 p-5 bg-white overflow-y-auto rounded-lg h-full max-h-full w-full font-medium border-gradient-to-r from-slate-150 to-slate-50 border-2  grid-cols-1 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2'
             }
             onScroll={onBottom}
         >

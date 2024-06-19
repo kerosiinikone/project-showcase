@@ -32,9 +32,10 @@ export const usePagination = (
         if (
             e.target.scrollHeight - e.target.scrollTop ===
                 e.target.clientHeight &&
-            projectsRaw.nextCursor
-        )
+            projectsRaw?.nextCursor
+        ) {
             search()
+        }
     }
 
     useEffect(() => {

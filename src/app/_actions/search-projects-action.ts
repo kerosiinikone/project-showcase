@@ -39,11 +39,11 @@ const searchProjects = async (
 
     const isNewQuery =
         query != lastQuery ||
-        !(JSON.stringify(prevProjects.stage) == stageFilter) ||
-        !(JSON.stringify(prevProjects.tags) == tags) ||
+        !(JSON.stringify(prevProjects?.stage || []) == stageFilter) ||
+        !(JSON.stringify(prevProjects?.tags || []) == tags) ||
         !(
             (hasGithub == '' ? 'null' : hasGithub) ==
-            JSON.stringify(prevProjects.hasGithub)
+            JSON.stringify(prevProjects?.hasGithub)
         )
 
     const cursorToUse = isNewQuery ? undefined : cursor
