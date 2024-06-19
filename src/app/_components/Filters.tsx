@@ -42,15 +42,18 @@ export default function Filters({
     const handleStageFilter = (s: Stage) => {
         if (stageFilter?.includes(s)) {
             setStateFilter((state) => {
-                return state?.filter((stage) => stage !== s)
+                return state.filter((stage) => stage !== s)
             })
         } else {
             setStateFilter((state) => {
-                return [...(state || []), s]
+                return [...state, s]
             })
         }
 
         resetCursor()
+        setTimeout(() => {
+            initSearch()
+        }, 500)
     }
 
     return (
@@ -60,7 +63,10 @@ export default function Filters({
                 id="stage-filter"
             >
                 <Button
-                    onClick={() => handleStageFilter(Stage.IDEA)}
+                    onClick={(e) => {
+                        e.preventDefault()
+                        handleStageFilter(Stage.IDEA)
+                    }}
                     variant="secondary"
                 >
                     {stageFilter?.includes(Stage.IDEA) ? (
@@ -73,7 +79,10 @@ export default function Filters({
                     )}
                 </Button>
                 <Button
-                    onClick={() => handleStageFilter(Stage.PLAN)}
+                    onClick={(e) => {
+                        e.preventDefault()
+                        handleStageFilter(Stage.PLAN)
+                    }}
                     variant="secondary"
                 >
                     {stageFilter?.includes(Stage.PLAN) ? (
@@ -86,9 +95,10 @@ export default function Filters({
                     )}
                 </Button>
                 <Button
-                    onClick={() =>
+                    onClick={(e) => {
+                        e.preventDefault()
                         handleStageFilter(Stage.DEVELOPMENT)
-                    }
+                    }}
                     variant="secondary"
                 >
                     {stageFilter?.includes(Stage.DEVELOPMENT) ? (
@@ -101,7 +111,10 @@ export default function Filters({
                     )}
                 </Button>
                 <Button
-                    onClick={() => handleStageFilter(Stage.FINISHED)}
+                    onClick={(e) => {
+                        e.preventDefault()
+                        handleStageFilter(Stage.FINISHED)
+                    }}
                     variant="secondary"
                 >
                     {stageFilter?.includes(Stage.FINISHED) ? (
@@ -114,9 +127,10 @@ export default function Filters({
                     )}
                 </Button>
                 <Button
-                    onClick={() =>
+                    onClick={(e) => {
+                        e.preventDefault()
                         handleStageFilter(Stage.PRODUCTION)
-                    }
+                    }}
                     variant="secondary"
                 >
                     {stageFilter?.includes(Stage.PRODUCTION) ? (
