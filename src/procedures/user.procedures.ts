@@ -151,6 +151,9 @@ export default {
                         },
                     }
                 )
+                if (!data.ok) {
+                    throw new Error(`Request denied: ${data.status}`)
+                }
                 const repos = await data.json()
 
                 return repos.map((repo: any) => {
@@ -183,6 +186,9 @@ export default {
                         },
                     }
                 )
+                if (!data.ok) {
+                    throw new Error(`Request denied: ${data.status}`)
+                }
                 const { bio } = await data.json()
 
                 return bio as string

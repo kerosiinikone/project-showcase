@@ -286,12 +286,10 @@ export default {
                     error,
                     input,
                 })
-                return []
-
-                // throw new TRPCError({
-                //     code: 'INTERNAL_SERVER_ERROR',
-                //     message: 'Database: Error fetching project.',
-                // })
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Database: Error fetching project.',
+                })
             }
         }),
     deleteProjectById: protectedProcedure

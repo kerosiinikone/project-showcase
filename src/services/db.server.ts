@@ -10,58 +10,28 @@ import { migrate } from './db/test_migration'
 
 /* eslint-disable */
 
-// Messy and hacky, fix
-
-declare global {
-    var db: PostgresJsDatabase<typeof schema> | undefined
-    var testDb:
-        | betterSqlite.BetterSQLite3Database<typeof testSchema>
-        | undefined
-}
-
 let db: PostgresJsDatabase<typeof schema>
 let testDb:
     | betterSqlite.BetterSQLite3Database<typeof testSchema>
     | undefined
 
-if (
+const isProduction =
     process.env.NODE_ENV === 'production' ||
     process.env.ENVIRONMENT === 'production'
-) {
-    db = drizzle(postgres(process.env.DB_URL || ''), { schema })
-    global.testDb = undefined
-    testDb = global.testDb
-}
-if (
+const isTest =
     process.env.ENVIRONMENT === 'test' ||
     process.env.NODE_ENV === 'test'
-) {
+
+if (isProduction) {
+    db = drizzle(postgres(process.env.DB_URL || ''), { schema })
+} else if (isTest) {
     const sqlite = new Database('test.db')
     migrate(sqlite)
 
-    const liteDb = betterSqlite.drizzle(sqlite, {
-        schema: testSchema,
-    })
-    if (!global.db) {
-        global.db = drizzle(postgres(process.env.DB_URL || ''), {
-            schema,
-        })
-    }
-    db = global.db
-
-    if (!global.testDb) {
-        global.testDb = liteDb
-    }
-    testDb = global.testDb
+    testDb = betterSqlite.drizzle(sqlite, { schema: testSchema })
+    db = drizzle(postgres(process.env.DB_URL || ''), { schema })
 } else {
-    if (!global.db) {
-        global.db = drizzle(postgres(process.env.DB_URL || ''), {
-            schema,
-        })
-    }
-    db = global.db
-    global.testDb = undefined
-    testDb = global.testDb
+    db = drizzle(postgres(process.env.DB_URL || ''), { schema })
 }
 
 export default { db, testDb }

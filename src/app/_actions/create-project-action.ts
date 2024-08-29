@@ -5,7 +5,7 @@ import { createProjectServer } from '@/services/trpc/server'
 import { TRPCError } from '@trpc/server'
 import { revalidatePath } from 'next/cache'
 
-export interface ProjectParams {
+export type ProjectParams = {
     name: string
     stage: Stage
     github_url: string | null
